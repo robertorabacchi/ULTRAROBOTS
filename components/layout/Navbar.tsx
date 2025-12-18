@@ -11,6 +11,7 @@ const navItems = [
   { name: 'FLEET', path: '/products' },
   { name: 'RAPPORTINI', path: '/reports' },
   { name: 'MANUALI AI', path: '/ai-docs' },
+  { name: 'CONTATTI', path: '/contact' },
 ];
 
 export default function Navbar() {
