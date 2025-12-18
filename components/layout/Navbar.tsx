@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
 const navItems = [
@@ -18,14 +17,10 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <motion.nav 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+    <nav 
       className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-0"
-      suppressHydrationWarning
     >
-      <div className="w-full bg-black/80 backdrop-blur-md border-b border-[#1a1a1a] px-8 py-4 flex items-center justify-between" suppressHydrationWarning>
+      <div className="w-full bg-black/80 backdrop-blur-md border-b border-[#1a1a1a] px-8 py-4 flex items-center justify-between">
         {/* Brand: Minimal Text */}
         <div className="flex items-center gap-3">
             <div className="w-2 h-2 bg-[#0066FF]"></div>
@@ -62,7 +57,7 @@ export default function Navbar() {
           INITIALIZE
         </button>
       </div>
-    </motion.nav>
+    </nav>
   );
 }
 
