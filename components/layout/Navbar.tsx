@@ -8,9 +8,9 @@ import clsx from 'clsx';
 const navItems = [
   { name: 'HOME', path: '/' },
   { name: 'TECNOLOGIA', path: '/technology' },
-  { name: 'APPLICAZIONI', path: '/applications' }, // Placeholder
+  { name: 'FLEET', path: '/products' },
   { name: 'RAPPORTINI', path: '/reports' },
-  { name: 'MANUALI AI', path: '/ai-docs' }, // Placeholder
+  { name: 'MANUALI AI', path: '/ai-docs' },
 ];
 
 export default function Navbar() {

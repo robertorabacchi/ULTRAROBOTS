@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
+import { getReports, getRobots, getReportStats, getReportById } from '@/lib/data/reports-data';
 
 // Cache in-memory (demo). In prod usare Redis.
 const REPORT_CACHE = new Map<
@@ -31,25 +32,78 @@ async function buildPdfBase64(unitId: string, reportType: string, meta: ReportMe
 
   doc.on('data', (chunk) => chunks.push(chunk));
 
-  doc.fontSize(16).font('Helvetica-Bold').text('ULTRAROBOTS // REPORT TECNICO', {
-    align: 'left',
-  });
+  // Header
+  doc.fontSize(20).font('Helvetica-Bold').text('ULTRAROBOTS', { align: 'center' });
+  doc.fontSize(10).font('Helvetica').fillColor('#666').text('AI-POWERED ROBOTICS SYSTEMS', { align: 'center' });
+  doc.moveDown(2);
+  
+  // Report Info
+  doc.fillColor('#000').fontSize(14).font('Helvetica-Bold').text('REPORT TECNICO', { underline: true });
   doc.moveDown();
-  doc.fontSize(12).font('Helvetica').text(`UNITÀ: ${unitId}`);
-  doc.text(`TIPO ANALISI: ${reportType}`);
-  doc.text(`GENERATED AT: ${meta.generatedAt}`);
+  doc.fontSize(10).font('Helvetica');
+  doc.text(`Unità: ${unitId}`);
+  doc.text(`Tipo Analisi: ${reportType}`);
+  doc.text(`Generato: ${new Date(meta.generatedAt).toLocaleString('it-IT')}`);
   doc.moveDown();
-  doc.text('SINTESI KPI', { underline: true });
+
+  // Stats globali
+  const stats = getReportStats();
+  doc.fontSize(12).font('Helvetica-Bold').text('STATISTICHE GLOBALI', { underline: true });
   doc.moveDown(0.5);
-  doc.text(`- Pagine: ${meta.pages}`);
-  doc.text(`- Dimensione stimata: ${meta.size}`);
-  doc.text(`- AI Score: ${meta.aiAnalysisScore}%`);
-  doc.text(`- Maintenance: ${meta.maintenancePredict}`);
+  doc.fontSize(10).font('Helvetica');
+  doc.text(`Total Reports: ${stats.totalReports}`);
+  doc.text(`Avg Efficiency: ${stats.avgEfficiency}%`);
+  doc.text(`Total Energy: ${stats.totalEnergy} kWh`);
+  doc.text(`Total Duration: ${stats.totalDuration}h`);
+  doc.text(`Success Rate: ${stats.successRate}%`);
   doc.moveDown();
-  doc.text(
-    'Nota: Questo report è generato automaticamente. Validare i dati prima di distribuzione.',
-    { align: 'justify' }
+
+  // Report specifico se esiste
+  const report = getReportById(unitId);
+  if (report) {
+    doc.fontSize(12).font('Helvetica-Bold').text('DETTAGLI REPORT', { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(10).font('Helvetica');
+    doc.text(`ID: ${report.id}`);
+    doc.text(`Robot: ${report.robotId}`);
+    doc.text(`Location: ${report.location}`);
+    doc.text(`Task Type: ${report.taskType}`);
+    doc.text(`Duration: ${report.duration} min`);
+    doc.text(`Energy Used: ${report.energyUsed} kWh`);
+    doc.text(`Efficiency: ${report.efficiency}%`);
+    doc.text(`Operator: ${report.operator}`);
+    doc.moveDown();
+    if (report.errors.length > 0) {
+      doc.fillColor('#d32f2f').text('Errors:');
+      report.errors.forEach(err => doc.text(`  • ${err}`));
+      doc.fillColor('#000');
+    }
+    doc.moveDown();
+    doc.text(`Notes: ${report.notes}`, { align: 'justify' });
+  } else {
+    // Robots overview
+    const robots = getRobots();
+    doc.fontSize(12).font('Helvetica-Bold').text('STATO ROBOT', { underline: true });
+    doc.moveDown(0.5);
+    robots.forEach(robot => {
+      doc.fontSize(10).font('Helvetica-Bold').text(`${robot.name} (${robot.id})`);
+      doc.fontSize(9).font('Helvetica');
+      doc.text(`  Model: ${robot.model}`);
+      doc.text(`  Status: ${robot.status.toUpperCase()}`);
+      doc.text(`  Battery: ${robot.battery}%`);
+      doc.text(`  Location: ${robot.location}`);
+      doc.text(`  Operating Hours: ${robot.operatingHours}h`);
+      doc.moveDown(0.5);
+    });
+  }
+
+  // Footer
+  doc.moveDown(2);
+  doc.fontSize(8).fillColor('#666').text(
+    'Questo documento è generato automaticamente dal sistema ULTRAROBOTS. Validare i dati prima della distribuzione.',
+    { align: 'center' }
   );
+  doc.text(`AI Analysis Score: ${meta.aiAnalysisScore}% | Maintenance Predict: ${meta.maintenancePredict}`, { align: 'center' });
 
   doc.end();
 
