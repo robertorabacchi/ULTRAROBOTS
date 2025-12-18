@@ -23,8 +23,9 @@ export default function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-0"
+      suppressHydrationWarning
     >
-      <div className="w-full bg-black/80 backdrop-blur-md border-b border-[#1a1a1a] px-8 py-4 flex items-center justify-between">
+      <div className="w-full bg-black/80 backdrop-blur-md border-b border-[#1a1a1a] px-8 py-4 flex items-center justify-between" suppressHydrationWarning>
         {/* Brand: Minimal Text */}
         <div className="flex items-center gap-3">
             <div className="w-2 h-2 bg-[#0066FF]"></div>
