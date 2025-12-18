@@ -1,0 +1,43 @@
+{
+  "lastUpdate": "2025-12-18T03:00:00Z",
+  "activeModels": ["gemini", "claude-sonnet", "gpt-4o"],
+  "currentLocks": [],
+  "workQueue": {
+    "inProgress": [],
+    "pending": [
+      {
+        "id": "manuali-ai",
+        "assignedTo": null,
+        "priority": "high",
+        "description": "Creare sistema chat RAG per interrogazione manuali tecnici"
+      },
+      {
+        "id": "pdf-api",
+        "assignedTo": null,
+        "priority": "medium",
+        "description": "Implementare API Netlify Functions per generazione PDF reali"
+      }
+    ],
+    "completed": [
+      {
+        "id": "setup",
+        "completedBy": "gemini",
+        "timestamp": "2025-12-18T02:30:00Z"
+      }
+    ]
+  },
+  "fileOwnership": {
+    "components/": "claude-sonnet",
+    "app/api/": "gpt-4o",
+    "lib/": "gpt-4o",
+    "docs/": "gemini"
+  }
+}
+
+
+
+
+
+
+
+

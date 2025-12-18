@@ -1,26 +1,107 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* 🛡️ TITAN PROTOCOL: KERNEL EXECUTABLE STYLE (DIGITALENGINEERED.AI TARGET) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* VOID ZERO (Nero Assoluto Tecnico) */
+  --titan-bg: #000000;
+  --titan-panel: #050505;
+  
+  /* LINES (Hairline Borders) */
+  --titan-border: #1a1a1a;
+  --titan-border-light: #333333;
+  
+  /* ACCENT (Laser Blue - Preciso, non diffuso) */
+  --titan-accent: #0066FF; 
+  
+  /* TEXT */
+  --titan-text-primary: #ffffff;
+  --titan-text-secondary: #888888;
+  --titan-text-dim: #444444;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--titan-text-primary);
+  background-color: var(--titan-bg);
+  /* Griglia millimetrica tecnica appena visibile */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  font-family: var(--font-geist-mono), monospace !important; /* MONOSPACE COME DEFAULT TECNICO */
+  overflow-x: hidden;
+}
+
+/* UTILITÀ KERNEL */
+.titan-border-b {
+  border-bottom: 1px solid var(--titan-border);
+}
+
+.titan-border {
+  border: 1px solid var(--titan-border);
+}
+
+.titan-panel {
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--titan-border);
+}
+
+.titan-button {
+  background: transparent;
+  border: 1px solid var(--titan-border-light);
+  color: var(--titan-text-primary);
+  font-family: var(--font-geist-mono);
+  text-transform: uppercase;
+  font-size: 0.75rem; /* 12px */
+  letter-spacing: 0.1em;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.titan-button:hover {
+  border-color: var(--titan-accent);
+  color: var(--titan-accent);
+  box-shadow: 0 0 15px rgba(0, 102, 255, 0.2);
+}
+
+.titan-button-primary {
+  background: var(--titan-accent);
+  border: 1px solid var(--titan-accent);
+  color: white;
+  font-family: var(--font-geist-mono);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 1.5rem;
+}
+
+.titan-button-primary:hover {
+  background: #0052cc;
+  border-color: #0052cc;
+}
+
+/* TYPOGRAPHY */
+h1, h2, h3, h4 {
+  font-family: var(--font-geist-sans), sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+.mono-label {
+  font-family: var(--font-geist-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--titan-text-secondary);
+}
+
+/* SCROLLBAR INVISIBILE (Mac Style) */
+::-webkit-scrollbar {
+  width: 6px;
+  background: var(--titan-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 3px;
 }
