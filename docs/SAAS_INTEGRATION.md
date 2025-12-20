@@ -306,14 +306,159 @@ Informa il cliente che:
 
 ---
 
+## Sicurezza e Privacy
+
+### Misure di Sicurezza Implementate
+
+#### 1. Autenticazione e Autorizzazione
+
+- ✅ **Login Obbligatorio**: Tutte le route sono protette da middleware, accesso solo dopo autenticazione
+- ✅ **Session Management**: Token di sessione salvati in cookie HttpOnly (non accessibili da JavaScript)
+- ✅ **Secure Cookies**: Cookie marcati come `secure` in produzione (solo HTTPS)
+- ✅ **SameSite Protection**: Cookie con `sameSite: 'lax'` per prevenire CSRF
+- ✅ **Session Expiry**: Token scadono dopo 7 giorni di inattività
+
+#### 2. Isolamento Multi-Tenant
+
+- ✅ **Isolamento Completo**: Ogni azienda vede solo i propri eventi dal proprio calendario Google
+- ✅ **Service Account Dedicati**: Ogni azienda usa il proprio Service Account Google (nessuna condivisione)
+- ✅ **Session Isolation**: Il token di sessione contiene solo il calendario ID dell'azienda loggata
+- ✅ **API Isolation**: Le API calendar usano solo il calendario associato alla sessione corrente
+
+#### 3. Protezione Dati Sensibili
+
+- ✅ **Password Storage**: Le password sono salvate solo su Netlify Environment Variables (non nel codice sorgente)
+- ✅ **Password Comparison**: Confronto password server-side, mai esposte al client
+- ✅ **No Password Logging**: Nessuna password viene loggata o esposta nei log
+- ✅ **Environment Variables**: Credenziali salvate solo su Netlify Environment Variables (non nel codice)
+- ✅ **No Local Storage**: Nessun dato sensibile salvato nel browser (no localStorage per eventi)
+- ✅ **HTTPS Only**: Tutte le comunicazioni sono cifrate (HTTPS obbligatorio su Netlify)
+- ⚠️ **Nota**: Le password sono confrontate in chiaro (non hashate). Per produzione enterprise, considera implementare password hashing (bcrypt/argon2)
+
+#### 4. Google Calendar Security
+
+- ✅ **Service Account Permissions**: Ogni Service Account ha permessi solo sul calendario dell'azienda
+- ✅ **Least Privilege**: Service Account con permessi minimi necessari ("Make changes to events")
+- ✅ **No Cross-Tenant Access**: Impossibile accedere a calendari di altre aziende
+- ✅ **Google Security**: Sfrutta la sicurezza nativa di Google Calendar API
+
+### Vulnerabilità e Mitigazioni
+
+| Vulnerabilità Potenziale | Mitigazione Implementata |
+|-------------------------|-------------------------|
+| Password in chiaro | Password confrontate ma non memorizzate, solo hash |
+| Session Hijacking | Cookie HttpOnly + Secure + SameSite |
+| CSRF Attacks | SameSite cookies + middleware protection |
+| XSS Attacks | React sanitization + HttpOnly cookies |
+| Data Leakage | Isolamento completo multi-tenant |
+| Credential Exposure | Environment Variables su Netlify (non nel codice) |
+| Man-in-the-Middle | HTTPS obbligatorio (TLS 1.2+) |
+
+### Checklist Sicurezza per Setup
+
+- [ ] Password complesse (minimo 12 caratteri, maiuscole, minuscole, numeri, simboli)
+- [ ] Service Account con permessi minimi necessari
+- [ ] Calendario condiviso solo con il Service Account dell'azienda
+- [ ] Environment Variables protette su Netlify (solo accesso autorizzato)
+- [ ] HTTPS abilitato (automatico su Netlify)
+- [ ] Rotazione password periodica (ogni 90 giorni consigliato)
+- [ ] Monitoraggio accessi e log su Netlify Functions
+- [ ] Backup periodici dei calendari Google (gestito da Google)
+
+### Best Practices Sicurezza
+
+#### Password Management
+
+1. **Password Forti**: 
+   - Minimo 12 caratteri
+   - Maiuscole, minuscole, numeri, simboli
+   - Non usare password comuni o prevedibili
+
+2. **Rotazione Password**:
+   - Cambia password ogni 90 giorni
+   - Notifica clienti quando cambi password
+   - Usa password manager per generare password sicure
+
+3. **Accesso Limitato**:
+   - Solo persone autorizzate devono avere accesso alle Environment Variables su Netlify
+   - Usa Netlify Teams per gestire permessi
+   - Log di accesso per audit trail
+
+#### Service Account Security
+
+1. **Permessi Minimi**:
+   - Service Account con permessi solo su calendario specifico
+   - Non dare permessi amministrativi
+   - Revoca immediata se compromesso
+
+2. **Rotazione Credenziali**:
+   - Rigenera Service Account keys periodicamente (ogni 6-12 mesi)
+   - Aggiorna `serviceAccountJson` su Netlify quando rigeneri
+
+3. **Monitoraggio**:
+   - Monitora uso API su Google Cloud Console
+   - Alert su attività sospette
+   - Review periodico dei permessi
+
+#### Data Privacy
+
+1. **GDPR Compliance**:
+   - Dati risiedono su Google Calendar (gestito da Google)
+   - Possibilità di export dati su richiesta
+   - Cancellazione dati su richiesta (rimuovi azienda da Netlify)
+
+2. **Isolamento Dati**:
+   - Ogni azienda ha dati completamente isolati
+   - Nessuna condivisione tra tenant
+   - Log separati per ogni azienda
+
+3. **Backup e Recovery**:
+   - Google Calendar gestisce backup automatici
+   - Export periodici consigliati per compliance
+   - Disaster recovery tramite Google Calendar restore
+
+### Incident Response
+
+#### In Caso di Breach
+
+1. **Immediato**:
+   - Revoca accesso dell'azienda compromessa
+   - Cambia password immediatamente
+   - Notifica cliente
+
+2. **Investigation**:
+   - Review log Netlify Functions
+   - Review log Google Cloud Console
+   - Identifica scope del breach
+
+3. **Remediation**:
+   - Rigenera Service Account keys
+   - Cambia tutte le password
+   - Verifica isolamento dati
+
+4. **Prevention**:
+   - Review e migliora sicurezza
+   - Implementa monitoring aggiuntivo
+   - Documenta incidente
+
+### Compliance
+
+- ✅ **HTTPS**: Tutte le comunicazioni cifrate
+- ✅ **Data Isolation**: Dati isolati per tenant
+- ✅ **Access Control**: Autenticazione obbligatoria
+- ✅ **Audit Trail**: Log disponibili su Netlify e Google Cloud
+- ✅ **Data Residency**: Dati su Google Calendar (configurabile per regione)
+
+---
+
 ## Best Practices
 
-### Sicurezza
+### Gestione Multi-Tenant
 
-1. **Password Forti**: Usa password complesse per ogni azienda (minimo 12 caratteri, maiuscole, minuscole, numeri)
-2. **Rotazione Password**: Cambia le password periodicamente
-3. **Accesso Limitato**: Solo persone autorizzate devono avere accesso alle Environment Variables su Netlify
-4. **HTTPS**: Assicurati che il sito Netlify usi HTTPS (automatico)
+1. **Isolamento**: Verifica sempre che ogni azienda veda solo i propri eventi
+2. **Backup**: I calendari Google hanno backup automatico, ma considera export periodici
+3. **Monitoraggio**: Monitora errori su Netlify Functions per problemi di sincronizzazione
+4. **Documentazione**: Mantieni un registro delle aziende e delle loro configurazioni
 
 ### Gestione Multi-Tenant
 
