@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { Send, Book, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
@@ -29,6 +30,7 @@ interface QueryResult {
 }
 
 export default function AiDocsPage() {
+  const { dict } = useLanguage();
   const [manuals, setManuals] = useState<Manual[]>([]);
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<QueryResult | null>(null);
@@ -83,21 +85,22 @@ export default function AiDocsPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-500 mb-6"
           >
-            AI MANUALS QUERY
+            {dict.aiDocs.title}
           </motion.h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Interroga i manuali tecnici con linguaggio naturale. Powered by RAG.
+            {dict.aiDocs.subtitle}
           </p>
         </div>
 
         {/* Manuals Library */}
         <div className="mb-12">
           <h2 className="text-sm font-mono text-slate-400 mb-4 uppercase tracking-wider">
-            Available Manuals
+            {dict.aiDocs.availableManuals}
           </h2>
           {manualsLoading ? (
             <div className="text-center text-slate-400 py-8">
               <Loader2 className="inline-block animate-spin w-6 h-6" />
+              <span className="ml-2">{dict.aiDocs.loadingManuals}</span>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -116,8 +119,8 @@ export default function AiDocsPage() {
                         {manual.model} • v{manual.version}
                       </p>
                       <div className="flex items-center gap-4 text-xs text-slate-500 font-mono">
-                        <span>{manual.totalPages} pages</span>
-                        <span>Updated {new Date(manual.lastUpdated).toLocaleDateString('it-IT')}</span>
+                        <span>{manual.totalPages} {dict.aiDocs.pages}</span>
+                        <span suppressHydrationWarning>{dict.aiDocs.updated} {new Date(manual.lastUpdated).toLocaleDateString('it-IT')}</span>
                       </div>
                     </div>
                   </div>
@@ -135,7 +138,7 @@ export default function AiDocsPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Es: Come calibrare i sensori del Titan X?"
+                placeholder={dict.aiDocs.placeholder}
                 className="flex-1 bg-black border border-slate-800 rounded-sm px-4 py-3 text-white font-mono text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
                 disabled={loading}
               />
@@ -149,7 +152,7 @@ export default function AiDocsPage() {
                 ) : (
                   <Send className="w-4 h-4" />
                 )}
-                {loading ? 'PROCESSING' : 'QUERY'}
+                {loading ? dict.aiDocs.processing : dict.aiDocs.button}
               </button>
             </div>
           </form>
@@ -163,9 +166,9 @@ export default function AiDocsPage() {
             >
               {/* Confidence */}
               <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-800">
-                <h3 className="text-xs font-mono text-slate-400 uppercase">AI Response</h3>
+                <h3 className="text-xs font-mono text-slate-400 uppercase">{dict.aiDocs.responseTitle}</h3>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-slate-500">Confidence:</span>
+                  <span className="text-xs font-mono text-slate-500">{dict.aiDocs.confidence}:</span>
                   <span className={`text-xs font-mono font-bold ${result.confidence > 0.7 ? 'text-emerald-500' : result.confidence > 0.4 ? 'text-amber-500' : 'text-red-500'}`}>
                     {Math.round(result.confidence * 100)}%
                   </span>
@@ -182,7 +185,7 @@ export default function AiDocsPage() {
               {/* Sources */}
               {result.sources.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-mono text-slate-400 uppercase mb-3">Sources</h4>
+                  <h4 className="text-xs font-mono text-slate-400 uppercase mb-3">{dict.aiDocs.sources}</h4>
                   <div className="space-y-2">
                     {result.sources.map((source, idx) => (
                       <div 
@@ -192,7 +195,7 @@ export default function AiDocsPage() {
                         <span className="text-cyan-400">{source.title}</span>
                         <div className="flex items-center gap-4 text-slate-500">
                           <span>{source.manual}</span>
-                          <span>Page {source.page}</span>
+                          <span>{dict.aiDocs.page} {source.page}</span>
                           <span className="px-2 py-0.5 bg-slate-800 rounded-sm text-[10px] uppercase">
                             {source.category}
                           </span>
@@ -208,16 +211,9 @@ export default function AiDocsPage() {
 
         {/* Example Queries */}
         <div className="max-w-4xl mx-auto mt-12">
-          <h3 className="text-xs font-mono text-slate-400 uppercase mb-4">Example Queries</h3>
+          <h3 className="text-xs font-mono text-slate-400 uppercase mb-4">{dict.aiDocs.examplesTitle}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[
-              'Come eseguire la calibrazione del Titan X?',
-              'Cosa significa errore E-104?',
-              'Come configurare le camere Atlas Vision?',
-              'Procedura di Emergency Stop',
-              'API REST endpoint disponibili',
-              'Manutenzione preventiva Nexus'
-            ].map((example, idx) => (
+            {dict.aiDocs.examples.map((example, idx) => (
               <button
                 key={idx}
                 onClick={() => setQuery(example)}
@@ -232,4 +228,3 @@ export default function AiDocsPage() {
     </main>
   );
 }
-

@@ -28,26 +28,48 @@ export default function TechCard({ title, description, icon: Icon, color, partne
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
       className={clsx(
-        'border border-[#1a1a1a] p-8 group relative bg-black hover:border-[#333] transition-colors',
-        colors[color]
+        'relative overflow-hidden rounded-xl border p-8 group transition-all duration-300',
+        'bg-slate-900/40 backdrop-blur-md',
+        color === 'cyan' && 'border-sky-500/30 hover:border-sky-400 hover:shadow-[0_0_30px_rgba(14,165,233,0.15)]',
+        color === 'blue' && 'border-blue-500/30 hover:border-blue-400 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]',
+        color === 'emerald' && 'border-emerald-500/30 hover:border-emerald-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]',
+        color === 'rose' && 'border-rose-500/30 hover:border-rose-400 hover:shadow-[0_0_30px_rgba(244,63,94,0.15)]'
       )}
     >
-      {/* Hairline Grid Accent */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#333] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      {/* Gradient Overlay on Hover */}
+      <div className={clsx(
+        "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none",
+        color === 'cyan' && 'bg-gradient-to-br from-sky-500/10 to-transparent',
+        color === 'blue' && 'bg-gradient-to-br from-blue-500/10 to-transparent',
+        color === 'emerald' && 'bg-gradient-to-br from-emerald-500/10 to-transparent',
+        color === 'rose' && 'bg-gradient-to-br from-rose-500/10 to-transparent'
+      )} />
 
-      <div className="flex flex-col h-full">
-        <div className="mb-8">
-            <span className="text-[9px] font-mono text-[#444] uppercase tracking-[0.2em] block mb-4">
-                MODULE_0{delay * 10 || 1} // {partner || 'SYSTEM'}
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="mb-6 flex justify-between items-start">
+            <span className={clsx(
+              "text-[9px] font-mono uppercase tracking-[0.2em] border px-2 py-1 rounded",
+              color === 'cyan' && 'text-sky-400 border-sky-500/30',
+              color === 'blue' && 'text-blue-400 border-blue-500/30',
+              color === 'emerald' && 'text-emerald-400 border-emerald-500/30',
+              color === 'rose' && 'text-rose-400 border-rose-500/30'
+            )}>
+                SYS_0{delay * 10 || 1} // {partner || 'NATIVE'}
             </span>
-            <Icon className="w-6 h-6 text-white stroke-[1.5]" />
+            <Icon className={clsx(
+              "w-8 h-8 stroke-1",
+              color === 'cyan' && 'text-sky-400',
+              color === 'blue' && 'text-blue-400',
+              color === 'emerald' && 'text-emerald-400',
+              color === 'rose' && 'text-rose-400'
+            )} />
         </div>
         
-        <h3 className="text-2xl font-light text-white mb-4 tracking-tight">
+        <h3 className="text-2xl font-bold text-white mb-4 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-400 transition-all">
           {title}
         </h3>
         
-        <p className="text-[#666] text-sm leading-relaxed font-light mt-auto">
+        <p className="text-slate-400 text-sm leading-relaxed font-light mt-auto">
           {description}
         </p>
       </div>

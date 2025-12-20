@@ -4,10 +4,12 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { Send, Mail, MapPin, Phone, Loader2, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
 export default function ContactPage() {
+  const { dict } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,10 +40,10 @@ export default function ContactPage() {
         setSuccess(true);
         setFormData({ name: '', email: '', company: '', message: '' });
       } else {
-        setError('Errore durante l\'invio. Riprova.');
+        setError(dict.contact.form.errorSend);
       }
     } catch (err) {
-      setError('Errore di rete. Verifica la connessione.');
+      setError(dict.contact.form.errorNet);
     } finally {
       setLoading(false);
     }
@@ -67,10 +69,10 @@ export default function ContactPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-500 mb-6"
           >
-            CONTACT
+            {dict.contact.title}
           </motion.h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Richiedi una consulenza tecnica o un preventivo personalizzato
+            {dict.contact.subtitle}
           </p>
         </div>
 
@@ -79,14 +81,14 @@ export default function ContactPage() {
           <div className="space-y-8">
             <div className="bg-black border border-slate-800 rounded-sm p-6">
               <h2 className="text-xl font-mono font-bold text-white mb-6">
-                INFO DI CONTATTO
+                {dict.contact.infoTitle}
               </h2>
               
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <Mail className="w-5 h-5 text-cyan-500 mt-1" />
                   <div>
-                    <p className="text-xs font-mono text-slate-400 mb-1">EMAIL</p>
+                    <p className="text-xs font-mono text-slate-400 mb-1">{dict.contact.emailLabel}</p>
                     <a href="mailto:info@ecservicesrl.com" className="text-white font-mono text-sm hover:text-cyan-400 transition-colors">
                       info@ecservicesrl.com
                     </a>
@@ -96,7 +98,7 @@ export default function ContactPage() {
                 <div className="flex items-start gap-4">
                   <Phone className="w-5 h-5 text-emerald-500 mt-1" />
                   <div>
-                    <p className="text-xs font-mono text-slate-400 mb-1">PHONE</p>
+                    <p className="text-xs font-mono text-slate-400 mb-1">{dict.contact.phoneLabel}</p>
                     <a href="tel:+390123456789" className="text-white font-mono text-sm hover:text-emerald-400 transition-colors">
                       +39 012 345 6789
                     </a>
@@ -106,10 +108,10 @@ export default function ContactPage() {
                 <div className="flex items-start gap-4">
                   <MapPin className="w-5 h-5 text-amber-500 mt-1" />
                   <div>
-                    <p className="text-xs font-mono text-slate-400 mb-1">ADDRESS</p>
+                    <p className="text-xs font-mono text-slate-400 mb-1">{dict.contact.addressLabel}</p>
                     <p className="text-white font-mono text-sm">
-                      Via dell'Innovazione, 42<br />
-                      40100 Bologna, Italia
+                      {dict.contact.addressValue}<br />
+                      {dict.contact.addressCity}
                     </p>
                   </div>
                 </div>
@@ -119,17 +121,17 @@ export default function ContactPage() {
             {/* Quick Links */}
             <div className="bg-black border border-slate-800 rounded-sm p-6">
               <h3 className="text-sm font-mono text-slate-400 mb-4 uppercase">
-                DOCUMENTAZIONE
+                {dict.contact.docsTitle}
               </h3>
               <div className="space-y-3">
                 <a href="/technology" className="block text-xs font-mono text-white hover:text-cyan-400 transition-colors">
-                  → Stack Tecnologico
+                  → {dict.contact.links.tech}
                 </a>
-                <a href="/products" className="block text-xs font-mono text-white hover:text-cyan-400 transition-colors">
-                  → Fleet Status
+                <a href="/platform" className="block text-xs font-mono text-white hover:text-cyan-400 transition-colors">
+                  → {dict.contact.links.fleet}
                 </a>
                 <a href="/ai-docs" className="block text-xs font-mono text-white hover:text-cyan-400 transition-colors">
-                  → Manuali AI
+                  → {dict.contact.links.manuals}
                 </a>
               </div>
             </div>
@@ -145,23 +147,23 @@ export default function ContactPage() {
               >
                 <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
                 <h3 className="text-xl font-mono font-bold text-white mb-2">
-                  MESSAGGIO INVIATO
+                  {dict.contact.form.successTitle}
                 </h3>
                 <p className="text-sm text-slate-400 font-mono mb-6">
-                  Ti risponderemo entro 24 ore
+                  {dict.contact.form.successMsg}
                 </p>
                 <button
                   onClick={() => setSuccess(false)}
                   className="text-xs font-mono uppercase text-cyan-400 hover:text-cyan-300 transition-colors"
                 >
-                  Invia un altro messaggio →
+                  {dict.contact.form.newMsg} →
                 </button>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-xs font-mono text-slate-400 mb-2 uppercase">
-                    Nome *
+                    {dict.contact.form.name} *
                   </label>
                   <input
                     type="text"
@@ -169,13 +171,13 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-sm px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="Mario Rossi"
+                    placeholder={dict.contact.form.placeholderName}
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono text-slate-400 mb-2 uppercase">
-                    Email *
+                    {dict.contact.form.email} *
                   </label>
                   <input
                     type="email"
@@ -183,26 +185,26 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-sm px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="mario.rossi@azienda.it"
+                    placeholder={dict.contact.form.placeholderEmail}
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono text-slate-400 mb-2 uppercase">
-                    Azienda
+                    {dict.contact.form.company}
                   </label>
                   <input
                     type="text"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-sm px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="Nome Azienda Srl"
+                    placeholder={dict.contact.form.placeholderCompany}
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono text-slate-400 mb-2 uppercase">
-                    Messaggio *
+                    {dict.contact.form.message} *
                   </label>
                   <textarea
                     required
@@ -210,7 +212,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-800 rounded-sm px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyan-500 transition-colors resize-none"
-                    placeholder="Descriviti la tua esigenza..."
+                    placeholder={dict.contact.form.placeholderMsg}
                   />
                 </div>
 
@@ -228,12 +230,12 @@ export default function ContactPage() {
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      INVIO IN CORSO
+                      {dict.contact.form.sending}
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      INVIA RICHIESTA
+                      {dict.contact.form.submit}
                     </>
                   )}
                 </button>
@@ -245,4 +247,3 @@ export default function ContactPage() {
     </main>
   );
 }
-

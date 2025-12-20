@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import TitanBadge from "@/components/titan/TitanBadge";
+import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,6 +15,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export const metadata: Metadata = {
   title: "ULTRAROBOTS | Meccatronica e AI",
   description: "Il futuro della robotica industriale integrata con l'intelligenza artificiale.",
@@ -25,15 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="it">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-950 text-white selection:bg-cyan-500/30`}
-      >
-        <Navbar />
-        <div className="min-h-screen">{children}</div>
-        <footer className="px-6 pb-10">
-          <TitanBadge className="max-w-4xl mx-auto" />
-        </footer>
+    <html lang="it" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+        <LanguageProvider>
+          <Navbar />
+          <div className="min-h-screen">{children}</div>
+          <footer className="px-6 pb-10" suppressHydrationWarning>
+            <TitanBadge className="max-w-4xl mx-auto" />
+          </footer>
+        </LanguageProvider>
       </body>
     </html>
   );

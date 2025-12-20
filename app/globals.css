@@ -2,84 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🛡️ TITAN PROTOCOL: KERNEL EXECUTABLE STYLE (DIGITALENGINEERED.AI TARGET) */
+/* 🛡️ TITAN PROTOCOL: VIBRANT INDUSTRIAL STYLE */
 :root {
-  /* VOID ZERO (Nero Assoluto Tecnico) */
-  --titan-bg: #000000;
-  --titan-panel: #050505;
+  /* DEEP SPACE (Non Nero piatto, ma profondo) */
+  --titan-bg: #030712; /* Slate 950 */
+  --titan-panel: rgba(15, 23, 42, 0.6);
   
-  /* LINES (Hairline Borders) */
-  --titan-border: #1a1a1a;
-  --titan-border-light: #333333;
+  /* BORDERS */
+  --titan-border: rgba(56, 189, 248, 0.2); /* Sky 400 low opacity */
+  --titan-border-light: rgba(56, 189, 248, 0.4);
   
-  /* ACCENT (Laser Blue - Preciso, non diffuso) */
-  --titan-accent: #0066FF; 
+  /* ACCENTS (Multi-color vibrant) */
+  --titan-accent: #0ea5e9; /* Sky 500 */
+  --titan-secondary: #10b981; /* Emerald 500 */
+  --titan-danger: #ef4444; /* Red 500 */
   
   /* TEXT */
-  --titan-text-primary: #ffffff;
-  --titan-text-secondary: #888888;
-  --titan-text-dim: #444444;
+  --titan-text-primary: #f8fafc;
+  --titan-text-secondary: #94a3b8;
+  --titan-text-dim: #475569;
 }
 
 body {
   color: var(--titan-text-primary);
   background-color: var(--titan-bg);
-  /* Griglia millimetrica tecnica appena visibile */
+  /* Sfondo ricco e profondo con gradienti */
   background-image: 
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.15), transparent 40%),
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  font-family: var(--font-geist-mono), monospace !important; /* MONOSPACE COME DEFAULT TECNICO */
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  font-family: var(--font-geist-sans), sans-serif; /* Torna al Sans Serif leggibile */
   overflow-x: hidden;
 }
 
-/* UTILITÀ KERNEL */
+/* UTILITÀ VIBRANT */
 .titan-border-b {
   border-bottom: 1px solid var(--titan-border);
 }
 
 .titan-border {
   border: 1px solid var(--titan-border);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.05);
 }
 
 .titan-panel {
-  background: rgba(5, 5, 5, 0.8);
-  backdrop-filter: blur(10px);
+  background: var(--titan-panel);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--titan-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* GRADIENT TEXT */
+.titan-text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* BUTTONS COLORATI & ANIMATI */
 .titan-button {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.6);
   border: 1px solid var(--titan-border-light);
   color: var(--titan-text-primary);
   font-family: var(--font-geist-mono);
   text-transform: uppercase;
-  font-size: 0.75rem; /* 12px */
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   padding: 0.75rem 1.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
 }
 
 .titan-button:hover {
   border-color: var(--titan-accent);
-  color: var(--titan-accent);
-  box-shadow: 0 0 15px rgba(0, 102, 255, 0.2);
+  color: white;
+  background: rgba(14, 165, 233, 0.2);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+  transform: translateY(-2px);
 }
 
 .titan-button-primary {
-  background: var(--titan-accent);
-  border: 1px solid var(--titan-accent);
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  border: 1px solid #38bdf8;
   color: white;
   font-family: var(--font-geist-mono);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   padding: 0.75rem 1.5rem;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+  transition: all 0.3s ease;
 }
 
 .titan-button-primary:hover {
-  background: #0052cc;
-  border-color: #0052cc;
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.6);
+  transform: translateY(-2px);
 }
 
 /* TYPOGRAPHY */
@@ -93,15 +116,19 @@ h1, h2, h3, h4 {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--titan-text-secondary);
+  color: var(--titan-accent);
 }
 
-/* SCROLLBAR INVISIBILE (Mac Style) */
+/* SCROLLBAR VIBRANT */
 ::-webkit-scrollbar {
-  width: 6px;
-  background: var(--titan-bg);
+  width: 8px;
+  background: #020617;
 }
 ::-webkit-scrollbar-thumb {
-  background: #222;
-  border-radius: 3px;
+  background: #1e293b;
+  border-radius: 4px;
+  border: 1px solid #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
 }
