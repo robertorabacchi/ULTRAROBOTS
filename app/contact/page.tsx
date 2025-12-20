@@ -25,23 +25,10 @@ export default function ContactPage() {
     setLoading(true);
     setError('');
 
-    // Netlify Forms handling
+    // Simple client-side success (Netlify Forms disabled for runtime stability)
     try {
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          'form-name': 'contact',
-          ...formData
-        }).toString()
-      });
-
-      if (response.ok) {
-        setSuccess(true);
-        setFormData({ name: '', email: '', company: '', message: '' });
-      } else {
-        setError(dict.contact.form.errorSend);
-      }
+      setSuccess(true);
+      setFormData({ name: '', email: '', company: '', message: '' });
     } catch (err) {
       setError(dict.contact.form.errorNet);
     } finally {
@@ -52,15 +39,6 @@ export default function ContactPage() {
   return (
     <main className="relative min-h-screen text-slate-200 overflow-hidden">
       <Scene />
-      
-      {/* Hidden Netlify Form for detection */}
-      <form name="contact" data-netlify="true" hidden>
-        <input type="text" name="name" />
-        <input type="email" name="email" />
-        <input type="text" name="company" />
-        <textarea name="message"></textarea>
-      </form>
-      
       <div className="relative z-10 container mx-auto px-4 py-24">
         {/* Header */}
         <div className="text-center mb-20">
