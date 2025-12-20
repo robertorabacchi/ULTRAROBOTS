@@ -61,9 +61,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, eventId: response.data.id });
 
   } catch (error: any) {
-    console.error('Google Calendar Sync Error:', error);
+    console.error('Google Calendar Sync Error:', {
+      message: error?.message,
+      code: error?.code,
+      errors: error?.errors,
+      responseData: error?.response?.data,
+    });
     return NextResponse.json(
-      { error: 'Failed to sync event', details: error.message },
+      { error: 'Failed to sync event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
       { status: 500 }
     );
   }
