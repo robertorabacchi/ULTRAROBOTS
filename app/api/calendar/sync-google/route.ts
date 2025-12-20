@@ -1,12 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { event } = await request.json();
 
     if (!event) {
-      return NextResponse.json({ error: 'Missing event data' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing event data' }, { status: 400, headers: corsHeaders });
     }
 
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
@@ -14,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     if (!serviceAccountJson || !calendarId) {
       console.error('Missing Google Service Account credentials');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500, headers: corsHeaders });
     }
 
     // Parse service account credentials
@@ -37,7 +50,7 @@ export async function POST(request: NextRequest) {
           error: 'Invalid credentials format', 
           details: e2 instanceof Error ? e2.message : 'JSON parse failed',
           hint: 'Check GOOGLE_SERVICE_ACCOUNT_JSON format in Netlify env vars'
-        }, { status: 500 });
+        }, { status: 500, headers: corsHeaders });
       }
     }
 
@@ -73,7 +86,7 @@ export async function POST(request: NextRequest) {
       requestBody: googleEvent,
     });
 
-    return NextResponse.json({ success: true, eventId: response.data.id });
+    return NextResponse.json({ success: true, eventId: response.data.id }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Google Calendar Sync Error:', {
@@ -84,7 +97,7 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(
       { error: 'Failed to sync event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

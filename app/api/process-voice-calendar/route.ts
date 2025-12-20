@@ -6,12 +6,25 @@ export const runtime = 'nodejs';
 
 const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
+}
+
 export async function POST(req: NextRequest) {
   // Require real keys; no mock fallback
   if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
     return NextResponse.json(
       { error: 'Missing API configuration' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 
@@ -20,11 +33,11 @@ export async function POST(req: NextRequest) {
     const audioFile = formData.get('audio') as File | null;
 
     if (!audioFile) {
-      return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
+      return NextResponse.json({ error: 'No audio file provided' }, { status: 400, headers: corsHeaders });
     }
 
     if (typeof audioFile.size === 'number' && audioFile.size > MAX_AUDIO_BYTES) {
-      return NextResponse.json({ error: 'Audio file too large (max 10MB)' }, { status: 413 });
+      return NextResponse.json({ error: 'Audio file too large (max 10MB)' }, { status: 413, headers: corsHeaders });
     }
 
     console.log('[API Calendar] Processing audio...', audioFile.size, audioFile.type);
@@ -56,7 +69,7 @@ export async function POST(req: NextRequest) {
          transcript: transcript || "", 
          events: [],
          message: "Audio troppo breve o non chiaro."
-       });
+       }, { headers: corsHeaders });
     }
 
     // 2. ANALISI CON OPENAI (GPT-4o)
@@ -127,13 +140,13 @@ export async function POST(req: NextRequest) {
       success: true,
       transcript,
       events: analysisData.events || []
-    });
+    }, { headers: corsHeaders });
 
   } catch (err: any) {
     console.error('[API Calendar Error]', err);
     return NextResponse.json(
       { error: 'Internal Server Error', details: err.message },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
