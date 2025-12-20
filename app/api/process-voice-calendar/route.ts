@@ -68,32 +68,47 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Sei un assistente personale intelligente. Analizza l'input vocale e identifica eventi, appuntamenti, task e promemoria.
+          content: `Sei un assistente personale intelligente e preciso. Analizza l'input vocale e identifica eventi, appuntamenti, task e promemoria con massima accuratezza.
           
           OGGI È: ${today}
           
-          REGOLE:
-          - "domani" = +1 giorno
-          - "dopodomani" = +2 giorni
-          - "lunedì prossimo" = prossimo lunedì
-          - Estrai orari precisi se presenti.
-          - Assegna una priorità (alta, media, bassa).
-          - Distingui tra 'appointment' (con orario e luogo), 'task' (cose da fare), 'reminder' (promemoria rapido), 'call' (telefonate).
+          REGOLE DI ESTRAZIONE:
+          - DATE: "domani" = +1 giorno, "dopodomani" = +2 giorni, "lunedì prossimo" = prossimo lunedì, "tra 3 giorni" = +3 giorni
+          - ORARI: Estrai orari precisi (es. "alle 15:30", "alle 3 del pomeriggio" = 15:00, "alle 9 di mattina" = 09:00)
+          - LUOGHI E INDIRIZZI: 
+            * Se viene menzionato un nome di attività/azienda/negozio/ristorante, cerca di dedurre l'indirizzo completo se conosciuto
+            * Se viene dato solo un nome (es. "Bar Centrale", "Farmacia Rossi"), metti il nome nel campo "location"
+            * Se viene dato un indirizzo completo o parziale, includilo nel campo "location" (es. "Via Roma 10, Milano")
+            * Se viene menzionato solo un quartiere/città, includilo
+          - CONTATTI: Se vengono menzionati numeri di telefono, email, o nomi di persone, includili nella "description"
+          - PRIORITÀ: Assegna "high" per appuntamenti importanti/urgenti, "medium" per eventi normali, "low" per promemoria/task
+          - TIPOLOGIA:
+            * "appointment" = appuntamento con orario e luogo specifico
+            * "task" = cosa da fare senza orario preciso
+            * "reminder" = promemoria rapido
+            * "call" = telefonata da fare
           
           OUTPUT JSON EXPECTED:
           {
             "events": [
               {
                 "type": "appointment" | "task" | "reminder" | "call",
-                "title": "Titolo breve",
-                "description": "Dettagli completi",
+                "title": "Titolo breve e descrittivo",
+                "description": "Dettagli completi inclusi contatti, note aggiuntive, informazioni contestuali",
                 "start_date": "YYYY-MM-DDTHH:mm:ss" (o null se non specificato),
                 "end_date": "YYYY-MM-DDTHH:mm:ss" (o null se non specificato),
-                "location": "Luogo o null",
+                "location": "Indirizzo completo o nome luogo quando disponibile (es. 'Via Roma 10, Milano' o 'Bar Centrale' o 'Farmacia Rossi, Via Verdi 5')",
                 "priority": "high" | "medium" | "low"
               }
             ]
-          }`
+          }
+          
+          IMPORTANTE: 
+          - Cerca sempre di estrarre il massimo di informazioni contestuali
+          - Se viene menzionato un nome di attività commerciale nota (es. "McDonald's", "IKEA", "Farmacia Comunale", "Bar Centrale"), usa la tua conoscenza per dedurre la città/area se menzionata nel contesto
+          - Se l'utente dice solo il nome senza indirizzo, mantieni il nome nel campo "location" (es. "Bar Centrale") - NON inventare indirizzi se non sei sicuro
+          - Se l'utente fornisce indirizzi parziali o completi, includili esattamente come detti
+          - Per attività molto comuni e note, puoi aggiungere la città nella description se menzionata nel contesto generale della conversazione`
         },
         {
           role: "user",
