@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code');
   const error = req.nextUrl.searchParams.get('error');
-
+  
   if (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -14,24 +15,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'No code provided' }, { status: 400 });
   }
 
-  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-  const REDIRECT_URI = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/callback`;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/auth/callback';
 
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      return NextResponse.json({ error: 'Missing Google Credentials' }, { status: 500 });
+  if (!clientId || !clientSecret) {
+    return NextResponse.json({ error: 'Missing Google credentials' }, { status: 500 });
   }
 
   try {
-    // Exchange code for tokens
+    // Scambio code per tokens
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: REDIRECT_URI,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
         grant_type: 'authorization_code',
       }),
     });
@@ -39,35 +40,37 @@ export async function GET(req: NextRequest) {
     const tokens = await tokenResponse.json();
 
     if (tokens.error) {
-        throw new Error(tokens.error_description || tokens.error);
+      throw new Error(tokens.error_description || tokens.error);
     }
 
-    // IN PRODUZIONE: Salvare i token (access_token, refresh_token) in un DB sicuro associati all'utente.
-    // PER ORA: Li mettiamo in un cookie httpOnly per dimostrazione (NON SICURO PER PROD REALE SENZA ENCRYPTION)
+    // Salva i token in un cookie sicuro HTTP-only
+    // In produzione reale dovresti criptarli o salvarli in un DB associati all'utente
+    // Qui usiamo cookie per semplicità e portabilità (no DB richiesto)
+    const cookieStore = await cookies();
     
-    const response = NextResponse.redirect(new URL('/calendar?connected=true', req.url));
-    
-    response.cookies.set('google_access_token', tokens.access_token, {
+    // Access Token (dura 1h)
+    cookieStore.set('titan_google_access_token', tokens.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: tokens.expires_in,
+        maxAge: 3600,
         path: '/',
     });
 
+    // Refresh Token (dura per sempre finché non revocato)
     if (tokens.refresh_token) {
-        response.cookies.set('google_refresh_token', tokens.refresh_token, {
+        cookieStore.set('titan_google_refresh_token', tokens.refresh_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 * 30, // 30 days
+            maxAge: 60 * 60 * 24 * 30, // 30 giorni
             path: '/',
         });
     }
 
-    return response;
+    // Redirect al calendario con successo
+    return NextResponse.redirect(new URL('/calendar?connected=true', req.url));
 
   } catch (err: any) {
-    console.error('Google Auth Error:', err);
+    console.error('OAuth Error:', err);
     return NextResponse.json({ error: 'Authentication failed', details: err.message }, { status: 500 });
   }
 }
-
