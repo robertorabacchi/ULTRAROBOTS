@@ -20,10 +20,25 @@ export async function POST(request: NextRequest) {
     // Parse service account credentials
     let credentials;
     try {
+      // Try parsing as-is first
       credentials = JSON.parse(serviceAccountJson);
     } catch (e) {
-      console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON');
-      return NextResponse.json({ error: 'Invalid credentials format' }, { status: 500 });
+      // If parsing fails, try removing any extra quotes or escaping
+      try {
+        const cleaned = serviceAccountJson.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '\n');
+        credentials = JSON.parse(cleaned);
+      } catch (e2) {
+        console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON', {
+          originalLength: serviceAccountJson?.length,
+          firstChars: serviceAccountJson?.substring(0, 50),
+          parseError: e2 instanceof Error ? e2.message : String(e2)
+        });
+        return NextResponse.json({ 
+          error: 'Invalid credentials format', 
+          details: e2 instanceof Error ? e2.message : 'JSON parse failed',
+          hint: 'Check GOOGLE_SERVICE_ACCOUNT_JSON format in Netlify env vars'
+        }, { status: 500 });
+      }
     }
 
     // Authenticate with JWT (Service Account) - use options object for latest google-auth-library
