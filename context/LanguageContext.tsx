@@ -6,7 +6,7 @@ import { dictionaries, Locale } from '@/lib/dictionaries';
 type LanguageContextType = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  dict: typeof dictionaries['it'];
+  dict: typeof dictionaries[Locale];
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
