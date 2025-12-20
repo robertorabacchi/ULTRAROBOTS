@@ -4,12 +4,12 @@ import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
-const deepgram = createClient(process.env.DEEPGRAM_API_KEY!);
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: NextRequest) {
+  // Lazy initialization to avoid build-time errors
+  const deepgram = createClient(process.env.DEEPGRAM_API_KEY!);
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
   try {
     const formData = await req.formData();
     const audioFile = formData.get('audio') as Blob;
