@@ -4,35 +4,11 @@ import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
-    const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
 
-    export async function POST(req: NextRequest) {
-      // --- MOCK FALLBACK FOR TESTING WITHOUT KEYS ---
-      if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
-        console.warn("[API Calendar] Missing API Keys. Using MOCK mode.");
-        
-        // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Return mock data
-        return NextResponse.json({
-          success: true,
-          transcript: "Pianifica una riunione con il team domani alle 15:00 per revisione progetto.",
-          events: [
-            {
-              type: "appointment",
-              title: "Riunione Team",
-              description: "Revisione progetto (Generato da Mock)",
-              start_date: new Date(Date.now() + 86400000).toISOString(), // Domani
-              end_date: new Date(Date.now() + 90000000).toISOString(), // +1 ora
-              location: "Sala Riunioni",
-              priority: "high"
-            }
-          ]
-        });
-      }
-
-      if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
+export async function POST(req: NextRequest) {
+  // Require real keys; no mock fallback
+  if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
     return NextResponse.json(
       { error: 'Missing API configuration' },
       { status: 500 }

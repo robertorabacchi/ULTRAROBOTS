@@ -12,17 +12,6 @@ export async function POST(request: NextRequest) {
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     const calendarId = process.env.GOOGLE_CALENDAR_ID;
 
-    // --- MOCK MODE FOR TESTING ---
-    if (serviceAccountJson && serviceAccountJson.includes('PLACEHOLDER_KEY_ID')) {
-        console.log("MOCK MODE: Simulating Google Calendar Sync success");
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Fake latency
-        
-        return NextResponse.json({ 
-            success: true, 
-            eventId: `mock-google-id-${Date.now()}` 
-        });
-    }
-
     if (!serviceAccountJson || !calendarId) {
       console.error('Missing Google Service Account credentials');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
