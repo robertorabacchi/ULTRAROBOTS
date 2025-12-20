@@ -28,7 +28,7 @@ function getUserCredentials() {
   
   // Fallback: single user from old env vars (backward compatibility)
   const defaultUser = process.env.SITE_USERNAME || 'admin';
-  const defaultPass = process.env.SITE_PASSWORD || 'ultrarobots2024';
+  const defaultPass = process.env.SITE_PASSWORD || 'ultrarobots2025';
   const defaultCalendar = process.env.GOOGLE_CALENDAR_ID || '';
   const defaultServiceAccount = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '';
   

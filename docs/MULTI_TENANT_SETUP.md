@@ -77,14 +77,14 @@ Ogni calendario deve essere condiviso con il **proprio Service Account**:
 
 **Azienda A (Barilla):**
 - Username: `barilla`
-- Password: `barilla2024`
+- Password: `barilla2025`
 - Calendario: `calendario@barilla.com`
 - Service Account: `barilla-service@barilla-project.iam.gserviceaccount.com`
 - Google Workspace: Proprio workspace Barilla
 
 **Azienda B (Camel):**
 - Username: `camel`
-- Password: `camel2024`
+- Password: `camel2025`
 - Calendario: `calendario@camel.com`
 - Service Account: `camel-service@camel-project.iam.gserviceaccount.com`
 - Google Workspace: Proprio workspace Camel
@@ -93,12 +93,12 @@ Ogni calendario deve essere condiviso con il **proprio Service Account**:
 ```json
 {
   "barilla": {
-    "password": "barilla2024",
+    "password": "barilla2025",
     "calendarId": "calendario@barilla.com",
     "serviceAccountJson": "{\"type\":\"service_account\",\"project_id\":\"barilla-project\",\"private_key\":\"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\\n-----END PRIVATE KEY-----\\n\",\"client_email\":\"barilla-service@barilla-project.iam.gserviceaccount.com\",\"client_id\":\"...\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_x509_cert_url\":\"...\"}"
   },
   "camel": {
-    "password": "camel2024",
+    "password": "camel2025",
     "calendarId": "calendario@camel.com",
     "serviceAccountJson": "{\"type\":\"service_account\",\"project_id\":\"camel-project\",\"private_key\":\"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\\n-----END PRIVATE KEY-----\\n\",\"client_email\":\"camel-service@camel-project.iam.gserviceaccount.com\",...}"
   }

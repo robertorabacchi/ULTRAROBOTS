@@ -537,6 +537,6 @@ Per supporto tecnico o domande:
 
 ---
 
-**Ultimo Aggiornamento**: Dicembre 2024  
+**Ultimo Aggiornamento**: Dicembre 2025  
 **Versione**: 1.0.0
 
