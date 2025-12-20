@@ -28,6 +28,7 @@ function CalendarContent() {
   // Google Auth State - REMOVED MANUAL CONNECT
   // const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   
   // Edit Mode States
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -60,7 +61,7 @@ function CalendarContent() {
                 }
             }, [events]);
 
-            // 3. AUTO SYNC (Service Account)
+            // 3. AUTO SYNC (Service Account) - Sync local events to Google
             useEffect(() => {
                 if (events.length === 0) return;
                 
@@ -69,6 +70,21 @@ function CalendarContent() {
                     handleGoogleSync(pendingEvents);
                 }
             }, [events, isSyncing]);
+            
+            // 4. AUTO-FETCH from Google Calendar on mount and every 30 seconds
+            useEffect(() => {
+                // Fetch immediately on mount
+                handleFetchFromGoogle();
+                
+                // Then fetch every 30 seconds
+                const interval = setInterval(() => {
+                    if (!isFetching && !isSyncing) {
+                        handleFetchFromGoogle();
+                    }
+                }, 30000); // 30 seconds
+                
+                return () => clearInterval(interval);
+            }, []); // Only run on mount
 
             const handleVoiceSubmit = async (transcript: string, audioBlob: Blob) => {
                 setIsProcessing(true);
@@ -147,6 +163,40 @@ function CalendarContent() {
       setEvents(prev => prev.map(e => e.id === editingId ? { ...editForm, syncStatus: 'pending' } : e));
       setEditingId(null);
       setEditForm(null);
+  };
+
+  // FETCH FROM GOOGLE CALENDAR
+  const handleFetchFromGoogle = async () => {
+    setIsFetching(true);
+    try {
+      const response = await fetch('/api/calendar/fetch-google');
+      const result = await response.json();
+      
+      if (result.success && result.events) {
+        // Merge with existing events, avoiding duplicates
+        setEvents(prev => {
+          const existingIds = new Set(prev.map(e => e.googleId || e.id));
+          const newEvents = result.events.filter((e: any) => !existingIds.has(e.googleId || e.id));
+          const merged = [...prev, ...newEvents];
+          
+          // Sort by date descending
+          merged.sort((a: any, b: any) => {
+            const dateA = new Date(a.start_date || a.date || 0).getTime();
+            const dateB = new Date(b.start_date || b.date || 0).getTime();
+            return dateB - dateA;
+          });
+          
+          return merged;
+        });
+      } else {
+        alert(`Errore recupero eventi: ${result.error || result.details || 'Errore sconosciuto'}`);
+      }
+    } catch (e: any) {
+      console.error("Fetch from Google failed", e);
+      alert(`Errore recupero eventi: ${e.message || 'Errore sconosciuto'}`);
+    } finally {
+      setIsFetching(false);
+    }
   };
 
   // AUTO SYNC FUNCTION
@@ -251,7 +301,7 @@ function CalendarContent() {
                 
                 <div className="flex items-center gap-4">
                     {/* Status Indicator (Auto Sync) */}
-                    {isSyncing ? (
+                    {isSyncing || isFetching ? (
                         <div className="flex items-center gap-2 px-4 py-2 border border-sky-500/30 rounded-lg bg-sky-900/20 text-sky-400 text-xs font-mono font-bold uppercase animate-pulse">
                             <RefreshCw className="w-4 h-4 animate-spin" />
                             {dict.calendar.syncing}
