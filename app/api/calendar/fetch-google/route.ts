@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
+import { getSession } from '@/lib/auth-server';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,8 +17,16 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    // Get user session to determine which calendar and Service Account to use
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
+    }
+
+    // Each company has its own Service Account (from session)
+    const serviceAccountJson = session.serviceAccountJson;
+    // Use calendar ID from user session (multi-tenant)
+    const calendarId = session.calendarId;
 
     if (!serviceAccountJson || !calendarId) {
       console.error('Missing Google Service Account credentials');

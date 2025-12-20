@@ -23,15 +23,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
-    const { event } = await request.json();
+    const { eventId } = await request.json();
 
-    if (!event) {
-      return NextResponse.json({ error: 'Missing event data' }, { status: 400, headers: corsHeaders });
+    if (!eventId) {
+      return NextResponse.json({ error: 'Missing event ID' }, { status: 400, headers: corsHeaders });
     }
 
     // Each company has its own Service Account (from session)
     const serviceAccountJson = session.serviceAccountJson;
-    // Use calendar ID from user session (multi-tenant)
     const calendarId = session.calendarId;
 
     if (!serviceAccountJson || !calendarId) {
@@ -42,10 +41,8 @@ export async function POST(request: NextRequest) {
     // Parse service account credentials
     let credentials;
     try {
-      // Try parsing as-is first
       credentials = JSON.parse(serviceAccountJson);
     } catch (e) {
-      // If parsing fails, try removing any extra quotes or escaping
       try {
         const cleaned = serviceAccountJson.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '\n');
         credentials = JSON.parse(cleaned);
@@ -58,12 +55,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
           error: 'Invalid credentials format', 
           details: e2 instanceof Error ? e2.message : 'JSON parse failed',
-          hint: 'Check GOOGLE_SERVICE_ACCOUNT_JSON format in Netlify env vars'
         }, { status: 500, headers: corsHeaders });
       }
     }
 
-    // Authenticate with JWT (Service Account) - use options object for latest google-auth-library
+    // Authenticate with JWT (Service Account)
     const auth = new google.auth.JWT({
       email: credentials.client_email,
       key: credentials.private_key,
@@ -72,41 +68,25 @@ export async function POST(request: NextRequest) {
 
     const calendar = google.calendar({ version: 'v3', auth });
 
-    // Format event for Google Calendar
-    const googleEvent = {
-      summary: event.title,
-      description: event.description || '',
-      location: event.location,
-      start: {
-        dateTime: new Date(event.start_date || event.date).toISOString(), 
-        timeZone: 'Europe/Rome'
-      },
-      end: {
-        dateTime: event.end_date 
-            ? new Date(event.end_date).toISOString() 
-            : new Date(new Date(event.start_date || event.date).getTime() + 60 * 60 * 1000).toISOString(), // Default 1 hour
-        timeZone: 'Europe/Rome'
-      },
-    };
-
-    // Insert event
-    const response = await calendar.events.insert({
+    // Delete event from Google Calendar
+    await calendar.events.delete({
       calendarId: calendarId,
-      requestBody: googleEvent,
+      eventId: eventId,
     });
 
-    return NextResponse.json({ success: true, eventId: response.data.id }, { headers: corsHeaders });
+    return NextResponse.json({ success: true }, { headers: corsHeaders });
 
   } catch (error: any) {
-    console.error('Google Calendar Sync Error:', {
+    console.error('Google Calendar Delete Error:', {
       message: error?.message,
       code: error?.code,
       errors: error?.errors,
       responseData: error?.response?.data,
     });
     return NextResponse.json(
-      { error: 'Failed to sync event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
+      { error: 'Failed to delete event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
       { status: 500, headers: corsHeaders }
     );
   }
 }
+

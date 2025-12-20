@@ -43,7 +43,7 @@ export default function RootLayout({
         <LanguageProvider>
           <Navbar />
           <div className="min-h-screen">{children}</div>
-          <footer className="px-6 pb-10" suppressHydrationWarning>
+          <footer className="bg-slate-950/80 backdrop-blur-md border-t border-sky-900/30 px-6 pb-10 pt-6" suppressHydrationWarning>
             <TitanBadge className="max-w-4xl mx-auto" />
           </footer>
         </LanguageProvider>

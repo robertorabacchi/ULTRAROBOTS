@@ -4,16 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Re-added this import
 import clsx from 'clsx';
 import { useLanguage } from '@/context/LanguageContext';
-import { Loader2, Menu, X } from 'lucide-react';
+import { Loader2, Menu, X, LogOut, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
+import { logout } from '@/lib/auth';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { dict, locale, setLocale } = useLanguage();
   const [isProcessing, setIsProcessing] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   // Simula un "processing" ad ogni cambio pagina o azione importante
   useEffect(() => {
@@ -25,6 +27,18 @@ export default function Navbar() {
   // Chiudi menu mobile al cambio pagina
   useEffect(() => {
     setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Get current user
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setCurrentUser(data.username);
+        }
+      })
+      .catch(() => setCurrentUser(null));
   }, [pathname]);
 
   const navItems = [
@@ -87,6 +101,21 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {/* Action: Desktop (Medium+ Screens) */}
             <div className="hidden md:flex items-center gap-4 justify-end w-auto">
+                {/* Current User & Logout */}
+                {currentUser && (
+                  <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-md px-3 py-1.5 text-[10px] font-mono font-bold">
+                    <User className="w-3 h-3 text-sky-400" />
+                    <span className="text-slate-300">{currentUser}</span>
+                    <button
+                      onClick={() => logout()}
+                      className="ml-2 p-1 hover:bg-red-500/20 rounded text-slate-400 hover:text-red-400 transition-colors"
+                      title="Logout"
+                    >
+                      <LogOut className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+                
                 {/* Lang Switcher Badge */}
                 <div className="flex items-center bg-slate-900 border border-slate-700 rounded-md px-2 py-1 gap-2 text-[10px] font-mono font-bold shadow-inner">
                     <button 
@@ -162,6 +191,23 @@ export default function Navbar() {
 
                 {/* Mobile Footer Actions */}
                 <div className="p-8 border-t border-sky-900/30 bg-black/20 pb-12">
+                     {/* Current User & Logout Mobile */}
+                     {currentUser && (
+                       <div className="flex items-center justify-between mb-6 p-4 bg-slate-900/50 border border-slate-700 rounded-lg">
+                         <div className="flex items-center gap-2">
+                           <User className="w-4 h-4 text-sky-400" />
+                           <span className="text-sm font-mono text-slate-300">{currentUser}</span>
+                         </div>
+                         <button
+                           onClick={() => logout()}
+                           className="flex items-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors text-sm font-mono"
+                         >
+                           <LogOut className="w-4 h-4" />
+                           Logout
+                         </button>
+                       </div>
+                     )}
+                     
                      <div className="flex items-center justify-between mb-8">
                         <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">LANGUAGE</span>
                         <div className="flex items-center bg-slate-900 border border-slate-700 rounded-md px-3 py-2 gap-4 text-xs font-mono font-bold">

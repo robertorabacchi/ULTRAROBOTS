@@ -34,8 +34,8 @@ export default function Home() {
                 {dict.home.title2}
             </span>
             <br />
-            <span className="text-2xl md:text-4xl text-slate-200 font-bold tracking-tighter block leading-tight whitespace-pre-wrap">
-                {dict.home.title3}
+            <span className="text-2xl md:text-4xl font-bold tracking-tighter block leading-tight whitespace-pre-wrap">
+                <span className="text-purple-400"> AI   </span><span className="text-white">ROBOTS</span><span className="text-emerald-400">   INDUSTRIAL ASSETS</span>
             </span>
             </h1>
 
@@ -64,14 +64,8 @@ export default function Home() {
        >
           {/* Primary Monitor Card */}
           <div className="w-full bg-slate-900/40 backdrop-blur-xl border border-sky-500/30 rounded-2xl overflow-hidden shadow-2xl relative group hover:border-sky-500/60 transition-all duration-500">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 via-emerald-500 to-sky-500 opacity-50"></div>
              <div className="p-4 border-b border-sky-500/20 flex justify-between items-center">
                 <span className="text-[10px] font-mono font-bold text-sky-400 tracking-widest">{dict.home.monitor}</span>
-                <div className="flex gap-1">
-                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                   <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                </div>
              </div>
              <div className="h-[280px] relative">
                 <SystemMonitor active={true} />

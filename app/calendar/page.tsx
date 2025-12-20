@@ -34,32 +34,8 @@ function CalendarContent() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
 
-            // 1. LOCAL PERSISTENCE - Load on Mount
-            useEffect(() => {
-                const savedEvents = localStorage.getItem('titan_calendar_events');
-                if (savedEvents) {
-                    try {
-                        const parsed = JSON.parse(savedEvents);
-                        // Sort by date descending (newest first)
-                        parsed.sort((a: any, b: any) => {
-                            const dateA = new Date(a.start_date || a.date || 0).getTime();
-                            const dateB = new Date(b.start_date || b.date || 0).getTime();
-                            return dateB - dateA;
-                        });
-                        setEvents(parsed);
-                    } catch (e) {
-                        console.error("Failed to load events", e);
-                    }
-                }
-            }, []);
-
-            // 2. LOCAL PERSISTENCE - Save on Change
-            useEffect(() => {
-                // Only save if we have events, or if we explicitly deleted everything (empty array is valid state)
-                if (events) {
-                    localStorage.setItem('titan_calendar_events', JSON.stringify(events));
-                }
-            }, [events]);
+            // 1. NO LOCAL STORAGE - Google Calendar is the single source of truth
+            // Events are loaded from Google Calendar only (see handleFetchFromGoogle)
 
             // 3. AUTO SYNC (Service Account) - Sync local events to Google
             useEffect(() => {
@@ -118,6 +94,7 @@ function CalendarContent() {
                             syncStatus: 'pending'
                         }));
                         
+                        // Add to local state temporarily (will be replaced by Google Calendar sync)
                         setEvents(prev => {
                             const updated = [...newEvents, ...prev];
                             // Sort again just to be sure
@@ -128,6 +105,10 @@ function CalendarContent() {
                             });
                             return updated;
                         });
+                        
+                        // Immediately sync to Google Calendar
+                        // The sync will happen automatically via useEffect, but we can trigger it
+                        setTimeout(() => handleFetchFromGoogle(), 2000); // Refresh after 2s to get Google IDs
                         
                         setTimeout(() => setActiveTab('dashboard'), 1500);
                     }
@@ -140,12 +121,33 @@ function CalendarContent() {
                 }
             };
 
-  const handleDelete = (id: string) => {
-      setEvents(prev => {
-          const updated = prev.filter(e => e.id !== id);
-          if (updated.length === 0) localStorage.removeItem('titan_calendar_events');
-          return updated;
-      });
+  const handleDelete = async (id: string) => {
+      const eventToDelete = events.find(e => e.id === id);
+      if (!eventToDelete) return;
+      
+      // Delete from local state immediately (optimistic update)
+      setEvents(prev => prev.filter(e => e.id !== id));
+      
+      // Delete from Google Calendar if it has a googleId
+      if (eventToDelete.googleId) {
+        try {
+          const response = await fetch('/api/calendar/delete-google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ eventId: eventToDelete.googleId })
+          });
+          
+          if (!response.ok) {
+            // If delete fails, refresh from Google Calendar to restore the event
+            console.error('Failed to delete from Google Calendar');
+            setTimeout(() => handleFetchFromGoogle(), 1000);
+          }
+        } catch (e) {
+          console.error('Delete error', e);
+          // Refresh from Google Calendar to restore the event
+          setTimeout(() => handleFetchFromGoogle(), 1000);
+        }
+      }
   };
 
   const startEditing = (evt: any) => {
@@ -165,7 +167,7 @@ function CalendarContent() {
       setEditForm(null);
   };
 
-  // FETCH FROM GOOGLE CALENDAR
+  // FETCH FROM GOOGLE CALENDAR - Single source of truth
   const handleFetchFromGoogle = async () => {
     setIsFetching(true);
     try {
@@ -173,27 +175,21 @@ function CalendarContent() {
       const result = await response.json();
       
       if (result.success && result.events) {
-        // Merge with existing events, avoiding duplicates
-        setEvents(prev => {
-          const existingIds = new Set(prev.map(e => e.googleId || e.id));
-          const newEvents = result.events.filter((e: any) => !existingIds.has(e.googleId || e.id));
-          const merged = [...prev, ...newEvents];
-          
-          // Sort by date descending
-          merged.sort((a: any, b: any) => {
-            const dateA = new Date(a.start_date || a.date || 0).getTime();
-            const dateB = new Date(b.start_date || b.date || 0).getTime();
-            return dateB - dateA;
-          });
-          
-          return merged;
+        // Replace all events with Google Calendar data (no merge, Google is source of truth)
+        const sortedEvents = [...result.events].sort((a: any, b: any) => {
+          const dateA = new Date(a.start_date || a.date || 0).getTime();
+          const dateB = new Date(b.start_date || b.date || 0).getTime();
+          return dateB - dateA;
         });
+        
+        setEvents(sortedEvents);
       } else {
-        alert(`Errore recupero eventi: ${result.error || result.details || 'Errore sconosciuto'}`);
+        console.error('Errore recupero eventi:', result.error || result.details);
+        // Don't show alert, just log - might be temporary network issue
       }
     } catch (e: any) {
       console.error("Fetch from Google failed", e);
-      alert(`Errore recupero eventi: ${e.message || 'Errore sconosciuto'}`);
+      // Don't show alert, just log - might be temporary network issue
     } finally {
       setIsFetching(false);
     }
