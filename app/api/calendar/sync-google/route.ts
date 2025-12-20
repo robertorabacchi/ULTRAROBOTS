@@ -1,67 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { google } from 'googleapis';
 
-export const runtime = 'nodejs';
-
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get('titan_google_access_token')?.value;
-    
-    // Se non c'è access token, servirebbe logica per usare il refresh token
-    // Per MVP assumiamo che l'utente si sia appena loggato o il token sia valido
-    if (!accessToken) {
-        return NextResponse.json({ error: 'Not authenticated with Google', code: 'AUTH_REQUIRED' }, { status: 401 });
+    const { event } = await request.json();
+
+    if (!event) {
+      return NextResponse.json({ error: 'Missing event data' }, { status: 400 });
     }
 
-    const body = await req.json();
-    const { events } = body;
+    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    const calendarId = process.env.GOOGLE_CALENDAR_ID;
 
-    if (!events || !Array.isArray(events)) {
-        return NextResponse.json({ error: 'Invalid events data' }, { status: 400 });
-    }
-
-    const results = [];
-
-    for (const evt of events) {
-        // Formatta evento per Google Calendar API
-        const googleEvent = {
-            summary: evt.title,
-            description: `${evt.description || ''}\n\n[Created via ULTRAROBOTS Voice]`,
-            location: evt.location,
-            start: {
-                dateTime: evt.start_date || new Date().toISOString(),
-                timeZone: 'Europe/Rome' // Default
-            },
-            end: {
-                dateTime: evt.end_date || new Date(new Date(evt.start_date).getTime() + 3600000).toISOString(), // +1h default
-                timeZone: 'Europe/Rome'
-            }
-        };
-
-        const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(googleEvent)
-        });
-
-        const data = await response.json();
+    // --- MOCK MODE FOR TESTING ---
+    if (serviceAccountJson && serviceAccountJson.includes('PLACEHOLDER_KEY_ID')) {
+        console.log("MOCK MODE: Simulating Google Calendar Sync success");
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Fake latency
         
-        if (response.ok) {
-            results.push({ id: evt.id, status: 'synced', googleId: data.id });
-        } else {
-            console.error('Google API Error for event:', evt.title, data);
-            results.push({ id: evt.id, status: 'error', error: data.error?.message });
-        }
+        return NextResponse.json({ 
+            success: true, 
+            eventId: `mock-google-id-${Date.now()}` 
+        });
     }
 
-    return NextResponse.json({ success: true, results });
+    if (!serviceAccountJson || !calendarId) {
+      console.error('Missing Google Service Account credentials');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
 
-  } catch (err: any) {
-    console.error('Sync Error:', err);
-    return NextResponse.json({ error: 'Sync failed', details: err.message }, { status: 500 });
+    // Parse service account credentials
+    let credentials;
+    try {
+      credentials = JSON.parse(serviceAccountJson);
+    } catch (e) {
+      console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON');
+      return NextResponse.json({ error: 'Invalid credentials format' }, { status: 500 });
+    }
+
+    // Authenticate with JWT (Service Account)
+    const auth = new google.auth.JWT(
+      credentials.client_email,
+      undefined,
+      credentials.private_key,
+      ['https://www.googleapis.com/auth/calendar']
+    );
+
+    const calendar = google.calendar({ version: 'v3', auth });
+
+    // Format event for Google Calendar
+    const googleEvent = {
+      summary: event.title,
+      description: event.description || '',
+      location: event.location,
+      start: {
+        dateTime: new Date(event.start_date || event.date).toISOString(), 
+        timeZone: 'Europe/Rome'
+      },
+      end: {
+        dateTime: event.end_date 
+            ? new Date(event.end_date).toISOString() 
+            : new Date(new Date(event.start_date || event.date).getTime() + 60 * 60 * 1000).toISOString(), // Default 1 hour
+        timeZone: 'Europe/Rome'
+      },
+    };
+
+    // Insert event
+    const response = await calendar.events.insert({
+      calendarId: calendarId,
+      requestBody: googleEvent,
+    });
+
+    return NextResponse.json({ success: true, eventId: response.data.id });
+
+  } catch (error: any) {
+    console.error('Google Calendar Sync Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to sync event', details: error.message },
+      { status: 500 }
+    );
   }
 }

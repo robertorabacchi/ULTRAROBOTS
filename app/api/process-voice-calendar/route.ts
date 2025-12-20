@@ -4,13 +4,51 @@ import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
-export async function POST(req: NextRequest) {
+    const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
+
+    export async function POST(req: NextRequest) {
+      // --- MOCK FALLBACK FOR TESTING WITHOUT KEYS ---
+      if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
+        console.warn("[API Calendar] Missing API Keys. Using MOCK mode.");
+        
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Return mock data
+        return NextResponse.json({
+          success: true,
+          transcript: "Pianifica una riunione con il team domani alle 15:00 per revisione progetto.",
+          events: [
+            {
+              type: "appointment",
+              title: "Riunione Team",
+              description: "Revisione progetto (Generato da Mock)",
+              start_date: new Date(Date.now() + 86400000).toISOString(), // Domani
+              end_date: new Date(Date.now() + 90000000).toISOString(), // +1 ora
+              location: "Sala Riunioni",
+              priority: "high"
+            }
+          ]
+        });
+      }
+
+      if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'Missing API configuration' },
+      { status: 500 }
+    );
+  }
+
   try {
     const formData = await req.formData();
-    const audioFile = formData.get('audio') as File;
+    const audioFile = formData.get('audio') as File | null;
 
     if (!audioFile) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
+    }
+
+    if (typeof audioFile.size === 'number' && audioFile.size > MAX_AUDIO_BYTES) {
+      return NextResponse.json({ error: 'Audio file too large (max 10MB)' }, { status: 413 });
     }
 
     console.log('[API Calendar] Processing audio...', audioFile.size, audioFile.type);

@@ -16,42 +16,35 @@ export default function Home() {
    <main className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20 pb-10">
      <Scene />
      
-     <div className="relative z-10 container mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+     <div className="relative z-10 container mx-auto px-6 md:px-12 flex flex-col lg:flex-row gap-8 items-start justify-between max-w-7xl">
        
        {/* LEFT COLUMN: HUGE TITLE & CONTENT */}
        <motion.div
          initial={{ opacity: 0, x: -30 }}
          animate={{ opacity: 1, x: 0 }}
          transition={{ duration: 0.8 }}
-         className="text-left"
+         className="text-left flex-1 pt-12"
          suppressHydrationWarning
        >
-         <div className="flex items-center gap-3 mb-6">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+         <div className="border-l-4 border-sky-500 pl-6 md:pl-8 -ml-6 md:ml-0">
+            
+            <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.9] text-white drop-shadow-2xl uppercase" suppressHydrationWarning>
+            {dict.home.title1}<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-emerald-400 filter drop-shadow-[0_0_20px_rgba(14,165,233,0.6)]">
+                {dict.home.title2}
             </span>
-            <span className="text-sm font-bold text-emerald-400 tracking-widest uppercase shadow-emerald-500/50 drop-shadow-md">
-              {dict.home.status}
+            <br />
+            <span className="text-2xl md:text-4xl text-slate-200 font-bold tracking-tighter block leading-tight whitespace-pre-wrap">
+                {dict.home.title3}
             </span>
+            </h1>
+
+            <p className="text-xl text-slate-300 max-w-xl mb-10 leading-relaxed font-light" suppressHydrationWarning>
+            {dict.home.subtitle}
+            </p>
          </div>
 
-         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9] text-white drop-shadow-2xl" suppressHydrationWarning>
-           {dict.home.title1}<br />
-           <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-emerald-400 filter drop-shadow-[0_0_20px_rgba(14,165,233,0.6)]">
-             {dict.home.title2}
-           </span>
-           <br />
-           <span className="text-4xl md:text-5xl lg:text-6xl text-slate-200 font-bold tracking-tight">
-             {dict.home.title3}
-           </span>
-         </h1>
-
-         <p className="text-xl text-slate-300 max-w-xl mb-10 leading-relaxed font-light border-l-4 border-sky-500 pl-6" suppressHydrationWarning>
-           {dict.home.subtitle}
-         </p>
-
-         <div className="flex flex-col sm:flex-row gap-5">
+         <div className="flex flex-col sm:flex-row gap-5 pl-2 md:pl-8">
             <Link href="/technology" className="px-8 py-4 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold rounded-lg transition-all hover:scale-105 shadow-[0_0_30px_rgba(14,165,233,0.4)] uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
               {dict.home.explore}
               <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -67,7 +60,7 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.9, x: 30 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="hidden lg:flex flex-col gap-6"
+          className="hidden lg:flex flex-col gap-6 w-full max-w-[450px] pt-12"
        >
           {/* Primary Monitor Card */}
           <div className="w-full bg-slate-900/40 backdrop-blur-xl border border-sky-500/30 rounded-2xl overflow-hidden shadow-2xl relative group hover:border-sky-500/60 transition-all duration-500">
@@ -104,12 +97,12 @@ export default function Home() {
                  </div>
                  <span className="text-[10px] font-mono font-bold text-purple-400 tracking-widest mb-4">{dict.home.stream}</span>
                  <div className="font-mono text-[10px] text-purple-300 space-y-2 opacity-80 overflow-hidden">
-                   <div className="animate-pulse">{'>>'} CONNECTING_NODES... OK</div>
-                   <div className="animate-pulse delay-75">{'>>'} SYNC_PROTOCOL_V4... ACTIVE</div>
-                   <div className="animate-pulse delay-100">{'>>'} OPTIMIZING_FLUX... 99.9%</div>
-                   <div className="animate-pulse delay-150">{'>>'} KAWASAKI_BRIDGE... LINKED</div>
+                   <div className="animate-pulse">{'>>'} {dict.home.logs.connecting}</div>
+                   <div className="animate-pulse delay-75">{'>>'} {dict.home.logs.protocol}</div>
+                   <div className="animate-pulse delay-100">{'>>'} {dict.home.logs.optimizing}</div>
+                   <div className="animate-pulse delay-150">{'>>'} {dict.home.logs.bridge}</div>
                    <div className="mt-4 pt-4 border-t border-purple-500/20 text-xs font-bold text-white">
-                      TOTAL THROUGHPUT:
+                      {dict.home.throughput}:
                       <span className="block text-2xl text-purple-400 mt-1">10.4 TB/s</span>
                    </div>
                  </div>

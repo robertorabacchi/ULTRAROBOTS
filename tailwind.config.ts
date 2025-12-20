@@ -14,6 +14,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        jetbrains: ["var(--font-jetbrains-mono)", "monospace"],
       },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
@@ -23,7 +24,3 @@ const config: Config = {
   plugins: [],
 };
 export default config;
-
-
-
-

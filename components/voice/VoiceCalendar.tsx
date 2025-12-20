@@ -7,12 +7,14 @@ import {
   Calendar, Check, Loader2, Trash2, CalendarDays
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface VoiceCalendarProps {
   onSubmit?: (transcript: string, audioBlob: Blob) => void;
 }
 
 export default function VoiceCalendar({ onSubmit }: VoiceCalendarProps) {
+  const { dict } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -193,10 +195,10 @@ export default function VoiceCalendar({ onSubmit }: VoiceCalendarProps) {
                   status === 'completed' ? "bg-emerald-500" :
                   "bg-slate-600"
               )}></div>
-              {status === 'recording' ? 'LISTENING...' :
-               status === 'paused' ? 'PAUSED' :
-               status === 'completed' ? 'READY' :
-               'CALENDAR MODE'}
+              {status === 'recording' ? dict.voice.listening :
+               status === 'paused' ? dict.voice.paused :
+               status === 'completed' ? dict.voice.ready :
+               dict.voice.calendarMode}
           </div>
       </div>
 
@@ -224,7 +226,7 @@ export default function VoiceCalendar({ onSubmit }: VoiceCalendarProps) {
                 className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-mono font-bold tracking-widest flex items-center gap-3 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
               >
                 {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CalendarDays className="w-5 h-5" />}
-                {isProcessing ? 'PROCESSING' : 'PLAN EVENTS'}
+                {isProcessing ? dict.voice.processing : dict.voice.planEvents}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -275,5 +277,3 @@ export default function VoiceCalendar({ onSubmit }: VoiceCalendarProps) {
     </div>
   );
 }
-
-

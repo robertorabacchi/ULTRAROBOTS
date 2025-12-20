@@ -7,28 +7,47 @@ export const dictionaries = {
       technology: 'TECNOLOGIA',
       platform: 'PIATTAFORMA',
       reports: 'RAPPORTINI',
-      calendar: 'CALENDARIO',
+      calendar: 'AGENDA',
       aiDocs: 'MANUALI AI',
       contact: 'CONTATTI',
       initialize: 'INITIALIZE',
       brand: 'ENGINEERED'
     },
+    common: {
+      loading: 'CARICAMENTO...',
+      error: 'ERRORE',
+      retry: 'RIPROVA',
+      status: 'STATO',
+      close: 'CHIUDI',
+      export: 'ESPORTA',
+      download: 'SCARICA'
+    },
     home: {
       status: 'SISTEMA ONLINE // V4.5',
       title1: 'FUSIONE',
       title2: 'MECCATRONICA',
-      title3: '& INTELLIGENZA SINTETICA',
+      title3: ' AI   ROBOTS   INDUSTRIAL ASSETS',
       subtitle: 'Sistemi di visione evoluti e precisione Kawasaki guidati da architetture Siemens. Trasformiamo l\'hardware in pura intelligenza operativa.',
       explore: 'ESPLORA LE SOLUZIONI',
       stack: 'STACK TECNOLOGICO',
       monitor: 'TELEMETRIA_LIVE',
       vision: 'VISION_AI',
-      stream: 'NEURAL_STREAM'
+      stream: 'NEURAL_STREAM',
+      throughput: 'THROUGHPUT TOTALE',
+      logs: {
+        connecting: 'CONNESSIONE_NODI... OK',
+        protocol: 'PROTOCOLLO_SYNC_V4... ATTIVO',
+        optimizing: 'OTTIMIZZAZIONE_FLUSSO... 99.9%',
+        bridge: 'BRIDGE_KAWASAKI... COLLEGATO'
+      }
     },
     tech: {
       tag: 'ARCHITETTURA DI SISTEMA V4.5',
       title: 'NEURAL STACK',
-      subtitle: 'La convergenza definitiva tra Hardware Industriale e Algoritmi Generativi.',
+      subtitlePre: 'La convergenza definitiva tra',
+      subtitleWhite: 'Hardware Industriale',
+      subtitleMid: 'e',
+      subtitleCyan: 'Algoritmi Generativi',
       cards: {
         kawasaki: {
           title: 'Kawasaki BX300L',
@@ -63,8 +82,9 @@ export const dictionaries = {
     platform: {
       banner: 'MODALITÀ SIMULAZIONE // ANTEPRIMA DATI SINTETICI // NON CONNESSO A IMPIANTO REALE',
       tag: 'DEMO CAPACITÀ PIATTAFORMA',
-      title: 'CONTROLLO FLOTTA',
-      subtitlePart1: 'Esplora la potenza della nostra dashboard. Ecco come visualizzerai lo stato dei tuoi',
+      title: 'CONTROLLO ASSETS',
+      subtitlePart1a: 'Esplora la potenza della nostra dashboard. Ecco come visualizzerai lo stato',
+      subtitlePart1b: 'dei tuoi',
       subtitlePart2: 'Industrial Assets',
       subtitlePart3: 'una volta integrati nel nostro ecosistema cloud.',
       disclaimer: '* I dati mostrati sono puramente dimostrativi.',
@@ -88,12 +108,88 @@ export const dictionaries = {
       },
       actions: {
         viewLogs: 'VEDI LOG'
+      },
+      logsModal: {
+        title: 'LOG DI SISTEMA',
+        export: 'ESPORTA .TXT',
+        close: 'CHIUDI'
+      }
+    },
+    calendar: {
+      tag: 'PIANIFICAZIONE CLOUD',
+      title: 'PROGRAMMA AGENDA',
+      subtitle: 'PIANIFICAZIONE VOCALE INTELLIGENTE',
+      tabs: {
+        newEvent: 'NUOVO EVENTO',
+        dashboard: 'DASHBOARD'
+      },
+      inputTitle: 'INPUT VOCALE',
+      syncing: 'SINCRONIZZAZIONE...',
+      syncNow: 'SINCRONIZZA ORA',
+      connectGoogle: 'CONNETTI GOOGLE',
+      processing: 'ANALISI EVENTI IN CORSO',
+      steps: {
+        upload: 'UPLOADING AUDIO STREAM... OK',
+        transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
+        parse: 'GPT-4O PARSING... PENDING'
+      },
+      errorTitle: 'ERRORE ELABORAZIONE',
+      noEventsTitle: 'NESSUN EVENTO',
+      noEventsMsg: 'I tuoi eventi salvati appariranno qui.\nRegistra un messaggio vocale per iniziare.',
+      agendaTitle: 'AGENDA INTELLIGENTE',
+      eventsQueue: 'EVENTI IN CODA',
+      lastTranscript: 'ULTIMA TRASCRIZIONE',
+      edit: {
+        priority: {
+          high: 'Alta',
+          medium: 'Media',
+          low: 'Bassa'
+        }
+      },
+      alerts: {
+        allSynced: 'Tutti gli eventi sono già sincronizzati!',
+        syncError: 'Errore sync: '
       }
     },
     reports: {
+        tag: 'INTELLIGENZA OPERATIVA V4.5',
         interface: 'INTERFACCIA // V.2.0.4',
         title: 'REPORT DI SISTEMA',
+        subtitle: 'GESTIONE INTERVENTI E ANALISI ASSETS',
         placeholder: 'INSERISCI_CODICE_OVERRIDE',
+        tabs: {
+          create: 'NUOVO INTERVENTO',
+          dashboard: 'DASHBOARD'
+        },
+        inputTitle: 'INPUT VOCALE',
+        processing: {
+          title: 'ELABORAZIONE AI IN CORSO',
+          steps: {
+            upload: 'UPLOADING AUDIO STREAM... OK',
+            transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
+            analysis: 'GPT-4O ANALYSIS... PENDING'
+          }
+        },
+        error: {
+          title: 'ERRORE ELABORAZIONE',
+          msg: 'Errore durante l\'elaborazione del rapporto.',
+          retry: 'RIPROVA'
+        },
+        idle: {
+          title: 'PRONTO A REGISTRARE',
+          msg: 'Il sistema ascolterà il tuo rapporto, trascriverà il testo e genererà automaticamente un documento PDF formattato con i dati dell\'intervento.'
+        },
+        result: {
+          title: 'REPORT COMPLETATO',
+          status: 'STATO',
+          summary: 'RIEPILOGO AI',
+          client: 'CLIENTE',
+          type: 'TIPO',
+          desc: 'DESCRIZIONE TECNICA',
+          components: 'COMPONENTI',
+          transcript: 'TRASCRIZIONE ORIGINALE',
+          download: 'SCARICA PDF'
+        },
         exec: 'ESEGUI',
         target: 'UNITÀ_TARGET',
         type: 'TIPO_ANALISI',
@@ -121,8 +217,10 @@ export const dictionaries = {
         }
     },
     aiDocs: {
+        tag: 'KNOWLEDGE BASE',
         title: 'MANUALI AI',
         subtitle: 'Interroga i manuali tecnici con linguaggio naturale. Powered by RAG.',
+        indexing: 'INDICIZZAZIONE: ATTIVA',
         availableManuals: 'MANUALI DISPONIBILI',
         loadingManuals: 'Caricamento manuali...',
         pages: 'pagine',
@@ -144,8 +242,20 @@ export const dictionaries = {
             'Manutenzione preventiva Nexus'
         ]
     },
+    voice: {
+      calendarMode: 'MODALITÀ CALENDARIO',
+      systemIdle: 'SISTEMA PRONTO',
+      listening: 'ASCOLTO...',
+      paused: 'IN PAUSA',
+      ready: 'PRONTO',
+      recLive: 'REGISTRAZIONE LIVE',
+      processing: 'ELABORAZIONE...',
+      planEvents: 'PIANIFICA EVENTI',
+      generate: 'GENERA REPORT'
+    },
     contact: {
-        title: 'CONTATTI',
+        tag: 'CONNETTITI',
+        title: 'CONTATTACI',
         subtitle: 'Richiedi una consulenza tecnica o un preventivo personalizzato',
         infoTitle: 'INFO DI CONTATTO',
         emailLabel: 'EMAIL',
@@ -160,6 +270,8 @@ export const dictionaries = {
             manuals: 'Manuali AI'
         },
         form: {
+            title: 'Invia un Messaggio',
+            subtitle: 'Ti risponderemo entro 24 ore.',
             successTitle: 'MESSAGGIO INVIATO',
             successMsg: 'Ti risponderemo entro 24 ore',
             newMsg: 'Invia un altro messaggio',
@@ -200,22 +312,41 @@ export const dictionaries = {
       initialize: 'INITIALIZE',
       brand: 'ENGINEERED'
     },
+    common: {
+      loading: 'LOADING...',
+      error: 'ERROR',
+      retry: 'RETRY',
+      status: 'STATUS',
+      close: 'CLOSE',
+      export: 'EXPORT',
+      download: 'DOWNLOAD'
+    },
     home: {
       status: 'SYSTEM ONLINE // V4.5',
       title1: 'FUSION',
       title2: 'MECHATRONICS',
-      title3: '& SYNTHETIC INTELLIGENCE',
+      title3: ' AI   ROBOTS   INDUSTRIAL ASSETS',
       subtitle: 'Advanced vision systems and Kawasaki precision guided by Siemens architectures. We transform hardware into pure operational intelligence.',
       explore: 'EXPLORE SOLUTIONS',
       stack: 'TECHNOLOGY STACK',
       monitor: 'LIVE_TELEMETRY',
       vision: 'VISION_AI',
-      stream: 'NEURAL_STREAM'
+      stream: 'NEURAL_STREAM',
+      throughput: 'TOTAL THROUGHPUT',
+      logs: {
+        connecting: 'CONNECTING_NODES... OK',
+        protocol: 'SYNC_PROTOCOL_V4... ACTIVE',
+        optimizing: 'OPTIMIZING_FLUX... 99.9%',
+        bridge: 'KAWASAKI_BRIDGE... LINKED'
+      }
     },
     tech: {
       tag: 'SYSTEM ARCHITECTURE V4.5',
       title: 'NEURAL STACK',
-      subtitle: 'The definitive convergence between Industrial Hardware and Generative Algorithms.',
+      subtitlePre: 'The definitive convergence between',
+      subtitleWhite: 'Industrial Hardware',
+      subtitleMid: 'and',
+      subtitleCyan: 'Generative Algorithms',
       cards: {
         kawasaki: {
           title: 'Kawasaki BX300L',
@@ -250,8 +381,9 @@ export const dictionaries = {
     platform: {
       banner: 'SIMULATION MODE // SYNTHETIC DATA PREVIEW // NOT CONNECTED TO LIVE PLANT',
       tag: 'PLATFORM CAPABILITY DEMO',
-      title: 'FLEET CONTROL',
-      subtitlePart1: 'Explore the power of our dashboard. Here is how you will visualize the status of your',
+      title: 'ASSETS CONTROL',
+      subtitlePart1a: 'Explore the power of our dashboard. Here is how you will visualize the status',
+      subtitlePart1b: 'of your',
       subtitlePart2: 'Industrial Assets',
       subtitlePart3: 'once integrated into our cloud ecosystem.',
       disclaimer: '* Data shown is for demonstration purposes only.',
@@ -275,12 +407,88 @@ export const dictionaries = {
       },
       actions: {
         viewLogs: 'VIEW LOGS'
+      },
+      logsModal: {
+        title: 'SYSTEM LOGS',
+        export: 'EXPORT .TXT',
+        close: 'CLOSE'
+      }
+    },
+    calendar: {
+      tag: 'CLOUD PLANNING',
+      title: 'CALENDAR',
+      subtitle: 'INTELLIGENT VOICE PLANNING',
+      tabs: {
+        newEvent: 'NEW EVENT',
+        dashboard: 'DASHBOARD'
+      },
+      inputTitle: 'VOICE INPUT',
+      syncing: 'SYNCING...',
+      syncNow: 'SYNC NOW',
+      connectGoogle: 'CONNECT GOOGLE',
+      processing: 'PROCESSING EVENTS',
+      steps: {
+        upload: 'UPLOADING AUDIO STREAM... OK',
+        transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
+        parse: 'GPT-4O PARSING... PENDING'
+      },
+      errorTitle: 'PROCESSING ERROR',
+      noEventsTitle: 'NO EVENTS',
+      noEventsMsg: 'Your saved events will appear here.\nRecord a voice message to start.',
+      agendaTitle: 'SMART AGENDA',
+      eventsQueue: 'EVENTS QUEUE',
+      lastTranscript: 'LAST TRANSCRIPT',
+      edit: {
+        priority: {
+          high: 'High',
+          medium: 'Medium',
+          low: 'Low'
+        }
+      },
+      alerts: {
+        allSynced: 'All events are already synced!',
+        syncError: 'Sync error: '
       }
     },
     reports: {
+        tag: 'OPERATIONAL INTELLIGENCE V4.5',
         interface: 'INTERFACE // V.2.0.4',
         title: 'SYSTEM REPORTS',
+        subtitle: 'INTERVENTION MANAGEMENT & ASSETS ANALYSIS',
         placeholder: 'ENTER_OVERRIDE_CODE',
+        tabs: {
+          create: 'NEW INTERVENTION',
+          dashboard: 'DASHBOARD'
+        },
+        inputTitle: 'VOICE INPUT',
+        processing: {
+          title: 'AI PROCESSING ACTIVE',
+          steps: {
+            upload: 'UPLOADING AUDIO STREAM... OK',
+            transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
+            analysis: 'GPT-4O ANALYSIS... PENDING'
+          }
+        },
+        error: {
+          title: 'PROCESSING ERROR',
+          msg: 'Error processing report.',
+          retry: 'RETRY'
+        },
+        idle: {
+          title: 'READY TO RECORD',
+          msg: 'The system will listen to your report, transcribe the text, and automatically generate a formatted PDF document with intervention data.'
+        },
+        result: {
+          title: 'REPORT COMPLETED',
+          status: 'STATUS',
+          summary: 'AI SUMMARY',
+          client: 'CLIENT',
+          type: 'TYPE',
+          desc: 'TECHNICAL DESCRIPTION',
+          components: 'COMPONENTS',
+          transcript: 'ORIGINAL TRANSCRIPT',
+          download: 'DOWNLOAD PDF'
+        },
         exec: 'EXEC',
         target: 'TARGET_UNIT',
         type: 'ANALYSIS_TYPE',
@@ -308,8 +516,10 @@ export const dictionaries = {
         }
     },
     aiDocs: {
+        tag: 'KNOWLEDGE BASE',
         title: 'AI MANUALS',
         subtitle: 'Query technical manuals with natural language. Powered by RAG.',
+        indexing: 'INDEXING: ACTIVE',
         availableManuals: 'AVAILABLE MANUALS',
         loadingManuals: 'Loading manuals...',
         pages: 'pages',
@@ -331,8 +541,20 @@ export const dictionaries = {
             'Nexus preventive maintenance'
         ]
     },
+    voice: {
+      calendarMode: 'CALENDAR MODE',
+      systemIdle: 'SYSTEM READY',
+      listening: 'LISTENING...',
+      paused: 'PAUSED',
+      ready: 'READY',
+      recLive: 'REC LIVE',
+      processing: 'PROCESSING...',
+      planEvents: 'PLAN EVENTS',
+      generate: 'GENERA REPORT'
+    },
     contact: {
-        title: 'CONTACT',
+        tag: 'CONNECT',
+        title: 'CONTACT US',
         subtitle: 'Request technical consultation or a custom quote',
         infoTitle: 'CONTACT INFO',
         emailLabel: 'EMAIL',
@@ -347,6 +569,8 @@ export const dictionaries = {
             manuals: 'AI Manuals'
         },
         form: {
+            title: 'Send a Message',
+            subtitle: 'We will respond within 24 hours.',
             successTitle: 'MESSAGE SENT',
             successMsg: 'We will reply within 24 hours',
             newMsg: 'Send another message',
@@ -376,4 +600,3 @@ export const dictionaries = {
     }
   }
 } as const;
-

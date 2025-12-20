@@ -7,12 +7,14 @@ import {
   FileText, Check, Loader2, Trash2
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface VoiceReportProps {
   onSubmit?: (transcript: string, audioBlob: Blob) => void;
 }
 
 export default function VoiceReport({ onSubmit }: VoiceReportProps) {
+  const { dict } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -197,10 +199,10 @@ export default function VoiceReport({ onSubmit }: VoiceReportProps) {
                   status === 'completed' ? "bg-emerald-500" :
                   "bg-slate-600"
               )}></div>
-              {status === 'recording' ? 'REC LIVE' :
-               status === 'paused' ? 'PAUSED' :
-               status === 'completed' ? 'READY' :
-               'SYSTEM IDLE'}
+              {status === 'recording' ? dict.voice.recLive :
+               status === 'paused' ? dict.voice.paused :
+               status === 'completed' ? dict.voice.ready :
+               dict.voice.systemIdle}
           </div>
       </div>
 
@@ -228,7 +230,7 @@ export default function VoiceReport({ onSubmit }: VoiceReportProps) {
                 className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-mono font-bold tracking-widest flex items-center gap-3 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
               >
                 {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                {isProcessing ? 'PROCESSING' : 'GENERATE'}
+                {isProcessing ? dict.voice.processing : dict.voice.generate}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}

@@ -18,7 +18,7 @@ export default function TechnologyPage() {
       
       <div className="relative z-10 container mx-auto px-6 md:px-12">
         {/* Header Section */}
-        <div className="mb-20 border-l-4 border-sky-500 pl-8 ml-4 md:ml-0">
+        <div className="mb-20 border-l-4 border-sky-500 pl-6 ml-4 md:ml-0">
           <motion.div
              initial={{ opacity: 0, x: -20 }}
              animate={{ opacity: 1, x: 0 }}
@@ -30,11 +30,11 @@ export default function TechnologyPage() {
                </span>
                <div className="h-[1px] w-20 bg-sky-500/30"></div>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6">
-              NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">STACK</span>
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 uppercase">
+              {dict.tech.title.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">{dict.tech.title.split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-400 max-w-2xl font-light leading-relaxed">
-              {dict.tech.subtitle}
+              {dict.tech.subtitlePre} <span className="text-white font-bold drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{dict.tech.subtitleWhite}</span> {dict.tech.subtitleMid} <span className="text-cyan-400 font-bold drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">{dict.tech.subtitleCyan}</span>
             </p>
           </motion.div>
         </div>

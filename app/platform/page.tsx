@@ -179,18 +179,18 @@ export default function PlatformPage() {
              transition={{ duration: 0.8 }}
              className="flex flex-col md:flex-row justify-between items-end gap-6"
           >
-              <div>
+              <div className="border-l-4 border-sky-500 pl-6">
                 <div className="flex items-center gap-3 mb-4">
                     <span className="text-[10px] font-mono font-bold text-sky-400 tracking-[0.2em] uppercase bg-sky-950/50 px-3 py-1 rounded border border-sky-500/30">
                         {dict.platform.tag}
                     </span>
                     <div className="h-[1px] w-20 bg-sky-500/30"></div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-4">
-                FLEET <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-500">CONTROL</span>
+                <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 uppercase">
+                {dict.platform.title.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-500">{dict.platform.title.split(' ').slice(1).join(' ')}</span>
                 </h1>
                 <p className="text-slate-400 max-w-2xl font-light leading-relaxed text-lg" suppressHydrationWarning>
-                    {dict.platform.subtitlePart1} <strong className="text-cyan-400 font-bold drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] tracking-wide text-xl">{dict.platform.subtitlePart2}</strong> {dict.platform.subtitlePart3}
+                    {dict.platform.subtitlePart1a} <br className="hidden md:block"/> {dict.platform.subtitlePart1b} <strong className="text-cyan-400 font-bold drop-shadow-[0_0_8px_rgba(34,211,238,0.8)] tracking-wide text-xl">{dict.platform.subtitlePart2}</strong> {dict.platform.subtitlePart3}
                 </p>
               </div>
 
@@ -366,7 +366,7 @@ export default function PlatformPage() {
                             <Terminal className="w-5 h-5 text-sky-400" />
                             <div>
                                 <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                                    SYSTEM LOGS // {selectedRobotLog.id}
+                                    {dict.platform.logsModal.title} // {selectedRobotLog.id}
                                 </h3>
                                 <p className="text-[10px] text-slate-500 font-mono">
                                     {selectedRobotLog.model} • {selectedRobotLog.location}
@@ -418,13 +418,13 @@ export default function PlatformPage() {
                                 a.click();
                             }}
                         >
-                            <FileText className="w-3 h-3" /> EXPORT .TXT
+                            <FileText className="w-3 h-3" /> {dict.platform.logsModal.export}
                         </button>
                         <button 
                             className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs rounded transition-colors font-mono font-bold tracking-wider"
                             onClick={() => setSelectedRobotLog(null)}
                         >
-                            CLOSE
+                            {dict.platform.logsModal.close}
                         </button>
                     </div>
                 </motion.div>

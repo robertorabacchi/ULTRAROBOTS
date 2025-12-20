@@ -5,13 +5,26 @@ import OpenAI from 'openai';
 // Configurazione Runtime Node.js per supportare le librerie
 export const runtime = 'nodejs';
 
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
+
 export async function POST(req: NextRequest) {
+  if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'Missing API configuration' },
+      { status: 500 }
+    );
+  }
+
   try {
     const formData = await req.formData();
-    const audioFile = formData.get('audio') as File;
+    const audioFile = formData.get('audio') as File | null;
 
     if (!audioFile) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
+    }
+
+    if (typeof audioFile.size === 'number' && audioFile.size > MAX_AUDIO_BYTES) {
+      return NextResponse.json({ error: 'Audio file too large (max 10MB)' }, { status: 413 });
     }
 
     console.log('[API] Processing audio...', audioFile.size, audioFile.type);

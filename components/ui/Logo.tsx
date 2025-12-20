@@ -18,24 +18,24 @@ export default function Logo({ className, variant = 'color' }: LogoProps) {
         viewBox="0 0 240 40" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        className="h-full w-auto"
+        className="h-[130%] w-auto"
         aria-label="ULTRAROBOTS AI"
       >
-        {/* GRUPPO 1: ULTR */}
+        {/* GRUPPO 1: ULTR - Bold */}
         <text 
           x="0" 
           y="28" 
           fontSize="24" 
-          fontWeight="800" 
-          fontFamily="Arial, Helvetica, sans-serif" 
+          fontWeight="700" 
           fill={colorPrimary} 
-          style={{ letterSpacing: '0.05em' }}
+          className="font-jetbrains"
+          style={{ letterSpacing: '-0.02em' }}
         >
-          ULTR
+          UL<tspan dx="-4">TR</tspan>
         </text>
 
         {/* GRUPPO 2: AI (Il Cuore) */}
-        <g transform="translate(72, 0)">
+        <g transform="translate(56, 0)">
            {/* Background Glow solo in color mode */}
            {!isMono && (
              <defs>
@@ -61,26 +61,30 @@ export default function Logo({ className, variant = 'color' }: LogoProps) {
            {/* Piccolo dot neurale nella A */}
            <circle cx="10" cy="22" r="1.5" fill={colorAccent} />
 
-           {/* Lettera I (Centrata e Ridotta) */}
-           <rect 
+           {/* Lettera i (Minuscola Ciano Normale) - ExtraBold to match ROBOTS intensity */}
+           <text 
              x="24" 
-             y="11" 
-             width="3.5" 
-             height="14" 
+             y="28" 
+             fontSize="24" 
+             fontWeight="800" 
              fill={colorAccent} 
              filter={!isMono ? "url(#glow)" : ""}
-           />
+             className="font-jetbrains"
+             style={{ letterSpacing: '-0.02em' }}
+           >
+             i
+           </text>
         </g>
 
-        {/* GRUPPO 3: ROBOTS (Avvicinato) */}
+        {/* GRUPPO 3: ROBOTS - ExtraBold */}
         <text 
-          x="105" 
+          x="96" 
           y="28" 
           fontSize="24" 
-          fontWeight="800" 
-          fontFamily="Arial, Helvetica, sans-serif" 
+          fontWeight="800"  
           fill={colorPrimary} 
-          style={{ letterSpacing: '0.05em' }}
+          className="font-jetbrains"
+          style={{ letterSpacing: '-0.02em' }}
         >
           ROBOTS
         </text>

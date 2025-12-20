@@ -4,18 +4,32 @@ import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
 
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10MB safeguard
+
 export async function POST(req: NextRequest) {
+  if (!process.env.DEEPGRAM_API_KEY || !process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'Missing API configuration' },
+      { status: 500 }
+    );
+  }
+
   // Lazy initialization to avoid build-time errors
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY!);
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
+
   try {
     const formData = await req.formData();
-    const audioFile = formData.get('audio') as Blob;
+    const audioFile = formData.get('audio') as Blob | null;
 
     if (!audioFile) {
       return NextResponse.json({ error: 'No audio file provided' }, { status: 400 });
+    }
+
+    if (typeof audioFile.size === 'number' && audioFile.size > MAX_AUDIO_BYTES) {
+      return NextResponse.json({ error: 'Audio file too large (max 10MB)' }, { status: 413 });
     }
 
     console.log('[API] Processing audio...', audioFile.size, audioFile.type);
@@ -65,7 +79,7 @@ export async function POST(req: NextRequest) {
           - VITTO: Se menziona pranzi/cene (es. "Ho mangiato da Gigi"), estrai nome locale e luogo. Se dice importi ("pagato 20 euro"), estraili.
           - PERNOTTO: Se menziona hotel/alberghi.
           - VARIE: Acquisti ferramenta, parcheggi, ecc.
-
+          
           Regole Estrazione TECNICA:
           - Identifica Cliente, Intervento, Componenti e Criticità come standard.
           

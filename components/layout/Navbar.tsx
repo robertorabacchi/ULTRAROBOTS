@@ -54,12 +54,12 @@ export default function Navbar() {
 
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between h-full">
           {/* Brand: NEW LOGO */}
-          <div className="flex items-center gap-3 shrink-0 w-[200px] md:w-[240px]">
+          <div className="flex items-center gap-3 shrink-0 w-auto">
               <Logo className="h-8" />
           </div>
 
           {/* Navigation: Desktop (Responsive spacing) */}
-          <ul className="hidden lg:flex items-center gap-3 xl:gap-8">
+          <ul className="hidden xl:flex items-center gap-3 2xl:gap-8">
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
@@ -67,9 +67,9 @@ export default function Navbar() {
                   <Link 
                     href={item.path}
                     className={clsx(
-                      "font-mono uppercase tracking-[0.2em] transition-all duration-300 whitespace-nowrap",
-                      // Responsive font size: smaller on LG, normal on XL
-                      "text-[9px] xl:text-[10px]",
+                      "font-sans font-semibold uppercase tracking-[0.18em] transition-all duration-300 whitespace-nowrap",
+                      // Slightly larger font
+                      "text-[10px]",
                       isActive 
                         ? "text-sky-400 font-bold drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" 
                         : "text-slate-400 hover:text-white hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]"
@@ -84,34 +84,36 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Action: Desktop (Medium+ Screens) */}
-          <div className="hidden md:flex items-center gap-4 justify-end w-[200px]">
-             {/* Lang Switcher Badge */}
-             <div className="flex items-center bg-slate-900 border border-slate-700 rounded-md px-2 py-1 gap-2 text-[10px] font-mono font-bold shadow-inner">
-                <button 
-                  onClick={() => setLocale('it')}
-                  className={clsx("transition-colors px-1 rounded", locale === 'it' ? "bg-sky-500/20 text-white" : "text-slate-500 hover:text-slate-300")}
-                >
-                  IT
-                </button>
-                <span className="text-slate-700">|</span>
-                <button 
-                  onClick={() => setLocale('en')}
-                  className={clsx("transition-colors px-1 rounded", locale === 'en' ? "bg-sky-500/20 text-white" : "text-slate-500 hover:text-slate-300")}
-                >
-                  EN
-                </button>
-             </div>
-          </div>
+          <div className="flex items-center gap-4">
+            {/* Action: Desktop (Medium+ Screens) */}
+            <div className="hidden md:flex items-center gap-4 justify-end w-auto">
+                {/* Lang Switcher Badge */}
+                <div className="flex items-center bg-slate-900 border border-slate-700 rounded-md px-2 py-1 gap-2 text-[10px] font-mono font-bold shadow-inner">
+                    <button 
+                    onClick={() => setLocale('it')}
+                    className={clsx("transition-colors px-1 rounded", locale === 'it' ? "bg-sky-500/20 text-white" : "text-slate-500 hover:text-slate-300")}
+                    >
+                    IT
+                    </button>
+                    <span className="text-slate-700">|</span>
+                    <button 
+                    onClick={() => setLocale('en')}
+                    className={clsx("transition-colors px-1 rounded", locale === 'en' ? "bg-sky-500/20 text-white" : "text-slate-500 hover:text-slate-300")}
+                    >
+                    EN
+                    </button>
+                </div>
+            </div>
 
-          {/* Mobile Hamburger Button (Visible below LG) */}
-          <div className="lg:hidden flex items-center justify-end w-[100px]">
-              <button 
-                onClick={() => setMobileMenuOpen(true)}
-                className="text-slate-300 hover:text-white p-2 border border-slate-800 rounded bg-slate-900/50"
-              >
-                  <Menu className="w-6 h-6" />
-              </button>
+            {/* Mobile Hamburger Button (Visible below XL) */}
+            <div className="xl:hidden flex items-center justify-end">
+                <button 
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="text-slate-300 hover:text-white p-2 border border-slate-800 rounded bg-slate-900/50"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
+            </div>
           </div>
 
         </div>
@@ -148,7 +150,7 @@ export default function Navbar() {
                             key={item.path}
                             href={item.path}
                             className={clsx(
-                                "text-2xl font-mono uppercase tracking-widest py-2 border-b border-slate-900 transition-colors",
+                                "text-[26px] font-sans font-semibold uppercase tracking-widest py-2 border-b border-slate-900 transition-colors",
                                 pathname === item.path ? "text-sky-400 font-bold border-sky-500/30" : "text-slate-400 border-transparent hover:text-white"
                             )}
                             suppressHydrationWarning
