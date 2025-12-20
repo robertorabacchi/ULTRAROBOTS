@@ -34,41 +34,29 @@ export default function Logo({ className, variant = 'color' }: LogoProps) {
           UL<tspan dx="-4">TR</tspan>
         </text>
 
-        {/* GRUPPO 2: AI (Il Cuore) */}
-        <g transform="translate(56, 0)">
-           {/* Background Glow solo in color mode */}
-           {!isMono && (
-             <defs>
-               <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                 <feMerge>
-                   <feMergeNode in="coloredBlur"/>
-                   <feMergeNode in="SourceGraphic"/>
-                 </feMerge>
-               </filter>
-             </defs>
-           )}
-
-           {/* Lettera A (Lambda sci-fi) */}
+        {/* ⚠️ SPAZIATURA FINALE - NON MODIFICARE ⚠️
+            ULTR → A: 52px | A → i: 20px | i → ROBOTS: 85px
+            Questi valori sono stati calibrati manualmente e sono FINALI.
+            NON CAMBIARE questi valori senza autorizzazione esplicita. */}
+        <g transform="translate(52, 0)">
+           {/* Lettera A (Lambda sci-fi) - Nitida, super neon, senza effetti */}
            <path 
              d="M 2 28 L 10 8 L 18 28" 
              stroke={colorAccent} 
              strokeWidth="3.5" 
              strokeLinecap="square"
              strokeLinejoin="round"
-             filter={!isMono ? "url(#glow)" : ""}
            />
            {/* Piccolo dot neurale nella A */}
            <circle cx="10" cy="22" r="1.5" fill={colorAccent} />
 
-           {/* Lettera i (Minuscola Ciano Normale) - ExtraBold to match ROBOTS intensity */}
+           {/* Lettera i (Minuscola Ciano Normale) - Spaziatura FINALE */}
            <text 
-             x="24" 
+             x="20" 
              y="28" 
              fontSize="24" 
              fontWeight="800" 
-             fill={colorAccent} 
-             filter={!isMono ? "url(#glow)" : ""}
+             fill={colorAccent}
              className="font-jetbrains"
              style={{ letterSpacing: '-0.02em' }}
            >
@@ -76,9 +64,9 @@ export default function Logo({ className, variant = 'color' }: LogoProps) {
            </text>
         </g>
 
-        {/* GRUPPO 3: ROBOTS - ExtraBold */}
+        {/* ROBOTS - Spaziatura FINALE */}
         <text 
-          x="96" 
+          x="85" 
           y="28" 
           fontSize="24" 
           fontWeight="800"  

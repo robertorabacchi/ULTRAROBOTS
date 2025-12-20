@@ -41,36 +41,61 @@ export async function POST(request: NextRequest) {
 
     let cursorY = MARGIN;
 
-    // --- HEADER (Fixed height: ~110px) ---
-    doc.fillColor(COLORS.primary)
-       .fontSize(18)
-       .font('Helvetica-Bold')
-       .text('ULTR A IROBOTS', MARGIN, cursorY);
-    cursorY += 25;
-
+    // --- HEADER (Compact: Logo left, ID/DATA right) ---
+    const headerStartY = cursorY;
+    
+    // LEFT SIDE: Logo SVG (drawn manually for PDF)
+    const logoHeight = 20;
+    const logoY = headerStartY;
+    
+    // Draw logo text manually (ULTR A i ROBOTS) - FINAL SPACING (matches Logo.tsx)
+    // ⚠️ SPACING VALUES ARE FINAL - DO NOT MODIFY ⚠️
+    doc.save();
+    doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.primary);
+    doc.text('ULTR', MARGIN, logoY);
+    
+    // A stylized (simple triangle) - Spacing: ULTR → A = 52px equivalent
+    const ultrWidth = doc.widthOfString('ULTR');
+    const aX = MARGIN + ultrWidth + 4; // ~52px equivalent spacing
+    doc.strokeColor(COLORS.accent).lineWidth(2.5);
+    doc.moveTo(aX + 2, logoY + 16).lineTo(aX + 8, logoY + 2).lineTo(aX + 14, logoY + 16).stroke();
+    doc.circle(aX + 8, logoY + 12, 1.2).fill(COLORS.accent);
+    
+    // i - Spacing: A → i = 20px equivalent
+    doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.accent);
+    doc.text('i', aX + 18, logoY); // ~20px spacing
+    
+    // ROBOTS - Spacing: i → ROBOTS = 85px equivalent
+    doc.fontSize(16).font('Helvetica-Bold').fillColor(COLORS.primary);
+    const iX = aX + 18 + doc.widthOfString('i') + 2; // ~85px equivalent spacing
+    doc.text('ROBOTS', iX, logoY);
+    doc.restore();
+    
+    // RIGHT SIDE: ID and DATA aligned right
+    const rightX = PAGE_WIDTH - MARGIN;
+    doc.fontSize(8).font('Helvetica-Bold').fillColor(COLORS.secondary);
+    const idText = `ID REPORT: ${rData.id || rData.unitId || 'N/D'}`;
+    const idWidth = doc.widthOfString(idText);
+    doc.text(idText, rightX - idWidth, logoY);
+    
+    const dataText = `DATA: ${new Date().toLocaleString('it-IT')}`;
+    const dataWidth = doc.widthOfString(dataText);
+    doc.text(dataText, rightX - dataWidth, logoY + 12);
+    
+    cursorY = headerStartY + logoHeight + 8;
+    
+    // Title and subtitle below logo
     doc.fillColor(COLORS.secondary)
-       .fontSize(12)
+       .fontSize(11)
        .font('Helvetica-Bold')
        .text('RAPPORTO INTERVENTO', MARGIN, cursorY);
-    cursorY += 20;
+    cursorY += 12;
 
     doc.fillColor(COLORS.secondary)
-       .fontSize(9)
+       .fontSize(8)
        .font('Helvetica')
        .text('TITAN PROTOCOL v4.5', MARGIN, cursorY);
-    cursorY += 30;
-
-    doc.fillColor(COLORS.secondary)
-       .fontSize(9)
-       .font('Helvetica-Bold')
-       .text(`ID REPORT: ${rData.id || rData.unitId || 'N/D'}`, MARGIN, cursorY);
     cursorY += 15;
-
-    doc.fillColor(COLORS.secondary)
-       .fontSize(9)
-       .font('Helvetica-Bold')
-       .text(`DATA: ${new Date().toLocaleString('it-IT')}`, MARGIN, cursorY);
-    cursorY += 30;
 
     // Calculate remaining space for content sections
     const headerHeight = cursorY - MARGIN;
