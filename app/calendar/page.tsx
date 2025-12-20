@@ -174,9 +174,24 @@ function CalendarContent() {
                         ? { ...e, syncStatus: 'synced', googleId: result.eventId } 
                         : e
                     ));
+                } else {
+                    // Show error details to user
+                    console.error("Sync failed for event", evt.id, result);
+                    alert(`Errore sync Google: ${result.details || result.error}\nCode: ${result.code || 'N/A'}\n\nControlla i permessi del calendario!`);
+                    setEvents(prev => prev.map(e => 
+                        e.id === evt.id 
+                        ? { ...e, syncStatus: 'error' } 
+                        : e
+                    ));
                 }
-             } catch (e) {
+             } catch (e: any) {
                  console.error("Sync failed for event", evt.id, e);
+                 alert(`Errore sync Google: ${e.message || 'Errore sconosciuto'}\n\nControlla i permessi del calendario!`);
+                 setEvents(prev => prev.map(e => 
+                     e.id === evt.id 
+                     ? { ...e, syncStatus: 'error' } 
+                     : e
+                 ));
              }
           }
 
