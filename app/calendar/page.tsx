@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import VoiceCalendar from '@/components/voice/VoiceCalendar';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { 
   Calendar, CheckCircle, Clock, MapPin, 
   AlertCircle, Loader2, AlertTriangle, ListTodo, 
@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
-export default function CalendarPage() {
+function CalendarContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [events, setEvents] = useState<any[]>([]);
@@ -413,5 +413,13 @@ export default function CalendarPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-cyan-400" /></div>}>
+      <CalendarContent />
+    </Suspense>
   );
 }
