@@ -56,10 +56,14 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
   return (
     <>
       {/* BADGE BUTTON */}
-      <div className={`border-t border-sky-900/30 pt-6 mt-8 flex justify-center ${className}`}>
+      <div 
+        className={`border-t border-sky-900/30 pt-6 mt-8 flex justify-center ${className}`}
+        suppressHydrationWarning
+      >
         <button
           onClick={() => setShowDialog(true)}
           className="group relative flex items-center gap-3 px-5 py-2.5 bg-black/80 border border-sky-500/30 rounded-lg overflow-hidden transition-all hover:border-sky-400 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)]"
+          suppressHydrationWarning
         >
           {/* Animated Borders */}
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-400 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />

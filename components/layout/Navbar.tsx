@@ -51,11 +51,29 @@ export default function Navbar() {
     { name: dict.nav.contact, path: '/contact' },
   ];
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-0 h-16 bg-slate-950/80 border-b border-sky-900/30" suppressHydrationWarning>
+        <div className="container mx-auto px-6 md:px-12 flex items-center justify-between h-full">
+           {/* Placeholder statico */}
+           <div className="w-32 h-8 bg-slate-900 animate-pulse rounded"></div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <>
     <nav
       className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-0"
       style={{ zIndex: 9999, position: 'fixed' }}
+      suppressHydrationWarning
     >
       <div className="w-full bg-slate-950/80 backdrop-blur-md border-b border-sky-900/30 h-16 flex items-center justify-center shadow-lg relative">
         {/* Processing Indicator Overlay (Subtle) */}
@@ -73,11 +91,11 @@ export default function Navbar() {
           </div>
 
           {/* Navigation: Desktop (Responsive spacing) */}
-          <ul className="hidden xl:flex items-center gap-3 2xl:gap-8">
+          <ul className="hidden xl:flex items-center gap-3 2xl:gap-8" suppressHydrationWarning>
             {navItems.map((item) => {
               const isActive = pathname === item.path;
               return (
-                <li key={item.path} className="shrink-0">
+                <li key={item.path} className="shrink-0" suppressHydrationWarning>
                   <Link 
                     href={item.path}
                     className={clsx(
@@ -90,7 +108,7 @@ export default function Navbar() {
                     )}
                     suppressHydrationWarning
                   >
-                    <span className="text-sky-500 mr-1 opacity-0 transition-opacity duration-300" style={{ opacity: isActive ? 1 : 0 }}>{'>'}</span>
+                    <span className="text-sky-500 mr-1 opacity-0 transition-opacity duration-300" style={{ opacity: isActive ? 1 : 0 }} suppressHydrationWarning>{'>'}</span>
                     {item.name}
                   </Link>
                 </li>
