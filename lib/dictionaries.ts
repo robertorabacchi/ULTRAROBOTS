@@ -130,8 +130,8 @@ export const dictionaries = {
       processing: 'ANALISI EVENTI IN CORSO',
       steps: {
         upload: 'UPLOADING AUDIO STREAM... OK',
-        transcribe: 'AUDIO TRANSCRIPTION... RUNNING',
-        parse: 'AI PARSING... PENDING'
+        transcribe: 'TRASCIPTIONS & ANALISYS BY TITAN 4.5 PROTOCOL ALL RIGHT RESERVED',
+        parse: 'TRASCIPTIONS & ANALISYS BY TITAN 4.5 PROTOCOL ALL RIGHT RESERVED'
       },
       errorTitle: 'ERRORE ELABORAZIONE',
       noEventsTitle: 'NESSUN EVENTO',
@@ -166,8 +166,8 @@ export const dictionaries = {
           title: 'ELABORAZIONE AI IN CORSO',
           steps: {
             upload: 'UPLOADING AUDIO STREAM... OK',
-            transcribe: 'AUDIO TRANSCRIPTION... RUNNING',
-            analysis: 'AI ANALYSIS... PENDING'
+            transcribe: 'TRASCIPTIONS & ANALISYS BY TITAN 4.5 PROTOCOL ALL RIGHT RESERVED',
+            analysis: 'TRASCIPTIONS & ANALISYS BY TITAN 4.5 PROTOCOL ALL RIGHT RESERVED'
           }
         },
         error: {
