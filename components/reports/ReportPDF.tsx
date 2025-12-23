@@ -9,21 +9,58 @@ import {
 } from '@react-pdf/renderer';
 
 /**
- * ⚠️ ISTRUZIONI CRITICHE PER GPT - DESCRIZIONI COMPONENTI
+ * ⚠️⚠️⚠️ ISTRUZIONI CRITICHE PER GPT - LIMITI CAMPI PDF ⚠️⚠️⚠️
  * 
- * REGOLA ASSOLUTA: Le descrizioni devono essere BREVI (1-2 parole MAX)
+ * TUTTI I CAMPI HANNO LIMITI DI TRONCAMENTO AUTOMATICO!
  * 
- * ✅ DESCRIZIONI CORRETTE:
- * - Motore, Encoder, Inverter, Fotocellula, Cinghie, PLC, Relè sicurezza
- * - Trasformatore, Sensore, Azionamento, Valvola, Cilindro, Filtro
+ * 📋 CAMPI CON LIMITI:
  * 
- * ❌ DESCRIZIONI SBAGLIATE (verranno TRONCATE):
- * - "Motore elettrico trifase" ❌
- * - "Encoder incrementale rotativo" ❌
- * - "Sensore fotoelettrico retroriflettente" ❌
+ * 1. AZIENDA (con sede): numberOfLines={3}
+ *    ✅ Formato: "Nome Azienda - Sede"
+ *    ⚠️ Se troppo lungo viene TRONCATO a 3 righe
  * 
- * MOTIVO: fontSize: 7, numberOfLines: 1, celle FISSE
- * Solo 15-20 caratteri visibili nella colonna DESCRIZIONE!
+ * 2. TIPOLOGIA: numberOfLines={3}
+ *    ✅ Esempi: "Sostituzione componenti", "Manutenzione preventiva"
+ *    ⚠️ Se troppo lungo viene TRONCATO a 3 righe
+ * 
+ * 3. REFERENTE: numberOfLines={1}
+ *    ✅ Esempi: "Mario Rossi", "N/D"
+ *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 
+ * 4. STATO FINALE: numberOfLines={1}
+ *    ✅ Esempi: "COMPLETATO", "IN CORSO", "ANNULLATO"
+ *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 
+ * 5. DESCRIZIONE ATTIVITÀ: numberOfLines={4}
+ *    ✅ Descrizione breve dell'intervento (max 4 righe)
+ *    ⚠️ Se troppo lunga viene TRONCATO a 4 righe
+ * 
+ * 6. COMPONENTI - DESCRIZIONE: numberOfLines={1}, MAX 15 caratteri!
+ *    REGOLA ASSOLUTA: Le descrizioni devono essere BREVI (1-2 parole MAX)
+ *    ✅ DESCRIZIONI CORRETTE:
+ *       - Motore, Encoder, Inverter, Fotocellula, Cinghie, PLC, Relè sicurezza
+ *       - Trasformatore, Sensore, Azionamento, Valvola, Cilindro, Filtro
+ *    ❌ DESCRIZIONI SBAGLIATE (verranno TRONCATE):
+ *       - "Motore elettrico trifase" ❌
+ *       - "Encoder incrementale rotativo" ❌
+ *       - "Sensore fotoelettrico retroriflettente" ❌
+ *    MOTIVO: fontSize: 7, numberOfLines: 1, celle FISSE
+ *    Solo 15-20 caratteri visibili nella colonna DESCRIZIONE!
+ * 
+ * 7. NOTE CRITICHE: numberOfLines={4}
+ *    ✅ Note brevi (max 4 righe)
+ *    ⚠️ Se troppo lunghe vengono TRONCATE a 4 righe
+ * 
+ * 8. SPESE DI TRASFERTA (tutte le celle): numberOfLines={1}
+ *    ✅ Formato breve per ogni campo (viaggio, vitto, pernottamento, varie)
+ *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 
+ * 9. TRASCRIZIONE ORIGINALE: numberOfLines={7}
+ *    ✅ Trascrizione completa (max 7 righe)
+ *    ⚠️ Se troppo lunga viene TRONCATO a 7 righe
+ * 
+ * ⚠️ REGOLA GENERALE: Se il testo supera numberOfLines, viene TRONCATO automaticamente!
+ * NON modificare mai numberOfLines per far stare il testo!
  */
 export interface Componente {
   quantita: string;
