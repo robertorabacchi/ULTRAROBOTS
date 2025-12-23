@@ -53,19 +53,10 @@ export default function TestPDFPage() {
     componenti: [],
     noteCritiche: '',
     spese: {
-      viaggio: { km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
-      vitto: {
-        pranzoPosto: 'N/D',
-        pranzoImporto: 'N/D',
-        cenaPosto: 'N/D',
-        cenaImporto: 'N/D',
-      },
-      pernottamento: {
-        nomeHotel: 'N/D',
-        numeroNotti: 'N/D',
-        importo: 'N/D',
-      },
-      varie: [],
+      viaggio: { destinazione: 'N/D', km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
+      vitto: 'N/D',
+      pernottamento: 'N/D',
+      varie: 'N/D',
     },
     trascrizione: '',
   };

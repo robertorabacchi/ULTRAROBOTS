@@ -29,14 +29,14 @@ const stressData: ReportData = {
       'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.-END',
   },
   componenti: [
-    { quantita: '1234', descrizione: 'DescrizioneComp01XYZ', brand: 'BrandLONG1', codice: 'CODICE-1234567890' },
-    { quantita: '5678', descrizione: 'DescrizioneComp02XYZ', brand: 'BrandLONG2', codice: 'CODICE-ABCDEFGHJK' },
-    { quantita: '9999', descrizione: 'DescrizioneComp03XYZ', brand: 'BrandLONG3', codice: 'CODICE-ABCDEFGHIJ' },
-    { quantita: '0000', descrizione: 'DescrizioneComp04XYZ', brand: 'BrandLONG4', codice: 'CODICE-XYZ1234567' },
-    { quantita: '3210', descrizione: 'DescrizioneComp05XYZ', brand: 'BrandLONG5', codice: 'CODICE-LUNGHISSIMO' },
-    { quantita: '8888', descrizione: 'DescrizioneComp06XYZ', brand: 'BrandLONG6', codice: 'CODICE-EXTRA-LONG' },
-    { quantita: '7777', descrizione: 'DescrizioneComp07XYZ', brand: 'BrandLONG7', codice: 'CODICE-EXTRA1234' },
-    { quantita: '6666', descrizione: 'DescrizioneComp08XYZ', brand: 'BrandLONG8', codice: 'CODICE-EXTRA5678' },
+    'Comp01XYZ (1234x BrandLONG1 CODICE-1234567890)',
+    'Comp02XYZ (5678x BrandLONG2 CODICE-ABCDEFGHJK)',
+    'Comp03XYZ (9999x BrandLONG3 CODICE-ABCDEFGHIJ)',
+    'Comp04XYZ (0000x BrandLONG4 CODICE-XYZ1234567)',
+    'Comp05XYZ (3210x BrandLONG5 CODICE-LUNGHISSIMO)',
+    'Comp06XYZ (8888x BrandLONG6 CODICE-EXTRA-LONG)',
+    'Comp07XYZ (7777x BrandLONG7 CODICE-EXTRA1234)',
+    'Comp08XYZ (6666x BrandLONG8 CODICE-EXTRA5678)',
   ],
   noteCritiche:
     // 470+ caratteri
@@ -47,27 +47,14 @@ const stressData: ReportData = {
     'Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Sed posuere consectetur est at lobortis.-END',
   spese: {
     viaggio: {
+      destinazione: 'Destinazione molto lunga per test',
       km: '12345678901234567890 km', // lasciato lungo per verificare troncamento ma escluso dai 24
       costoKm: '€99999,99',
       pedaggio: '€88888,88',
     },
-    vitto: {
-      pranzoPosto: 'PRANZO-POSTO-LUNGHISSIMO-1234567890', // 34+ caratteri
-      pranzoImporto: '€12345,67',
-      cenaPosto: 'CENA-POSTO-LUNGHISSIMO-1234567890', // 34+ caratteri
-      cenaImporto: '€23456,78',
-    },
-    pernottamento: {
-      nomeHotel: 'HOTEL-LUNGHISSIMO-1234567890-ABCD', // >24
-      numeroNotti: '12345678901234567890', // lungo
-      importo: '€34567,89',
-    },
-    varie: [
-      { descrizione: 'VARIA-UNO-LUNGHISSIMA-1234567890', importo: '€45678,90' },
-      { descrizione: 'VARIA-DUE-LUNGHISSIMA-1234567890', importo: '€56789,01' },
-      { descrizione: 'VARIA-TRE-LUNGHISSIMA-1234567890', importo: '€67890,12' },
-      { descrizione: 'VARIA-QUATTRO-LUNGHISSIMA-1234567890', importo: '€78901,23' },
-    ],
+    vitto: 'Pranzo: PRANZO-POSTO-LUNGHISSIMO (€12345,67) | Cena: CENA-POSTO-LUNGHISSIMO (€23456,78)',
+    pernottamento: 'HOTEL-LUNGHISSIMO-1234567890-ABCD - 12345678901234567890 notti (€34567,89)',
+    varie: 'VARIA-UNO: €45678,90 | VARIA-DUE: €56789,01 | VARIA-TRE: €67890,12 | VARIA-QUATTRO: €78901,23',
   },
   trascrizione:
     // 470+ caratteri

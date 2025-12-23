@@ -447,7 +447,7 @@ export const sampleReportData: ReportData = {
   componenti: ['motori', 'encoder', 'inverter', 'cinghie'],
   noteCritiche: 'Nessuna',
   spese: {
-    viaggio: { destinazione: 'N/D', km: 'N/D', costo: 'N/D' },
+    viaggio: { destinazione: 'N/D', km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
     vitto: 'N/D',
     pernottamento: 'N/D',
     varie: '4 viti',

@@ -75,22 +75,14 @@ export function convertOldToNewFormat(oldData: OldReportFormat): ReportData {
     noteCritiche: oldData.noteCritiche || 'Nessuna',
     spese: {
       viaggio: {
+        destinazione: 'N/D',
         km: 'N/D',
         costoKm: 'N/D',
         pedaggio: 'N/D',
       },
-      vitto: {
-        pranzoPosto: 'N/D',
-        pranzoImporto: 'N/D',
-        cenaPosto: 'N/D',
-        cenaImporto: 'N/D',
-      },
-      pernottamento: {
-        nomeHotel: 'N/D',
-        numeroNotti: 'N/D',
-        importo: 'N/D',
-      },
-      varie: [],
+      vitto: 'N/D',
+      pernottamento: 'N/D',
+      varie: 'N/D',
     },
     trascrizione: oldData.transcript || 'Nessuna trascrizione disponibile',
   };
@@ -172,39 +164,26 @@ export function formatReportData(data: Partial<ReportData>): ReportData {
     noteCritiche: data.noteCritiche || 'Nessuna',
     spese: {
       viaggio: {
+        destinazione: data.spese?.viaggio?.destinazione || 'N/D',
         km: data.spese?.viaggio?.km || 'N/D',
         costoKm: data.spese?.viaggio?.costoKm || 'N/D',
         pedaggio: data.spese?.viaggio?.pedaggio || 'N/D',
       },
       vitto: typeof data.spese?.vitto === 'object' && data.spese?.vitto && !Array.isArray(data.spese.vitto)
-        ? {
-            pranzoPosto: (data.spese.vitto as any).pranzoPosto || 'N/D',
-            pranzoImporto: (data.spese.vitto as any).pranzoImporto || 'N/D',
-            cenaPosto: (data.spese.vitto as any).cenaPosto || 'N/D',
-            cenaImporto: (data.spese.vitto as any).cenaImporto || 'N/D',
-          }
+        ? `Pranzo: ${(data.spese.vitto as any).pranzoPosto || 'N/D'} (${(data.spese.vitto as any).pranzoImporto || 'N/D'}) | Cena: ${(data.spese.vitto as any).cenaPosto || 'N/D'} (${(data.spese.vitto as any).cenaImporto || 'N/D'})`
         : typeof data.spese?.vitto === 'string'
         ? data.spese.vitto
-        : {
-            pranzoPosto: 'N/D',
-            pranzoImporto: 'N/D',
-            cenaPosto: 'N/D',
-            cenaImporto: 'N/D',
-          },
+        : 'N/D',
       pernottamento: typeof data.spese?.pernottamento === 'object' && data.spese?.pernottamento && !Array.isArray(data.spese.pernottamento)
-        ? {
-            nomeHotel: (data.spese.pernottamento as any).nomeHotel || 'N/D',
-            numeroNotti: (data.spese.pernottamento as any).numeroNotti || 'N/D',
-            importo: (data.spese.pernottamento as any).importo || 'N/D',
-          }
+        ? `${(data.spese.pernottamento as any).nomeHotel || 'N/D'} - ${(data.spese.pernottamento as any).numeroNotti || 'N/D'} notti (${(data.spese.pernottamento as any).importo || 'N/D'})`
         : typeof data.spese?.pernottamento === 'string'
         ? data.spese.pernottamento
-        : {
-            nomeHotel: 'N/D',
-            numeroNotti: 'N/D',
-            importo: 'N/D',
-          },
-      varie: Array.isArray(data.spese?.varie) ? data.spese.varie : [],
+        : 'N/D',
+      varie: Array.isArray(data.spese?.varie) 
+        ? data.spese.varie.map((v: any) => typeof v === 'object' ? `${v.descrizione || 'N/D'}: ${v.importo || 'N/D'}` : v).join(' | ')
+        : typeof data.spese?.varie === 'string'
+        ? data.spese.varie
+        : 'N/D',
     },
     trascrizione: data.trascrizione || 'Nessuna trascrizione disponibile',
   };

@@ -98,9 +98,9 @@ export default function ReportsPage() {
                       componenti: reportResult.analysis.intervento?.componenti || [],
                       noteCritiche: reportResult.analysis.summary || 'N/D',
                       spese: {
-                        viaggio: { km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
-                        vitto: { pranzoPosto: 'N/D', pranzoImporto: 'N/D', cenaPosto: 'N/D', cenaImporto: 'N/D' },
-                        pernottamento: { nomeHotel: 'N/D', numeroNotti: 'N/D', importo: 'N/D' },
+                        viaggio: { destinazione: 'N/D', km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
+                        vitto: 'N/D',
+                        pernottamento: 'N/D',
                         varie: [],
                       },
                       trascrizione: reportResult.transcript || 'N/D',
