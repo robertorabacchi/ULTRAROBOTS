@@ -161,14 +161,22 @@ export interface ReportData {
   noteCritiche: string;
   spese: {
     viaggio: {
-      destinazione: string;
       km: string;
       costoKm: string;
       pedaggio: string;
     };
-    vitto: string;
-    pernottamento: string;
-    varie: string;
+    vitto: {
+      pranzoPosto: string;
+      pranzoImporto: string;
+      cenaPosto: string;
+      cenaImporto: string;
+    };
+    pernottamento: {
+      nomeHotel: string;
+      numeroNotti: string;
+      importo: string;
+    };
+    varie: { descrizione: string; importo: string }[];
   };
   trascrizione: string;
 }
@@ -413,10 +421,57 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
             <View style={[styles.tableHeader, styles.col4]}><Text>VARIE</Text></View>
           </View>
           <View style={styles.tableRow}>
-            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>Dest: {data.spese.viaggio.destinazione}</Text></View>
-            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>{data.spese.vitto}</Text></View>
-            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>{data.spese.pernottamento}</Text></View>
-            <View style={[styles.tableCell, styles.col4, { minHeight: 45 }]}><Text>{data.spese.varie}</Text></View>
+            {/* VIAGGIO */}
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}>
+              {data.spese.viaggio.km && data.spese.viaggio.km !== 'N/D' && (
+                <Text>Km: {data.spese.viaggio.km}</Text>
+              )}
+              {data.spese.viaggio.costoKm && data.spese.viaggio.costoKm !== 'N/D' && (
+                <Text>Importo Km: {data.spese.viaggio.costoKm}</Text>
+              )}
+              {data.spese.viaggio.pedaggio && data.spese.viaggio.pedaggio !== 'N/D' && (
+                <Text>Importo Pedaggio: {data.spese.viaggio.pedaggio}</Text>
+              )}
+            </View>
+
+            {/* VITTO */}
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}>
+              {/* Riga 1: Posto Pranzo (No Label) */}
+              <Text>{data.spese.vitto.pranzoPosto !== 'N/D' ? data.spese.vitto.pranzoPosto : ''}</Text>
+              {/* Riga 2: Importo Pranzo (Label Importo:) - Solo se c'è posto */}
+              {data.spese.vitto.pranzoPosto !== 'N/D' && (
+                <Text>Importo: {data.spese.vitto.pranzoImporto}</Text>
+              )}
+              {/* Riga 3: Posto Cena (No Label) */}
+              <Text>{data.spese.vitto.cenaPosto !== 'N/D' ? data.spese.vitto.cenaPosto : ''}</Text>
+              {/* Riga 4: Importo Cena (Label Importo:) - Solo se c'è posto */}
+              {data.spese.vitto.cenaPosto !== 'N/D' && (
+                <Text>Importo: {data.spese.vitto.cenaImporto}</Text>
+              )}
+            </View>
+
+            {/* PERNOTTAMENTO */}
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}>
+              {/* Riga 1: Nome Hotel (No Label) */}
+              <Text>{data.spese.pernottamento.nomeHotel !== 'N/D' ? data.spese.pernottamento.nomeHotel : ''}</Text>
+              {/* Riga 2: Notti (Label Notti:) - Solo se c'è hotel */}
+              {data.spese.pernottamento.nomeHotel !== 'N/D' && (
+                <Text>Notti: {data.spese.pernottamento.numeroNotti}</Text>
+              )}
+              {/* Riga 3: Importo (Label Importo:) - Solo se c'è hotel */}
+              {data.spese.pernottamento.nomeHotel !== 'N/D' && (
+                <Text>Importo: {data.spese.pernottamento.importo}</Text>
+              )}
+            </View>
+
+            {/* VARIE */}
+            <View style={[styles.tableCell, styles.col4, { minHeight: 45 }]}>
+              {data.spese.varie.map((item, index) => (
+                <Text key={index}>
+                  {item.descrizione}: {item.importo}
+                </Text>
+              ))}
+            </View>
           </View>
         </View>
       </View>
