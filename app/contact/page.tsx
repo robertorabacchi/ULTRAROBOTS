@@ -88,8 +88,8 @@ export default function ContactPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-mono text-slate-500 mb-1 uppercase tracking-widest">{dict.contact.emailLabel}</p>
-                            <a href="mailto:info@ecservicesrl.com" className="text-white font-sans text-lg hover:text-sky-400 transition-colors font-medium">
-                            info@ecservicesrl.com
+                            <a href="mailto:hunter@digitalengineered.ai" className="text-white font-sans text-lg hover:text-sky-400 transition-colors font-medium">
+                            hunter@digitalengineered.ai
                             </a>
                         </div>
                         </div>
