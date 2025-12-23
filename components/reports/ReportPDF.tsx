@@ -164,7 +164,7 @@ export interface ReportData {
       destinazione: string;
       km: string;
       costoKm: string;
-      costo: string;
+      pedaggio: string;
     };
     vitto: string;
     pernottamento: string;
