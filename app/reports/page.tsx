@@ -78,15 +78,32 @@ export default function ReportsPage() {
       if (!reportResult) return;
       
       try {
-          const response = await fetch('/api/generate-pdf', {
+          const response = await fetch('/api/generate-pdf-react', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                  unitId: reportResult.analysis.summary || "INTERVENTO_VOCALE",
-                  reportType: 'VOICE_REPORT',
                   reportData: {
-                      ...reportResult.analysis,
-                      transcript: reportResult.transcript
+                      id: `REP-${Date.now()}`,
+                      date: new Date().toLocaleString('it-IT'),
+                      cliente: {
+                        azienda: reportResult.analysis.cliente?.azienda || 'N/D',
+                        referente: 'N/D',
+                        sede: 'N/D',
+                      },
+                      intervento: {
+                        tipologia: reportResult.analysis.intervento?.tipo || 'N/D',
+                        statoFinale: 'N/D',
+                        descrizione: reportResult.analysis.intervento?.descrizione || 'N/D',
+                      },
+                      componenti: reportResult.analysis.intervento?.componenti || [],
+                      noteCritiche: reportResult.analysis.summary || 'N/D',
+                      spese: {
+                        viaggio: { km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
+                        vitto: { pranzoPosto: 'N/D', pranzoImporto: 'N/D', cenaPosto: 'N/D', cenaImporto: 'N/D' },
+                        pernottamento: { nomeHotel: 'N/D', numeroNotti: 'N/D', importo: 'N/D' },
+                        varie: [],
+                      },
+                      trascrizione: reportResult.transcript || 'N/D',
                   }
               })
           });
