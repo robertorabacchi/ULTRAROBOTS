@@ -86,7 +86,7 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
       {/* DIALOG MODAL */}
       <AnimatePresence>
         {showDialog && (
-          <div className="fixed inset-0 z-[50000] flex items-start justify-center p-4 pt-12">
+          <div className="fixed inset-0 z-[50000] flex justify-center items-start p-4 pt-16 md:pt-24">
             <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[50000]"
