@@ -10,9 +10,8 @@ const PDFLogo = () => {
       <SvgText 
         x="0" 
         y="28" 
-        fontSize="24" 
         fill={colorBlack}
-        style={{ fontFamily: 'Helvetica', fontWeight: 'bold', letterSpacing: '-0.02em' }}
+        style={{ fontFamily: 'Helvetica', fontWeight: 'bold', fontSize: 24, letterSpacing: '-0.02em' }}
       >
         ULTR
       </SvgText>
@@ -33,9 +32,8 @@ const PDFLogo = () => {
         <SvgText 
           x="20" 
           y="28" 
-          fontSize="24" 
           fill={colorBlack}
-          style={{ fontFamily: 'Helvetica', fontWeight: 'bold', letterSpacing: '-0.02em' }}
+          style={{ fontFamily: 'Helvetica', fontWeight: 'bold', fontSize: 24, letterSpacing: '-0.02em' }}
         >
           i
         </SvgText>
@@ -45,9 +43,8 @@ const PDFLogo = () => {
       <SvgText 
         x="85" 
         y="28" 
-        fontSize="24" 
         fill={colorBlack}
-        style={{ fontFamily: 'Helvetica', fontWeight: 'bold', letterSpacing: '-0.02em' }}
+        style={{ fontFamily: 'Helvetica', fontWeight: 'bold', fontSize: 24, letterSpacing: '-0.02em' }}
       >
         ROBOTS
       </SvgText>
