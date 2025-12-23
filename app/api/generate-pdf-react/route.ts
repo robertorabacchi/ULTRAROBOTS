@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { renderToBuffer, type DocumentProps } from '@react-pdf/renderer';
 import ReportPDF, { ReportData } from '@/components/reports/ReportPDF';
 import React, { type ReactElement } from 'react';
+import { LOGOS } from '@/lib/pdf-logos-base64';
 
 export const dynamic = 'force-dynamic';
 
@@ -265,8 +266,12 @@ export async function POST(request: NextRequest) {
       trascrizione: reportData.trascrizione || '',
     };
 
-    // Genera il PDF usando @react-pdf/renderer
-    const element = React.createElement(ReportPDF, { data: completeData });
+    // Genera il PDF usando @react-pdf/renderer con i loghi in base64
+    const element = React.createElement(ReportPDF, { 
+      data: completeData,
+      logoUltrarobots: LOGOS.ultrarobots,
+      logoDigitalEngineered: LOGOS.digitalengineered
+    });
     const pdfBuffer = await renderToBuffer(element as ReactElement<DocumentProps>);
 
     // Converti Buffer in Uint8Array per NextResponse

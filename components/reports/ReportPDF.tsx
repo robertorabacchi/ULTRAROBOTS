@@ -416,29 +416,38 @@ const joinWithDash = (left?: string, right?: string) => {
  * 
  * QUESTA STRUTTURA È FINALE E APPROVATA. NON SI TOCCA MAI!
  */
-type ReportPDFProps = DocumentProps & { data: ReportData };
+type ReportPDFProps = DocumentProps & { 
+  data: ReportData;
+  logoUltrarobots?: string;
+  logoDigitalEngineered?: string;
+};
 
 const baseUrl = process.env.SITE_URL || 'http://localhost:3000';
 
-const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
-  <Document {...documentProps}>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.reportTitle}>RAPPORTO DI</Text>
-          <Text style={[styles.reportTitle, { marginTop: -2 }]}>INTERVENTO</Text>
+const ReportPDF: React.FC<ReportPDFProps> = ({ data, logoUltrarobots, logoDigitalEngineered, ...documentProps }) => {
+  // Usa i loghi base64 se forniti, altrimenti fallback agli URL
+  const ultrarobotsLogo = logoUltrarobots || `${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`;
+  const digitalEngineeredLogo = logoDigitalEngineered || `${baseUrl}/assets/SVG_PNG/digitalengineered.wordmark-black.png`;
+
+  return (
+    <Document {...documentProps}>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.reportTitle}>RAPPORTO DI</Text>
+            <Text style={[styles.reportTitle, { marginTop: -2 }]}>INTERVENTO</Text>
+          </View>
+          <View style={styles.headerCenter}>
+            <Image
+              style={styles.logoImage}
+              src={ultrarobotsLogo}
+            />
+          </View>
+          <View style={styles.headerRight}>
+            <Text style={styles.reportId}>ID REPORT: {data.id}</Text>
+            <Text style={styles.reportDate}>DATA: {data.date}</Text>
+          </View>
         </View>
-        <View style={styles.headerCenter}>
-          <Image
-            style={styles.logoImage}
-            src={`${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`}
-          />
-        </View>
-        <View style={styles.headerRight}>
-          <Text style={styles.reportId}>ID REPORT: {data.id}</Text>
-          <Text style={styles.reportDate}>DATA: {data.date}</Text>
-        </View>
-      </View>
 
       <View style={styles.section}>
         <View style={styles.table}>
@@ -632,14 +641,15 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
       </View>
 
       <View style={styles.footer} fixed>
-        <Image style={styles.footerLogo} src={`${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`} />
+        <Image style={styles.footerLogo} src={ultrarobotsLogo} />
         <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogoDigitalEngineered} src={`${baseUrl}/assets/SVG_PNG/digitalengineered.wordmark-black.png`} />
+        <Image style={styles.footerLogoDigitalEngineered} src={digitalEngineeredLogo} />
         <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
       </View>
     </Page>
   </Document>
-);
+  );
+};
 
 /**
  * ⚠️ GPT: QUESTO È L'ESEMPIO DA SEGUIRE!
