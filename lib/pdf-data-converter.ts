@@ -66,17 +66,30 @@ export function convertOldToNewFormat(oldData: OldReportFormat): ReportData {
         oldData.description ||
         'Nessuna descrizione disponibile',
     },
-    componenti: oldData.intervento?.componenti || [],
+    componenti: oldData.intervento?.componenti?.map((comp: any) => 
+      typeof comp === 'string' 
+        ? { quantita: '-', descrizione: comp, brand: 'N/D', codice: 'N/D' }
+        : comp
+    ) || [],
     noteCritiche: oldData.noteCritiche || 'Nessuna',
     spese: {
       viaggio: {
-        destinazione: 'N/D',
         km: 'N/D',
-        costo: oldData.spese?.viaggio?.costo || 'N/D',
+        costoKm: 'N/D',
+        pedaggio: 'N/D',
       },
-      vitto: oldData.spese?.vitto || 'N/D',
-      pernottamento: oldData.spese?.pernottamento || 'N/D',
-      varie: oldData.spese?.varie || 'N/D',
+      vitto: {
+        pranzoPosto: 'N/D',
+        pranzoImporto: 'N/D',
+        cenaPosto: 'N/D',
+        cenaImporto: 'N/D',
+      },
+      pernottamento: {
+        nomeHotel: 'N/D',
+        numeroNotti: 'N/D',
+        importo: 'N/D',
+      },
+      varie: [],
     },
     trascrizione: oldData.transcript || 'Nessuna trascrizione disponibile',
   };
@@ -150,17 +163,47 @@ export function formatReportData(data: Partial<ReportData>): ReportData {
       statoFinale: data.intervento?.statoFinale || 'COMPLETATO',
       descrizione: data.intervento?.descrizione || 'Nessuna descrizione disponibile',
     },
-    componenti: data.componenti || [],
+    componenti: data.componenti?.map((comp: any) => 
+      typeof comp === 'string' 
+        ? { quantita: '-', descrizione: comp, brand: 'N/D', codice: 'N/D' }
+        : comp
+    ) || [],
     noteCritiche: data.noteCritiche || 'Nessuna',
     spese: {
       viaggio: {
-        destinazione: data.spese?.viaggio?.destinazione || 'N/D',
         km: data.spese?.viaggio?.km || 'N/D',
-        costo: data.spese?.viaggio?.costo || 'N/D',
+        costoKm: data.spese?.viaggio?.costoKm || 'N/D',
+        pedaggio: data.spese?.viaggio?.pedaggio || 'N/D',
       },
-      vitto: data.spese?.vitto || 'N/D',
-      pernottamento: data.spese?.pernottamento || 'N/D',
-      varie: data.spese?.varie || 'N/D',
+      vitto: typeof data.spese?.vitto === 'object' && data.spese?.vitto && !Array.isArray(data.spese.vitto)
+        ? {
+            pranzoPosto: (data.spese.vitto as any).pranzoPosto || 'N/D',
+            pranzoImporto: (data.spese.vitto as any).pranzoImporto || 'N/D',
+            cenaPosto: (data.spese.vitto as any).cenaPosto || 'N/D',
+            cenaImporto: (data.spese.vitto as any).cenaImporto || 'N/D',
+          }
+        : typeof data.spese?.vitto === 'string'
+        ? data.spese.vitto
+        : {
+            pranzoPosto: 'N/D',
+            pranzoImporto: 'N/D',
+            cenaPosto: 'N/D',
+            cenaImporto: 'N/D',
+          },
+      pernottamento: typeof data.spese?.pernottamento === 'object' && data.spese?.pernottamento && !Array.isArray(data.spese.pernottamento)
+        ? {
+            nomeHotel: (data.spese.pernottamento as any).nomeHotel || 'N/D',
+            numeroNotti: (data.spese.pernottamento as any).numeroNotti || 'N/D',
+            importo: (data.spese.pernottamento as any).importo || 'N/D',
+          }
+        : typeof data.spese?.pernottamento === 'string'
+        ? data.spese.pernottamento
+        : {
+            nomeHotel: 'N/D',
+            numeroNotti: 'N/D',
+            importo: 'N/D',
+          },
+      varie: Array.isArray(data.spese?.varie) ? data.spese.varie : [],
     },
     trascrizione: data.trascrizione || 'Nessuna trascrizione disponibile',
   };
@@ -182,6 +225,7 @@ export function formatReportData(data: Partial<ReportData>): ReportData {
  * );
  * ```
  */
+
 
 
 

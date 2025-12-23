@@ -384,16 +384,16 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
           <View style={styles.tableRow}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>AZIENDA</Text></View>
             <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { minHeight: 65 }]}>
-              <Text numberOfLines={3}>{data.cliente.azienda} - {data.cliente.sede}</Text>
+              <Text>{data.cliente.azienda} - {data.cliente.sede}</Text>
             </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>TIPOLOGIA</Text></View>
-            <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text numberOfLines={3}>{data.intervento.tipologia}</Text></View>
+            <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text>{data.intervento.tipologia}</Text></View>
           </View>
           <View style={styles.tableRowLast}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>REFERENTE</Text></View>
-            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder]}><Text numberOfLines={1}>{data.cliente.referente}</Text></View>
+            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder]}><Text>{data.cliente.referente}</Text></View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>STATO FINALE</Text></View>
-            <View style={[styles.tableCell, styles.colValue]}><Text numberOfLines={1}>{data.intervento.statoFinale}</Text></View>
+            <View style={[styles.tableCell, styles.colValue]}><Text>{data.intervento.statoFinale}</Text></View>
           </View>
         </View>
       </View>
@@ -401,7 +401,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>DESCRIZIONE ATTIVITÀ</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text style={styles.descriptionText} numberOfLines={4}>{data.intervento.descrizione}</Text>
+          <Text style={styles.descriptionText}>{data.intervento.descrizione}</Text>
         </View>
       </View>
 
@@ -420,10 +420,10 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
               const comp = data.componenti[idx];
               return (
                 <View key={`comp-left-${idx}`} style={idx === 3 ? styles.tableRowLast : styles.tableRow}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
-                  <View style={[styles.componentCell, styles.compColCode]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
+                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
+                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
+                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
+                  <View style={[styles.componentCell, styles.compColCode]}><Text>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
                 </View>
               );
             })}
@@ -441,10 +441,10 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
               const comp = data.componenti[idx + 4];
               return (
                 <View key={`comp-right-${idx}`} style={idx === 3 ? styles.tableRowLast : styles.tableRow}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
-                  <View style={[styles.componentCell, styles.compColCode]}><Text numberOfLines={1}>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
+                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
+                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
+                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
+                  <View style={[styles.componentCell, styles.compColCode]}><Text>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
                 </View>
               );
             })}
@@ -455,7 +455,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>NOTE CRITICHE</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text style={styles.descriptionText} numberOfLines={4}>{data.noteCritiche}</Text>
+          <Text style={styles.descriptionText}>{data.noteCritiche}</Text>
         </View>
       </View>
 
@@ -469,28 +469,28 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
             <View style={[styles.spesaHeader, styles.col4]}><Text>VARIE</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{data.spese.viaggio.km !== 'N/D' ? `Km (A/R): ${data.spese.viaggio.km}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.pranzoPosto : (typeof data.spese.vitto === 'string' ? data.spese.vitto : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento ? data.spese.pernottamento.nomeHotel : (typeof data.spese.pernottamento === 'string' ? data.spese.pernottamento : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text numberOfLines={1}>{Array.isArray(data.spese.varie) && data.spese.varie[0] ? `${data.spese.varie[0].descrizione}: ${data.spese.varie[0].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.km !== 'N/D' ? `Km (A/R): ${data.spese.viaggio.km}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.pranzoPosto : (typeof data.spese.vitto === 'string' ? data.spese.vitto : '')}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento ? data.spese.pernottamento.nomeHotel : (typeof data.spese.pernottamento === 'string' ? data.spese.pernottamento : '')}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[0] ? `${data.spese.varie[0].descrizione}: ${data.spese.varie[0].importo}` : ''}</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{data.spese.viaggio.costoKm !== 'N/D' ? `Importo Km: ${data.spese.viaggio.costoKm}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.pranzoPosto !== 'N/D' ? `Importo: ${data.spese.vitto.pranzoImporto}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Notti: ${data.spese.pernottamento.numeroNotti}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text numberOfLines={1}>{Array.isArray(data.spese.varie) && data.spese.varie[1] ? `${data.spese.varie[1].descrizione}: ${data.spese.varie[1].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.costoKm !== 'N/D' ? `Importo Km: ${data.spese.viaggio.costoKm}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.pranzoPosto !== 'N/D' ? `Importo: ${data.spese.vitto.pranzoImporto}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Notti: ${data.spese.pernottamento.numeroNotti}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[1] ? `${data.spese.varie[1].descrizione}: ${data.spese.varie[1].importo}` : ''}</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{data.spese.viaggio.pedaggio !== 'N/D' ? `Importo Pedaggio: ${data.spese.viaggio.pedaggio}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.cenaPosto : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Importo: ${data.spese.pernottamento.importo}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text numberOfLines={1}>{Array.isArray(data.spese.varie) && data.spese.varie[2] ? `${data.spese.varie[2].descrizione}: ${data.spese.varie[2].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.pedaggio !== 'N/D' ? `Importo Pedaggio: ${data.spese.viaggio.pedaggio}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.cenaPosto : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Importo: ${data.spese.pernottamento.importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[2] ? `${data.spese.varie[2].descrizione}: ${data.spese.varie[2].importo}` : ''}</Text></View>
           </View>
           <View style={[styles.tableRowLast, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}></Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.cenaPosto !== 'N/D' ? `Importo: ${data.spese.vitto.cenaImporto}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text numberOfLines={1}></Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text numberOfLines={1}>{Array.isArray(data.spese.varie) && data.spese.varie[3] ? `${data.spese.varie[3].descrizione}: ${data.spese.varie[3].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.cenaPosto !== 'N/D' ? `Importo: ${data.spese.vitto.cenaImporto}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[3] ? `${data.spese.varie[3].descrizione}: ${data.spese.varie[3].importo}` : ''}</Text></View>
           </View>
         </View>
       </View>
@@ -498,7 +498,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>TRASCRIZIONE ORIGINALE</Text>
         <View style={styles.transcriptionBox}>
-          <Text style={styles.transcriptionText} numberOfLines={7}>{data.trascrizione}</Text>
+          <Text style={styles.transcriptionText}>{data.trascrizione}</Text>
         </View>
       </View>
 
