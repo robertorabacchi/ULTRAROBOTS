@@ -11,163 +11,137 @@ import {
 /**
  * ⚠️⚠️⚠️ ISTRUZIONI DEFINITIVE PER GPT - COMPILAZIONE PDF RAPPORTO INTERVENTO ⚠️⚠️⚠️
  * 
- * 📋 LIMITI CARATTERI E RIGHE PER OGNI CAMPO
+ * 🧠 USA LA TUA CONOSCENZA PER ARRICCHIRE I DATI! 🧠
  * 
- * REGOLA FONDAMENTALE: GPT DEVE RISPETTARE I LIMITI DI CARATTERI, NON LE RIGHE!
- * Le righe sono un limite tecnico del PDF, MA IL CONTROLLO VA FATTO SUI CARATTERI!
+ * GPT, quando compili il rapporto PDF, devi ATTINGERE DALLA TUA CONOSCENZA per:
  * 
- * ═══════════════════════════════════════════════════════════════════════════════
+ * 1. 🏢 AZIENDE E RISTORANTI:
+ *    - Se l'utente menziona un'azienda, CERCA nella tua conoscenza:
+ *      • Indirizzo completo e città
+ *      • Ristoranti nelle vicinanze del cliente (max 10 km)
+ *      • Hotel nelle vicinanze per pernottamento
+ *    - Esempio: "Cliente: McDonald's Milano" → Cerca ristoranti vicini per vitto
  * 
- * 1️⃣ AZIENDA
- *    - Max righe PDF: 6 (tecnico)
- *    - Max caratteri: ~150 TOTALI (~25 per riga)
- *    - Struttura dati da GPT (se disponibili):
- *      1. Ragione Sociale
- *      2. Via e Numero Civico
- *      3. CAP + Città + Provincia (XX)
- *      4. Partita IVA
- *      5. Telefono
- *      6. Email
- *    - ⚠️ GPT: Se non hai tutti i dati, usa ciò che hai. Max 150 caratteri totali!
+ * 2. 📏 CALCOLO AUTOMATICO KM E COSTI:
+ *    - CALCOLA i km se hai origine e destinazione:
+ *      • Usa la tua conoscenza geografica per calcolare la distanza A/R
+ *      • Formato km: "150 km A/R" (sempre A/R = andata/ritorno)
+ *    - CALCOLA automaticamente costoKm:
+ *      • Formula: km numerici × 0,80 €/km
+ *      • Esempio: 150 km × 0,80 = €120,00
+ *      • Formato: SEMPRE "€XXX,XX" (virgola decimale italiana)
+ *    - Se utente dice "Milano-Torino" → Calcola ~140 km × 2 = 280 km A/R → €224,00
  * 
- * 2️⃣ TIPOLOGIA
- *    - Max righe PDF: 6 (tecnico)
- *    - Max caratteri: ~150 TOTALI (~25 per riga)
- *    - Testo continuo
- *    - ⚠️ GPT: Descrizione breve del tipo di intervento. Max 150 caratteri!
+ * 3. 🔧 CODICI COMPONENTI, SENSORI, MOTORI:
+ *    - RECUPERA dalla tua conoscenza i codici:
+ *      • Brand/marca del componente (max 8 caratteri)
+ *      • Codice prodotto (max 12 caratteri)
+ *      • Quantità (max 3 caratteri, numerico)
+ *    - Esempi:
+ *      • "sensore temperatura Siemens" → Brand: "Siemens", Codice: "QAE2120.010"
+ *      • "motore ABB 5.5kW" → Brand: "ABB", Codice: "M2BAX132M"
+ *    - Se NON conosci il codice → usa "N/D" (mai inventare!)
  * 
- * 3️⃣ REFERENTE
- *    - Max righe PDF: 1
- *    - Max caratteri: 25
- *    - ⚠️ GPT: Nome e cognome del referente. Max 25 caratteri!
+ * 4. 🍽️ VITTO - RISTORANTI VICINI:
+ *    - CERCA ristoranti nelle vicinanze del cliente:
+ *      • Max 10 km dal cliente
+ *      • Suggerisci ristoranti reali della zona
+ *      • Formato: "Ristorante Nome, Città"
+ *    - Se utente non specifica → usa "N/D"
  * 
- * 4️⃣ STATO FINALE
- *    - Max righe PDF: 1
- *    - Max caratteri: 25
- *    - Valori tipici: "COMPLETATO", "IN CORSO", "ANNULLATO"
- *    - ⚠️ GPT: Max 25 caratteri!
+ * 5. 🏨 PERNOTTAMENTO - HOTEL VICINI:
+ *    - CERCA hotel nelle vicinanze del cliente:
+ *      • Max 10 km dal cliente
+ *      • Suggerisci hotel reali della zona
+ *      • Calcola numero notti se hai date
+ *    - Formato: "Hotel Nome, Città - X notti"
  * 
- * 5️⃣ DESCRIZIONE ATTIVITÀ
- *    - Max righe PDF: 6 (tecnico, ininfluente)
- *    - Max caratteri: 460 ⚠️⚠️⚠️
- *    - Testo continuo
- *    - ⚠️ GPT: Descrizione dettagliata dell'intervento. MAX 460 CARATTERI!
+ * 6. 📍 INFORMAZIONI GEOGRAFICHE:
+ *    - USA la tua conoscenza per:
+ *      • Completare indirizzi parziali
+ *      • Calcolare distanze tra località
+ *      • Trovare città da CAP
+ *      • Suggerire pedaggi autostradali (es: Milano-Roma → ~€30-40)
  * 
- * 6️⃣ COMPONENTI (MAX 8 TOTALI: 4 colonna SX + 4 colonna DX)
- *    - Max righe per cella: 1
- *    - Limiti caratteri per colonna:
- *      • Quantità: 3 caratteri MAX
- *      • Descrizione: 15 caratteri MAX ⚠️⚠️⚠️ (1-2 PAROLE!)
- *      • Brand: 8 caratteri MAX
- *      • Codice: 12 caratteri MAX
- *    
- *    ✅ DESCRIZIONI CORRETTE (1-2 parole, max 15 caratteri):
- *       Motore, Encoder, Inverter, Fotocellula, Cinghie, PLC, Relè sicurezza,
- *       Trasformatore, Sensore, Azionamento, Valvola, Cilindro, Filtro
- *    
- *    ❌ DESCRIZIONI SBAGLIATE (troppo lunghe):
- *       "Motore elettrico trifase" ❌ → "Motore" ✅
- *       "Encoder incrementale rotativo" ❌ → "Encoder" ✅
- *    
- *    ⚠️ GPT: DESCRIZIONI COMPONENTI DEVONO ESSERE BREVISSIME! MAX 15 CARATTERI!
+ * 7. ⚙️ INFORMAZIONI TECNICHE:
+ *    - RECUPERA specifiche tecniche se menzionate:
+ *      • Potenze motori (kW, HP)
+ *      • Voltaggi (V, kV)
+ *      • Correnti (A)
+ *      • Temperature (°C)
+ *      • Pressioni (bar, PSI)
  * 
- * 7️⃣ NOTE CRITICHE
- *    - Max righe PDF: 6 (tecnico, ininfluente)
- *    - Max caratteri: 460 ⚠️⚠️⚠️
- *    - Testo continuo
- *    - ⚠️ GPT: Note importanti sull'intervento. MAX 460 CARATTERI!
+ * ⚠️ REGOLE CRITICHE CONOSCENZA:
+ * ✅ USA la conoscenza per ARRICCHIRE, mai per INVENTARE
+ * ✅ Se NON sei sicuro → usa "N/D"
+ * ✅ CALCOLA sempre km e costoKm se possibile
+ * ✅ CERCA sempre ristoranti/hotel vicini al cliente
+ * ✅ RECUPERA sempre codici componenti se li conosci
+ * ❌ MAI inventare codici/dati se non li conosci
+ * ❌ MAI lasciare campi vuoti (usa "N/D")
  * 
- * 8️⃣ TRASCRIZIONE ORIGINALE
- *    - Max righe PDF: 6 (tecnico, ininfluente)
- *    - Max caratteri: 460 ⚠️⚠️⚠️
- *    - Testo continuo
- *    - ⚠️ GPT: Trascrizione vocale originale. MAX 460 CARATTERI!
+ * 📋 LIMITI CARATTERI (RIGOROSI - TRONCA SE NECESSARIO):
  * 
- * ═══════════════════════════════════════════════════════════════════════════════
+ * SEZIONE CLIENTE:
+ * - azienda: max 150 caratteri (~25 per riga × 6 righe)
+ * - referente: max 25 caratteri (1 riga)
+ * - sede: max 150 caratteri (~25 per riga × 6 righe)
  * 
- * 9️⃣ SPESE DI TRASFERTA (TUTTA LA TABELLA: 1 RIGA PER CELLA!)
+ * SEZIONE INTERVENTO:
+ * - tipologia: max 150 caratteri (~25 per riga × 6 righe)
+ * - statoFinale: max 25 caratteri (1 riga)
+ * - descrizione: max 460 caratteri (6 righe × ~77 caratteri)
  * 
- * 🚗 VIAGGIO (4 righe):
- *    • Riga 1: Km (4 caratteri per numero)
- *      Formato: "Km: XXXX"
- *      Etichetta "Km:" mostrata SOLO se c'è valore
- *    
- *    • Riga 2: Importo Km
- *      Formato: "Importo Km: xxxx,xx €"
- *      Etichetta "Importo Km:" mostrata SOLO se c'è valore
- *      ⚠️ CALCOLO AUTOMATICO: Km totali A/R × 0,8€/km
- *      Esempio: 150 km A/R → 150 × 0,8 = 120,00 €
- *    
- *    • Riga 3: Pedaggio
- *      Formato: "Importo Pedaggio: xxxx,xx €"
- *      Etichetta "Importo Pedaggio:" mostrata SOLO se c'è valore
- *    
- *    • Riga 4: vuota
+ * COMPONENTI (per ogni componente):
+ * - descrizione: max 15 caratteri (1-2 PAROLE!)
+ * - quantità: max 3 caratteri (numero breve)
+ * - brand: max 8 caratteri
+ * - codice: max 12 caratteri
  * 
- * 🍽️ VITTO (4 righe):
- *    • Riga 1: Posto Pranzo (20 caratteri max) - SENZA etichetta
- *    • Riga 2: Importo Pranzo
- *      Formato: "Importo: xxxx,xx €"
- *      Etichetta "Importo:" SEMPRE presente
- *      ⚠️ DEFAULT se non dichiarato: 15,00 € (con parentesi quadre: [15,00 €])
- *    
- *    • Riga 3: Posto Cena (20 caratteri max) - SENZA etichetta
- *    • Riga 4: Importo Cena
- *      Formato: "Importo: xxxx,xx €"
- *      Etichetta "Importo:" SEMPRE presente
- *      ⚠️ DEFAULT se non dichiarato: 35,00 € (con parentesi quadre: [35,00 €])
+ * SPESE:
+ * - viaggio.destinazione: max 150 caratteri
+ * - viaggio.km: formato "XXX km A/R" (max 20 caratteri)
+ * - viaggio.costoKm: formato "€XXX,XX" (SEMPRE con € e virgola)
+ * - viaggio.costo: formato "€XXX,XX" (pedaggio)
+ * - vitto: testo libero ma conciso
+ * - pernottamento: testo libero ma conciso
+ * - varie: testo libero ma conciso
  * 
- * 🏨 PERNOTTAMENTO (4 righe):
- *    • Riga 1: Nome Hotel (20 caratteri max) - SENZA etichetta
- *    • Riga 2: Notti
- *      Formato: "Notti: XXX"
- *      Etichetta "Notti:" SEMPRE presente
- *    
- *    • Riga 3: Importo
- *      Formato: "Importo: xxxx,xx €"
- *      Etichetta "Importo:" SEMPRE presente
- *      ⚠️ DEFAULT se non dichiarato: 80,00 € per notte
- *      Esempio: 2 notti → [160,00 €] (con parentesi quadre)
- *    
- *    • Riga 4: vuota
+ * ALTRE SEZIONI:
+ * - noteCritiche: max 460 caratteri (6 righe)
+ * - trascrizione: max 460 caratteri (6 righe)
  * 
- * 💼 VARIE (4 righe):
- *    • 4 celle da 20 caratteri max ciascuna
- *    • NESSUNA etichetta
- *    • Formato libero: "Descrizione: importo"
+ * 💰 FORMATI IMPORTI:
+ * ✅ SEMPRE formato italiano: "€120,00" (virgola decimale)
+ * ✅ SEMPRE simbolo € PRIMA del numero
+ * ✅ SEMPRE 2 decimali
+ * ❌ MAI: "120€", "EUR 120", "120.00", "$120"
  * 
- * ⚠️⚠️⚠️ FORMATO IMPORTI CRITICO ⚠️⚠️⚠️
- *    - SEMPRE formato italiano: xxxx,xx € (virgola, € DOPO)
- *    - Esempi corretti: "120,00 €", "15,00 €", "1.250,50 €"
- *    - ❌ MAI: "€120,00", "120.00 €", "EUR 120,00"
+ * 📐 CALCOLI AUTOMATICI:
+ * - costoKm = km numerici × 0,80 €/km
+ * - Esempio: "150 km A/R" → 150 × 0,80 = €120,00
+ * - Se km è "N/D" → costoKm è "N/D"
  * 
- * ⚠️⚠️⚠️ PARENTESI QUADRE PER VALORI IPOTIZZATI ⚠️⚠️⚠️
- *    - Senza parentesi: valore dichiarato dal tecnico → "25,00 €"
- *    - Con parentesi: valore ipotizzato da GPT → "[15,00 €]"
- *    - Usa "N/D" se la spesa NON è stata fatta
+ * 🔄 VALORI DEFAULT:
+ * - Qualsiasi campo vuoto o non fornito → "N/D"
+ * - MAI lasciare campi completamente vuoti
+ * - "N/D" = "Non Disponibile"
  * 
- * ═══════════════════════════════════════════════════════════════════════════════
+ * ✅ CHECKLIST GPT PRIMA DI GENERARE PDF:
+ * □ Ho CALCOLATO i km se possibile?
+ * □ Ho CALCOLATO costoKm (km × 0,80)?
+ * □ Ho CERCATO ristoranti vicini al cliente?
+ * □ Ho CERCATO hotel vicini al cliente?
+ * □ Ho RECUPERATO codici componenti se li conosco?
+ * □ Tutti i campi vuoti sono "N/D"?
+ * □ Tutti gli importi sono formato "€XXX,XX"?
+ * □ Tutti i limiti caratteri sono rispettati?
+ * □ Ho troncato i testi troppo lunghi?
+ * □ Ho usato la conoscenza per arricchire i dati?
  * 
- * 🎯 CHECKLIST GPT PRIMA DI GENERARE IL PDF:
+ * Se tutti i □ sono ✅ → GENERA IL PDF!
  * 
- * [ ] AZIENDA: max 150 caratteri
- * [ ] TIPOLOGIA: max 150 caratteri
- * [ ] REFERENTE: max 25 caratteri
- * [ ] STATO FINALE: max 25 caratteri
- * [ ] DESCRIZIONE: max 460 caratteri
- * [ ] COMPONENTI descrizioni: max 15 caratteri (1-2 parole!)
- * [ ] COMPONENTI max 8 totali (4 SX + 4 DX)
- * [ ] NOTE CRITICHE: max 460 caratteri
- * [ ] TRASCRIZIONE: max 460 caratteri
- * [ ] IMPORTI formato italiano: xxxx,xx €
- * [ ] CALCOLO KM corretto: A/R × 0,8€/km
- * [ ] DEFAULT pranzo: [15,00 €] se non dichiarato
- * [ ] DEFAULT cena: [35,00 €] se non dichiarato
- * [ ] DEFAULT pernotto: [80,00 €] per notte se non dichiarato
- * [ ] Parentesi quadre SOLO per valori ipotizzati
- * [ ] "N/D" SOLO se spesa non fatta
- * 
- * ═══════════════════════════════════════════════════════════════════════════════
+ * ⚠️⚠️⚠️ FINE ISTRUZIONI GPT ⚠️⚠️⚠️
  */
 
 export interface ReportData {
@@ -189,6 +163,7 @@ export interface ReportData {
     viaggio: {
       destinazione: string;
       km: string;
+      costoKm: string;
       costo: string;
     };
     vitto: string;
