@@ -13,9 +13,11 @@ const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
 type ReportAnalysis = {
   summary?: string;
+  status?: string;
   cliente?: { azienda?: string };
-  intervento?: { tipo?: string; componenti?: string[] };
-  [key: string]: unknown;
+  client?: string;
+  intervento?: { tipo?: string; componenti?: string[]; descrizione?: string };
+  transcript?: string;
 };
 
 type ReportResult = {
@@ -274,7 +276,7 @@ export default function ReportsPage() {
                                         )}
 
                                         {/* Components */}
-                                        {reportResult.analysis.intervento?.componenti?.length > 0 && (
+                                        {!!reportResult.analysis.intervento?.componenti?.length && (
                                             <div>
                                             <div className="text-[10px] font-mono text-slate-500 uppercase mb-2">{dict.reports.result.components}</div>
                                             <div className="flex flex-wrap gap-2">

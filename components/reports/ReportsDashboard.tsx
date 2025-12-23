@@ -6,11 +6,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SystemMonitor from '@/components/ui/SystemMonitor';
 import { useLanguage } from '@/context/LanguageContext';
 
+type PdfMeta = {
+  aiAnalysisScore?: number;
+  fileUrl?: string;
+  [key: string]: unknown;
+};
+
 export default function ReportsDashboard() {
   const { dict } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'aborted'>('idle');
-  const [pdfMeta, setPdfMeta] = useState<Record<string, unknown> | null>(null);
+  const [pdfMeta, setPdfMeta] = useState<PdfMeta | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [unit, setUnit] = useState('Kawasaki R Series - Unit 01');
@@ -42,7 +48,7 @@ export default function ReportsDashboard() {
 
       await new Promise(resolve => setTimeout(resolve, 3000));
 
-      setPdfMeta(data.meta);
+      setPdfMeta(data.meta as PdfMeta);
       setPdfUrl(data.pdfDataUrl || null);
       setIsGenerating(false);
       setStatus('success');

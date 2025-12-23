@@ -460,25 +460,25 @@ function CalendarContent() {
                                                 <div className="space-y-3 flex-1 flex flex-col">
                                                     <input 
                                                         type="text" 
-                                                        value={editForm.title}
-                                                        onChange={e => setEditForm({...editForm, title: e.target.value})}
+                                                        value={editForm?.title ?? ''}
+                                                        onChange={e => setEditForm(prev => prev ? {...prev, title: e.target.value} : prev)}
                                                         className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white font-bold focus:border-indigo-500 outline-none"
                                                     />
                                                     <textarea 
-                                                        value={editForm.description}
-                                                        onChange={e => setEditForm({...editForm, description: e.target.value})}
+                                                        value={editForm?.description ?? ''}
+                                                        onChange={e => setEditForm(prev => prev ? {...prev, description: e.target.value} : prev)}
                                                         className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-sm text-slate-300 focus:border-indigo-500 outline-none h-20 resize-none flex-1"
                                                     />
                                                     <div className="flex gap-2">
                                                          <input 
                                                             type="datetime-local"
-                                                            value={editForm.start_date ? editForm.start_date.slice(0, 16) : ''}
-                                                            onChange={e => setEditForm({...editForm, start_date: e.target.value})}
+                                                            value={editForm?.start_date ? editForm.start_date.slice(0, 16) : ''}
+                                                            onChange={e => setEditForm(prev => prev ? {...prev, start_date: e.target.value} : prev)}
                                                             className="bg-slate-800 border border-slate-600 rounded p-2 text-xs text-white flex-1"
                                                          />
                                                          <select 
-                                                            value={editForm.priority}
-                                                            onChange={e => setEditForm({...editForm, priority: e.target.value})}
+                                                            value={editForm?.priority ?? ''}
+                                                            onChange={e => setEditForm(prev => prev ? {...prev, priority: e.target.value} : prev)}
                                                             className="bg-slate-800 border border-slate-600 rounded p-2 text-xs text-white"
                                                          >
                                                              <option value="high">{dict.calendar.edit.priority.high}</option>
@@ -496,7 +496,7 @@ function CalendarContent() {
                                                 <>
                                                     <div className="flex items-start gap-4 mb-3">
                                                         <div className="mt-1 p-2 bg-slate-800 rounded-lg group-hover:bg-indigo-500/20 transition-colors relative shrink-0">
-                                                            {getEventIcon(evt.type)}
+                                                            {getEventIcon(evt.type || '')}
                                                             {evt.syncStatus === 'synced' && (
                                                                 <div className="absolute -bottom-1 -right-1 bg-emerald-500 rounded-full p-[2px]">
                                                                     <CheckCircle className="w-2 h-2 text-white" />

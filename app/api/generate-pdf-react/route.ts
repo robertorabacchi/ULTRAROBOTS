@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { renderToBuffer } from '@react-pdf/renderer';
+import { renderToBuffer, type DocumentProps } from '@react-pdf/renderer';
 import ReportPDF, { ReportData } from '@/components/reports/ReportPDF';
-import React from 'react';
+import React, { type ReactElement } from 'react';
 
 export const dynamic = 'force-dynamic';
 
@@ -266,9 +266,8 @@ export async function POST(request: NextRequest) {
     };
 
     // Genera il PDF usando @react-pdf/renderer
-    const pdfBuffer = await renderToBuffer(
-      React.createElement(ReportPDF, { data: completeData })
-    );
+    const element = React.createElement(ReportPDF, { data: completeData });
+    const pdfBuffer = await renderToBuffer(element as ReactElement<DocumentProps>);
 
     // Converti Buffer in Uint8Array per NextResponse
     const pdfArray = new Uint8Array(pdfBuffer);

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   type TextProps,
+  type DocumentProps,
 } from '@react-pdf/renderer';
 
 /**
@@ -367,8 +368,9 @@ const formatEuro = (value?: string) => {
   if (!v) return '';
   return `€ ${v.replace(/€/g, '').trim()}`;
 };
-const max1: Pick<TextProps, 'maxLines'> = { maxLines: 1 };
-const max6: Pick<TextProps, 'maxLines'> = { maxLines: 6 };
+// Tipi @react-pdf/renderer non espongono maxLines in TextProps: forziamo con any.
+const max1 = { maxLines: 1 } as any;
+const max6 = { maxLines: 6 } as any;
 const isComponente = (comp: unknown): comp is Componente =>
   typeof comp === 'object' && comp !== null && 'descrizione' in comp;
 
@@ -414,8 +416,10 @@ const joinWithDash = (left?: string, right?: string) => {
  * 
  * QUESTA STRUTTURA È FINALE E APPROVATA. NON SI TOCCA MAI!
  */
-const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
-  <Document>
+type ReportPDFProps = DocumentProps & { data: ReportData };
+
+const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
+  <Document {...documentProps}>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -426,7 +430,6 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
           <Image
             style={styles.logoImage}
             src="/assets/SVG_PNG/logo-wordmark-black.png"
-            alt=""
           />
         </View>
         <View style={styles.headerRight}>
@@ -627,9 +630,9 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       </View>
 
       <View style={styles.footer} fixed>
-        <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" alt="" />
+        <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" />
         <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" alt="" />
+        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" />
         <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
       </View>
     </Page>
