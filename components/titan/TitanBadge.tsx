@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle2, Shield, Cpu, X, Server, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -37,6 +38,15 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
   const [showDialog, setShowDialog] = useState(false);
   const [data, setData] = useState<TitanStatus | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleOpen = () => {
+    setShowDialog(true);
+  };
 
   useEffect(() => {
     if (showDialog && !data) {
@@ -60,7 +70,7 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
         suppressHydrationWarning
       >
         <button
-          onClick={() => setShowDialog(true)}
+          onClick={handleOpen}
           className="group relative flex items-center gap-3 px-5 py-2.5 bg-black/80 border border-sky-500/30 rounded-lg overflow-hidden transition-all hover:border-sky-400 hover:shadow-[0_0_15px_rgba(14,165,233,0.3)]"
           suppressHydrationWarning
         >
@@ -83,13 +93,13 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
         </button>
       </div>
 
-      {/* DIALOG MODAL */}
-      <AnimatePresence>
-        {showDialog && (
-          <div className="fixed inset-0 z-[50000] flex justify-center items-start p-4 pt-16 md:pt-24">
+      {/* DIALOG MODAL - Rendered via Portal */}
+      {mounted && showDialog && createPortal(
+        <AnimatePresence>
+          <div className="fixed inset-0 z-[50000] flex justify-center items-center px-4 py-8">
             <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[50000]"
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                 onClick={() => setShowDialog(false)}
             />
             
@@ -97,7 +107,7 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
                 initial={{ scale: 0.95, opacity: 0, y: -20 }} 
                 animate={{ scale: 1, opacity: 1, y: 0 }} 
                 exit={{ scale: 0.95, opacity: 0, y: -20 }}
-                className="relative bg-[#0a0a0a] border border-sky-500/30 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-120px)] flex flex-col mt-0 z-[50001]"
+                className="relative bg-[#0a0a0a] border border-sky-500/30 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-160px)] flex flex-col z-[50001]"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-sky-900/30 bg-slate-900/20">
@@ -188,8 +198,9 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
                 </div>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
