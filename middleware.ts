@@ -3,10 +3,15 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token');
-  const isLoginPage = request.nextUrl.pathname === '/login';
+  const pathname = request.nextUrl.pathname;
+  
+  // Protected routes that require authentication
+  const protectedRoutes = ['/reports', '/calendar'];
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  const isLoginPage = pathname === '/login';
 
-  // If no token and not on login page, redirect to login
-  if (!token && !isLoginPage) {
+  // If accessing protected route without token, redirect to login
+  if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
