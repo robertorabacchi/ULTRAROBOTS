@@ -100,8 +100,8 @@ export default function ContactPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-mono text-slate-500 mb-1 uppercase tracking-widest">{dict.contact.phoneLabel}</p>
-                            <a href="tel:+390123456789" className="text-white font-sans text-lg hover:text-emerald-400 transition-colors font-medium">
-                            +39 012 345 6789
+                            <a href="tel:+390598377177" className="text-white font-sans text-lg hover:text-emerald-400 transition-colors font-medium">
+                            +39 059 837 7177
                             </a>
                         </div>
                         </div>

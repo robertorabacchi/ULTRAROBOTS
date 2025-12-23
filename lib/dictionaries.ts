@@ -261,8 +261,8 @@ export const dictionaries = {
         emailLabel: 'EMAIL',
         phoneLabel: 'TELEFONO',
         addressLabel: 'INDIRIZZO',
-        addressValue: 'Via dell\'Innovazione, 42',
-        addressCity: '40100 Bologna, Italia',
+        addressValue: 'Via delle Moie, 10',
+        addressCity: '25062 Concesio (BS), Italia',
         docsTitle: 'DOCUMENTAZIONE',
         links: {
             tech: 'Stack Tecnologico',
@@ -560,8 +560,8 @@ export const dictionaries = {
         emailLabel: 'EMAIL',
         phoneLabel: 'PHONE',
         addressLabel: 'ADDRESS',
-        addressValue: 'Via dell\'Innovazione, 42',
-        addressCity: '40100 Bologna, Italy',
+        addressValue: 'Via delle Moie, 10',
+        addressCity: '25062 Concesio (BS), Italy',
         docsTitle: 'DOCUMENTATION',
         links: {
             tech: 'Technology Stack',
