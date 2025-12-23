@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/',
     '/technology',
     '/platform',
+    '/ai-robot-bridge',
     '/reports',
     '/calendar',
     '/contact',
