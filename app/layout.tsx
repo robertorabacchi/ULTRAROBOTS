@@ -67,7 +67,7 @@ export default function RootLayout({
                 href="/ai-robot-bridge" 
                 className="inline-flex items-center gap-2 text-sm font-mono text-cyan-400 hover:text-cyan-300 transition-colors border border-cyan-500/30 hover:border-cyan-500/50 px-4 py-2 rounded-lg bg-cyan-950/20 hover:bg-cyan-950/40"
               >
-                <span className="text-[10px] tracking-widest uppercase">🤖 AI-Robot Bridge</span>
+                <span className="text-[10px] tracking-widest uppercase">AI-Robot Bridge</span>
                 <span className="text-cyan-500">→</span>
               </a>
             </div>
