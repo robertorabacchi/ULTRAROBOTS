@@ -418,6 +418,8 @@ const joinWithDash = (left?: string, right?: string) => {
  */
 type ReportPDFProps = DocumentProps & { data: ReportData };
 
+const baseUrl = process.env.SITE_URL || 'http://localhost:3000';
+
 const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
   <Document {...documentProps}>
     <Page size="A4" style={styles.page}>
@@ -429,7 +431,7 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
         <View style={styles.headerCenter}>
           <Image
             style={styles.logoImage}
-            src="/assets/SVG_PNG/logo-wordmark-black.png"
+            src={`${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`}
           />
         </View>
         <View style={styles.headerRight}>
@@ -630,9 +632,9 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ data, ...documentProps }) => (
       </View>
 
       <View style={styles.footer} fixed>
-        <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" />
+        <Image style={styles.footerLogo} src={`${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`} />
         <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" />
+        <Image style={styles.footerLogoDigitalEngineered} src={`${baseUrl}/assets/SVG_PNG/digitalengineered.wordmark-black.png`} />
         <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
       </View>
     </Page>
