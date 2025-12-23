@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const baseUrl = process.env.SITE_URL || 'https://ultrarobots.netlify.app';
+const baseUrl = process.env.SITE_URL || 'https://ultrarobots.ai';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
