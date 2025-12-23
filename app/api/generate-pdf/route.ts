@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,9 +49,15 @@ export async function POST(request: NextRequest) {
        .fill('#FFFFFF')
        .stroke('#CCCCCC');
     
-    // Logo semplice
-    doc.fontSize(20).font('Helvetica-Bold').fillColor('#000000');
-    doc.text('ULTR A i ROBOTS', MARGIN, 30);
+    // Logo ULTRAROBOTS (sinistra)
+    try {
+      const logoPath = path.join(process.cwd(), 'public', 'assets', 'SVG_PNG', 'logo-wordmark-black-cyan.png');
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, MARGIN, 20, { width: 120 });
+      }
+    } catch (e) {
+      console.error('Logo non caricato:', e);
+    }
     
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333');
     doc.text('RAPPORTO INTERVENTO', MARGIN, 55);
@@ -176,13 +184,23 @@ export async function POST(request: NextRequest) {
        .lineWidth(1)
        .stroke();
     
-    doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
-    const footerText1 = 'DIGITALENGINEERED.AI';
-    doc.text(footerText1, (PAGE_WIDTH - doc.widthOfString(footerText1)) / 2, footerY + 25);
+    // Logo DigitalEngineered nel footer
+    try {
+      const deLogoPath = path.join(process.cwd(), 'public', 'assets', 'SVG_PNG', 'digitalengineered.wordmark-black.png');
+      if (fs.existsSync(deLogoPath)) {
+        const logoWidth = 100;
+        doc.image(deLogoPath, (PAGE_WIDTH - logoWidth) / 2, footerY + 22, { width: logoWidth });
+      }
+    } catch (e) {
+      console.error('Logo footer non caricato:', e);
+      doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
+      const footerText1 = 'DIGITALENGINEERED.AI';
+      doc.text(footerText1, (PAGE_WIDTH - doc.widthOfString(footerText1)) / 2, footerY + 25);
+    }
     
-    doc.fontSize(8).font('Courier').fillColor('#666666');
+    doc.fontSize(7).font('Courier').fillColor('#666666');
     const footerText2 = '[ ULTRAROBOTS :: NEURAL SYSTEM ]';
-    doc.text(footerText2, (PAGE_WIDTH - doc.widthOfString(footerText2)) / 2, footerY + 40);
+    doc.text(footerText2, (PAGE_WIDTH - doc.widthOfString(footerText2)) / 2, footerY + 45);
 
     doc.end();
 
