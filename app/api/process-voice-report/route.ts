@@ -191,6 +191,36 @@ export async function POST(req: NextRequest) {
           - Mostra solo se esistono (varie[0], varie[1], varie[2], varie[3])
           - Se non esistono, il campo rimane vuoto
           
+          ⚠️⚠️⚠️ REGOLA CRITICA - CAMPO AZIENDA (6 RIGHE) ⚠️⚠️⚠️
+          Il campo "azienda" deve contenere informazioni complete su 6 righe separate:
+          
+          FORMATO RICHIESTO (6 righe):
+          1. Ragione sociale (es. "Barilla S.p.A.")
+          2. Via e numero civico (es. "Via Mantova, 166")
+          3. CAP + Città + Provincia (XX) (es. "43122 Parma (PR)")
+          4. Partita IVA (es. "P.IVA: 01234567890")
+          5. Telefono (es. "Tel: +39 0521 262626")
+          6. Email (es. "info@barilla.com")
+          
+          ✅ COME COMPILARE:
+          - Quando il tecnico menziona un'azienda (es. "sono stato da Barilla", "intervento alla Chiarini"), 
+            CERCA le informazioni dalla tua conoscenza interna
+          - Compila TUTTI i campi che conosci
+          - Se NON trovi un campo specifico, SALTA quella riga (non inserire "N/D")
+          - Separa ogni informazione con "\n" (newline)
+          
+          ✅ ESEMPIO COMPLETO:
+          "azienda": "Barilla S.p.A.\nVia Mantova, 166\n43122 Parma (PR)\nP.IVA: 01234567890\nTel: +39 0521 262626\ninfo@barilla.com"
+          
+          ✅ ESEMPIO CON CAMPI MANCANTI (salta le righe):
+          "azienda": "CM Officine Meccaniche S.r.l.\nVia Industriale, 45\n25030 Brescia (BS)\nTel: +39 030 1234567"
+          (in questo esempio: mancano P.IVA ed email, quindi vengono saltate)
+          
+          ❌ NON FARE:
+          - NON usare "N/D" per campi mancanti
+          - NON inventare dati se non li conosci
+          - NON usare placeholder generici
+          
           Se mancano dati, cerca di dedurli dal contesto o lasciali null.
           
           OUTPUT JSON EXPECTED:
