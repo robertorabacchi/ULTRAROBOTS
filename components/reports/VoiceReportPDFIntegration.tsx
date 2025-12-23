@@ -53,7 +53,7 @@ export default function VoiceReportPDFIntegration() {
       });
 
       // 4. Genera il PDF con il nuovo sistema
-      const pdfResponse = await fetch('/api/generate-pdf-react', {
+      const pdfResponse = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

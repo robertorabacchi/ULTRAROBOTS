@@ -78,7 +78,7 @@ export default function ReportsPage() {
       if (!reportResult) return;
       
       try {
-          const response = await fetch('/api/generate-pdf-react', {
+          const response = await fetch('/api/generate-pdf', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

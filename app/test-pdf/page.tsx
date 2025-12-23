@@ -63,7 +63,7 @@ export default function TestPDFPage() {
 
   const handleAPIGenerate = async () => {
     try {
-      const response = await fetch('/api/generate-pdf-react', {
+      const response = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ export default function TestPDFPage() {
         }}
       >
         <strong>Modalità:</strong> {mode === 'viewer' ? 'Viewer (Anteprima)' : 'Download (Link)'} |{' '}
-        <strong>API Endpoint:</strong> POST /api/generate-pdf-react
+        <strong>API Endpoint:</strong> POST /api/generate-pdf
       </div>
     </div>
   );
