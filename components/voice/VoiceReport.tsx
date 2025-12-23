@@ -271,7 +271,7 @@ export default function VoiceReport({ onSubmit }: VoiceReportProps) {
             >
                 <div className="bg-black/50 border border-slate-800 rounded-lg p-4 h-32 overflow-y-auto custom-scrollbar shadow-inner text-sm font-mono leading-relaxed text-slate-300">
                     {transcript || <span className="text-slate-600 italic">
-                        {recognitionAvailable ? "Listening..." : "Recording audio (Transcription unavailable)..."}
+                        {recognitionAvailable ? "Listening..." : "Recording audio..."}
                     </span>}
                 </div>
             </motion.div>
