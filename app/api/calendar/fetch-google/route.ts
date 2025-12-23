@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { getSession } from '@/lib/auth-server';
 
@@ -15,7 +15,7 @@ export async function OPTIONS() {
   });
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get user session to determine which calendar and Service Account to use
     const session = await getSession();
@@ -34,10 +34,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse service account credentials
-    let credentials;
+    type ServiceCredentials = {
+      client_email?: string;
+      private_key?: string;
+    };
+
+    let credentials: ServiceCredentials;
     try {
       credentials = JSON.parse(serviceAccountJson);
-    } catch (e) {
+    } catch {
       try {
         const cleaned = serviceAccountJson.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '\n');
         credentials = JSON.parse(cleaned);
@@ -75,12 +80,23 @@ export async function GET(request: NextRequest) {
       orderBy: 'startTime',
     });
 
-    const googleEvents = response.data.items || [];
+    type GoogleEvent = {
+      id?: string | null;
+      summary?: string | null;
+      description?: string | null;
+      location?: string | null;
+      created?: string | null;
+      updated?: string | null;
+      start?: { dateTime?: string | null; date?: string | null } | null;
+      end?: { dateTime?: string | null; date?: string | null } | null;
+    };
+
+    const googleEvents: GoogleEvent[] = response.data.items || [];
 
     // Transform Google Calendar events to our format
-    const events = googleEvents.map((ge: any) => {
-      const startDate = ge.start?.dateTime || ge.start?.date;
-      const endDate = ge.end?.dateTime || ge.end?.date;
+    const events = googleEvents.map((ge) => {
+      const startDate = ge.start?.dateTime || ge.start?.date || undefined;
+      const endDate = ge.end?.dateTime || ge.end?.date || undefined;
 
       return {
         id: ge.id,
@@ -100,15 +116,22 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, events }, { headers: corsHeaders });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; errors?: unknown; response?: { data?: unknown } } | null;
     console.error('Google Calendar Fetch Error:', {
-      message: error?.message,
-      code: error?.code,
-      errors: error?.errors,
-      responseData: error?.response?.data,
+      message: err?.message,
+      code: err?.code,
+      errors: err?.errors,
+      responseData: err?.response?.data,
     });
     return NextResponse.json(
-      { error: 'Failed to fetch events', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
+      {
+        error: 'Failed to fetch events',
+        details: err?.message,
+        code: err?.code,
+        apiError: err?.errors,
+        responseData: err?.response?.data,
+      },
       { status: 500, headers: corsHeaders }
     );
   }

@@ -73,6 +73,124 @@ export async function POST(req: NextRequest) {
           Analizza il testo trascritto di un rapporto vocale tecnico.
           Estrai i dati in formato JSON strutturato rigoroso.
           
+          ⚠️⚠️⚠️ REGOLA FERREA - STRUTTURA PDF NON SI TOCCA MAI ⚠️⚠️⚠️
+          
+          ❌ NON MODIFICARE MAI: fontSize, padding, larghezze colonne PDF
+          ✅ SE TESTO TROPPO LUNGO: SI TRONCA AUTOMATICAMENTE
+          ✅ NON SI MODIFICA LA STRUTTURA PER FAR STARE IL TESTO!
+          
+          LIMITI TESTO (numberOfLines limitato):
+          - Azienda/Tipologia: max 3 righe
+          - Referente/Stato: max 1 riga
+          - Descrizione intervento: max 4 righe (~200 char)
+          - Note critiche: max 4 righe (~200 char)
+          - Trascrizione: max 7 righe (~400 char)
+          
+          Quando estrai dati, mantieni testi CONCISI!
+          
+          ⚠️⚠️⚠️ REGOLA CRITICA - NOMI COMPONENTI ⚠️⚠️⚠️
+          I nomi dei componenti devono essere BREVI (MAX 15 caratteri, 1-2 parole).
+          
+          ✅ ESEMPI CORRETTI:
+          - "Motore" (NON "Motore elettrico trifase")
+          - "Encoder" (NON "Encoder incrementale rotativo")
+          - "Inverter" (NON "Inverter controllo velocità")
+          - "Fotocellula" (NON "Sensore fotoelettrico retroriflettente")
+          - "PLC" (NON "PLC programmabile CompactLogix")
+          - "Relè sicurezza" (OK, 2 parole)
+          - "Trasformatore" (OK, 1 parola)
+          
+          ❌ ESEMPI SBAGLIATI:
+          - "Motore elettrico trifase asincrono da 5.5kW" ❌
+          - "Encoder incrementale rotativo ad alta risoluzione" ❌
+          
+          Se l'utente dice "motore elettrico trifase", estrai solo "Motore".
+          I dettagli tecnici vanno nel campo "codice" o nella descrizione intervento.
+          
+          ⚠️⚠️⚠️ REGOLA CRITICA - CALCOLO SPESE DI VIAGGIO ⚠️⚠️⚠️
+          Quando l'utente menziona chilometri percorsi, CALCOLA automaticamente:
+          - Importo Km = Km totali (andata + ritorno) × 0,8€/km
+          - Esempio: se dice "150 km andata e ritorno" → Importo Km = 150 × 0,8 = 120€
+          - Se menziona solo "andata", moltiplica per 2 per ottenere A/R
+          - Il campo "km" deve contenere il totale A/R (es: "150 km A/R")
+          - Il campo "costoKm" deve contenere l'importo calcolato (es: "€120,00")
+          
+          ⚠️⚠️⚠️ REGOLA CRITICA - SPESE DI VITTO ⚠️⚠️⚠️
+          Quando l'utente menziona pranzo o cena, estrai:
+          - pranzoPosto: nome del ristorante/locale (es: "Trattoria del Borgo", "Ristorante La Botte")
+          - pranzoImporto: importo in formato "€XX,XX" (es: "€25,00", "€35,50")
+          - cenaPosto: nome del ristorante/locale (es: "Hotel", "Trattoria del Corso")
+          - cenaImporto: importo in formato "€XX,XX" (es: "€30,00", "€42,00")
+          
+          ✅ ESEMPI CORRETTI:
+          - "pranzo alla Trattoria del Borgo 25 euro" → pranzoPosto: "Trattoria del Borgo", pranzoImporto: "€25,00"
+          - "cena all'hotel 30 euro" → cenaPosto: "Hotel", cenaImporto: "€30,00"
+          - "ho mangiato al ristorante La Botte, ho speso 35 euro" → pranzoPosto: "Ristorante La Botte", pranzoImporto: "€35,00"
+          
+          ⚠️⚠️⚠️ VALORI DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️
+          Se il tecnico NON menziona l'importo MA ha fatto pranzo/cena (dedotto dal contesto):
+          - pranzoImporto: "[€ 15,00]" (parentesi quadre = ipotizzato)
+          - cenaImporto: "[€ 30,00]" (parentesi quadre = ipotizzato)
+          
+          REGOLE:
+          - Senza parentesi "€XX,XX" = dichiarato dal tecnico
+          - Con parentesi "[€XX,XX]" = ipotizzato da GPT quando non dichiarato
+          - Se non ha pranzato/cenato: "N/D"
+          - Dedurre pranzo/cena dal contesto (durata intervento, orari, menzioni indirette)
+          
+          ⚠️⚠️⚠️ REGOLA CRITICA - SPESE DI PERNOTTAMENTO ⚠️⚠️⚠️
+          Quando l'utente menziona pernottamento, estrai:
+          - nomeHotel: nome dell'hotel/albergo (es: "Hotel Centrale", "Hotel Parma Centro")
+          - numeroNotti: numero di notti in formato stringa (es: "2", "1", "3")
+          - importo: importo totale in formato "€XX,XX" (es: "€160,00", "€80,00")
+          
+          ✅ ESEMPI CORRETTI:
+          - "2 notti all'Hotel Centrale, 160 euro" → nomeHotel: "Hotel Centrale", numeroNotti: "2", importo: "€160,00"
+          - "ho dormito una notte all'hotel, ho pagato 80 euro" → nomeHotel: "Hotel", numeroNotti: "1", importo: "€80,00"
+          - "pernottamento Hotel Parma Centro, 2 notti, 180 euro" → nomeHotel: "Hotel Parma Centro", numeroNotti: "2", importo: "€180,00"
+          
+          ⚠️⚠️⚠️ VALORE DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️
+          Se il tecnico NON menziona l'importo MA ha pernottato (dedotto dal contesto):
+          - Calcola "[€ 80,00]" per notte e moltiplica per il numero di notti
+          - Esempio: 1 notte → importo: "[€ 80,00]"
+          - Esempio: 2 notti → importo: "[€ 160,00]" (80 × 2)
+          - Se dice prezzo a notte: calcola totale (es. "€80/notte x 2 = € 160,00")
+          
+          REGOLE:
+          - Senza parentesi "€XX,XX" = dichiarato dal tecnico
+          - Con parentesi "[€XX,XX]" = ipotizzato da GPT quando non dichiarato
+          - Valore standard: €80/notte se non dichiarato
+          - Se non ha pernottato: "N/D"
+          - Dedurre pernottamento dal contesto (durata intervento, menzioni di "notte", "hotel", ecc.)
+          
+          ⚠️ FORMATO IMPORTI:
+          - SEMPRE in formato "€XX,XX" con virgola come separatore decimale
+          - Esempi: "€25,00", "€30,50", "€160,00", "€180,75"
+          - Se l'utente dice solo "25 euro", converti in "€25,00"
+          - Se l'utente dice "25 e 50", converti in "€25,50"
+          
+          ⚠️⚠️⚠️ REGOLA CRITICA - VISUALIZZAZIONE CONDIZIONALE CAMPI ⚠️⚠️⚠️
+          Nel PDF, alcuni campi vengono mostrati SOLO SE la riga superiore non è "N/D":
+          
+          ✅ VITTO:
+          - pranzoPosto e cenaPosto vengono SEMPRE mostrati (anche se "N/D")
+          - Importo pranzo viene mostrato SOLO SE pranzoPosto !== 'N/D' (riga superiore)
+          - Importo cena viene mostrato SOLO SE cenaPosto !== 'N/D' (riga superiore)
+          - Se pranzoPosto o cenaPosto sono "N/D", gli importi NON vengono mostrati nel PDF
+          
+          ✅ PERNOTTAMENTO:
+          - nomeHotel viene SEMPRE mostrato (anche se "N/D")
+          - Notti e Importo vengono mostrati SOLO SE nomeHotel !== 'N/D' (riga superiore)
+          - Se nomeHotel è "N/D", notti e importo NON vengono mostrati nel PDF
+          
+          ✅ VIAGGIO:
+          - Km, Importo Km e Importo Pedaggio vengono mostrati SOLO SE i rispettivi campi !== 'N/D'
+          - Se sono "N/D", i campi rimangono vuoti nel PDF
+          
+          ✅ VARIE:
+          - Mostra solo se esistono (varie[0], varie[1], varie[2], varie[3])
+          - Se non esistono, il campo rimane vuoto
+          
           Se mancano dati, cerca di dedurli dal contesto o lasciali null.
           
           OUTPUT JSON EXPECTED:
@@ -84,7 +202,11 @@ export async function POST(req: NextRequest) {
                 "data": string (YYYY-MM-DD),
                 "durata_stimata": string
             },
-            "componenti": [ { "nome": string, "codice": string, "azione": "sostituito" | "riparato" | "controllato" } ],
+            "componenti": [ { 
+              "nome": string (MAX 15 caratteri! Es: "Motore", "Encoder", "PLC"), 
+              "codice": string, 
+              "azione": "sostituito" | "riparato" | "controllato" 
+            } ],
             "note_tecniche": string[],
             "stato_finale": "completato" | "in_corso" | "bloccato"
           }`
@@ -108,10 +230,11 @@ export async function POST(req: NextRequest) {
       analysis: analysisData
     });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('[API Error]', err);
     return NextResponse.json(
-      { error: 'Internal Server Error', details: err.message },
+      { error: 'Internal Server Error', details: message },
       { status: 500 }
     );
   }

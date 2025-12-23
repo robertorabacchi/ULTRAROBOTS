@@ -29,7 +29,7 @@ export default function ContactPage() {
     try {
       setSuccess(true);
       setFormData({ name: '', email: '', company: '', message: '' });
-    } catch (err) {
+    } catch {
       setError(dict.contact.form.errorNet);
     } finally {
       setLoading(false);

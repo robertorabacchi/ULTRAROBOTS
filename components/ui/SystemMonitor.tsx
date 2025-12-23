@@ -1,16 +1,23 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Radio, Activity, Disc, Wifi, AlertTriangle } from 'lucide-react';
+import { Activity, Disc, Wifi } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function SystemMonitor({ active }: { active: boolean }) {
   const [time, setTime] = useState<string>('');
   const [glitch, setGlitch] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [cpuUsage, setCpuUsage] = useState('60.0');
+
+  const [dataStream, setDataStream] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    const stream = Array.from({ length: 400 })
+      .map(() => (Math.random() > 0.5 ? '1' : '0'))
+      .join('');
+    setDataStream(stream);
     const interval = setInterval(() => {
       setTime(new Date().toLocaleTimeString('it-IT', { hour12: false, fractionalSecondDigits: 2 }));
       // Random glitch effect
@@ -20,6 +27,18 @@ export default function SystemMonitor({ active }: { active: boolean }) {
       }
     }, 100);
     return () => clearInterval(interval);
+  }, [active]);
+
+  useEffect(() => {
+    if (!active) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCpuUsage('04.2');
+      return;
+    }
+    const id = setInterval(() => {
+      setCpuUsage((Math.random() * 30 + 60).toFixed(1));
+    }, 500);
+    return () => clearInterval(id);
   }, [active]);
 
   if (!mounted) return null; // Avoid hydration mismatch by rendering only on client
@@ -43,7 +62,7 @@ export default function SystemMonitor({ active }: { active: boolean }) {
           <div className="relative w-full h-full flex items-center justify-center" style={{ padding: '3rem 1rem' }}>
              {/* Data Streams */}
              <div className="absolute inset-0 opacity-10 overflow-hidden font-mono text-[10px] text-sky-500 leading-none p-2 whitespace-pre-wrap break-all pointer-events-none">
-                {Array.from({ length: 400 }).map(() => Math.random() > 0.5 ? '1' : '0').join('')}
+                {dataStream}
              </div>
 
              {/* Core Visualization */}
@@ -84,7 +103,7 @@ export default function SystemMonitor({ active }: { active: boolean }) {
           <div className="flex flex-col gap-0.5 flex-shrink min-w-0">
             <div className="flex items-center gap-1 min-w-0">
                 <Activity className="w-2 h-2 text-emerald-400 flex-shrink-0" />
-                <span className="text-[7px]">CPU: {active ? (Math.random() * 30 + 60).toFixed(1) : '04.2'}%</span>
+                <span className="text-[7px]">CPU: {cpuUsage}%</span>
             </div>
             <div className="flex items-center gap-1 min-w-0">
                 <Disc className="w-2 h-2 text-sky-400 flex-shrink-0" />

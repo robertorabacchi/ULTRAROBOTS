@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { 
-  Mic, StopCircle, Play, Pause, Send, 
-  Calendar, Check, Loader2, Trash2, CalendarDays
-} from 'lucide-react';
+import { Mic, StopCircle, Play, Pause, Send, Loader2, Trash2, CalendarDays } from 'lucide-react';
 import clsx from 'clsx';
 import { useLanguage } from '@/context/LanguageContext';
 

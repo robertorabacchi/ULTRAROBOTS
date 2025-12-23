@@ -11,10 +11,24 @@ import clsx from 'clsx';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
+type ReportAnalysis = {
+  summary?: string;
+  cliente?: { azienda?: string };
+  intervento?: { tipo?: string; componenti?: string[] };
+  [key: string]: unknown;
+};
+
+type ReportResult = {
+  id: string;
+  transcript: string;
+  analysis: ReportAnalysis;
+  status: 'success' | 'error';
+};
+
 export default function ReportsPage() {
   const { dict } = useLanguage();
   const [activeTab, setActiveTab] = useState<'create' | 'dashboard'>('dashboard');
-  const [reportResult, setReportResult] = useState<any>(null);
+  const [reportResult, setReportResult] = useState<ReportResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,14 +58,15 @@ export default function ReportsPage() {
             setReportResult({
                 id: 'REP-' + Math.floor(Math.random() * 10000),
                 transcript: data.transcript,
-                analysis: data.analysis,
+                analysis: data.analysis as ReportAnalysis,
                 status: 'success'
             });
         }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Errore sconosciuto';
         console.error("Submission error:", err);
-        setError(err.message || dict.reports.error.msg);
+        setError(message || dict.reports.error.msg);
     } finally {
         setIsProcessing(false);
     }
@@ -261,23 +276,23 @@ export default function ReportsPage() {
                                         {/* Components */}
                                         {reportResult.analysis.intervento?.componenti?.length > 0 && (
                                             <div>
-                                                <div className="text-[10px] font-mono text-slate-500 uppercase mb-2">{dict.reports.result.components}</div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {reportResult.analysis.intervento.componenti.map((comp: string, i: number) => (
-                                                        <span key={i} className="text-xs bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300">
-                                                            {comp}
-                                                        </span>
-                                                    ))}
-                                                </div>
+                                            <div className="text-[10px] font-mono text-slate-500 uppercase mb-2">{dict.reports.result.components}</div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {reportResult.analysis.intervento.componenti.map((comp, i) => (
+                                                    <span key={i} className="text-xs bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300">
+                                                        {comp}
+                                                    </span>
+                                                ))}
+                                            </div>
                                             </div>
                                         )}
 
                                         {/* Transcript */}
                                         <div className="border-t border-white/5 pt-4">
                                             <div className="text-[10px] font-mono text-slate-600 uppercase mb-1">{dict.reports.result.transcript}</div>
-                                            <p className="text-slate-500 text-xs italic leading-relaxed">
-                                                "{reportResult.transcript}"
-                                            </p>
+                                        <p className="text-slate-500 text-xs italic leading-relaxed">
+                                            {`"${reportResult.transcript}"`}
+                                        </p>
                                         </div>
                                     </div>
 

@@ -1,18 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import ReportPDF, { sampleReportData, ReportData } from './ReportPDF';
 
-const PDFViewer = dynamic(() => import('@react-pdf/renderer').then(mod => mod.PDFViewer), {
-  ssr: false,
-  loading: () => <div className="flex items-center justify-center h-full text-slate-400">Caricamento PDF Viewer...</div>,
-});
+const PDFViewer = dynamic(
+  () => import('@react-pdf/renderer').then((mod) => ({ default: mod.PDFViewer })),
+  {
+    ssr: false,
+    loading: () => <div className="flex items-center justify-center h-full text-slate-400">Caricamento PDF Viewer...</div>,
+  }
+);
 
-const PDFDownloadLink = dynamic(() => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink), {
-  ssr: false,
-  loading: () => <span className="text-slate-400">Caricamento...</span>,
-});
+const PDFDownloadLink = dynamic(
+  () => import('@react-pdf/renderer').then((mod) => ({ default: mod.PDFDownloadLink })),
+  {
+    ssr: false,
+    loading: () => <span className="text-slate-400">Caricamento...</span>,
+  }
+);
 
 /**
  * Componente esempio per visualizzare e scaricare il PDF
@@ -38,6 +44,8 @@ const ReportPDFExample: React.FC<ReportPDFExampleProps> = ({
   mode = 'viewer',
   data = sampleReportData,
 }) => {
+  const stableFileName = useMemo(() => `report-${data.id}.pdf`, [data.id]);
+
   if (mode === 'viewer') {
     return (
       <div style={{ width: '100%', height: '100vh' }}>
@@ -52,9 +60,9 @@ const ReportPDFExample: React.FC<ReportPDFExampleProps> = ({
     <div style={{ padding: '20px' }}>
       <PDFDownloadLink
         document={<ReportPDF data={data} />}
-        fileName={`report-${data.id}-${Date.now()}.pdf`}
+        fileName={stableFileName}
       >
-        {({ blob, url, loading, error }) => (
+        {({ loading }) => (
           <button
             style={{
               padding: '12px 24px',

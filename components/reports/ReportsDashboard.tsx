@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Printer, FileText, CheckCircle, OctagonX, PauseCircle, Download, AlertTriangle, Activity } from 'lucide-react';
-import clsx from 'clsx';
+
 import SystemMonitor from '@/components/ui/SystemMonitor';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -11,7 +10,7 @@ export default function ReportsDashboard() {
   const { dict } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'aborted'>('idle');
-  const [pdfMeta, setPdfMeta] = useState<any>(null);
+  const [pdfMeta, setPdfMeta] = useState<Record<string, unknown> | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [unit, setUnit] = useState('Kawasaki R Series - Unit 01');
@@ -48,10 +47,10 @@ export default function ReportsDashboard() {
       setIsGenerating(false);
       setStatus('success');
       setAbortController(null);
-    } catch (e: any) {
+    } catch (e) {
       console.error('Fetch Error:', e); // DEBUG
       setIsGenerating(false);
-      if (e.name === 'AbortError') {
+      if (e instanceof Error && e.name === 'AbortError') {
         setStatus('aborted');
       } else {
         setStatus('error');

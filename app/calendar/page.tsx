@@ -6,20 +6,36 @@ import VoiceCalendar from '@/components/voice/VoiceCalendar';
 import { useState, useEffect, Suspense } from 'react';
 import { 
   Calendar, CheckCircle, Clock, MapPin, 
-  AlertCircle, Loader2, AlertTriangle, ListTodo, 
+  Loader2, AlertTriangle, ListTodo, 
   Phone, Bell, Trash2, Edit2, Save, X, RefreshCw, Mic, LayoutDashboard, Cloud
 } from 'lucide-react';
 import clsx from 'clsx';
-import { useRouter, useSearchParams } from 'next/navigation';
+// import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
+type CalendarEvent = {
+  id: string;
+  googleId?: string;
+  title?: string;
+  description?: string;
+  location?: string | null;
+  start_date?: string;
+  end_date?: string;
+  date?: string;
+  type?: string;
+  priority?: string;
+  syncStatus?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 function CalendarContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
   const { dict } = useLanguage();
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTranscript, setLastTranscript] = useState('');
@@ -32,7 +48,7 @@ function CalendarContent() {
   
   // Edit Mode States
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<CalendarEvent | null>(null);
 
             // 1. NO LOCAL STORAGE - Google Calendar is the single source of truth
             // Events are loaded from Google Calendar only (see handleFetchFromGoogle)
@@ -60,6 +76,7 @@ function CalendarContent() {
                 }, 30000); // 30 seconds
                 
                 return () => clearInterval(interval);
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             }, []); // Only run on mount
 
             const handleVoiceSubmit = async (transcript: string, audioBlob: Blob) => {
@@ -85,7 +102,7 @@ function CalendarContent() {
                     if (data.error) {
                         setError(data.error);
                     } else {
-                        const newEvents = (data.events || []).map((e: any) => ({
+                        const newEvents: CalendarEvent[] = (data.events || []).map((e: CalendarEvent) => ({
                             ...e,
                             id: `evt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             createdAt: new Date().toISOString(),
@@ -98,7 +115,7 @@ function CalendarContent() {
                         setEvents(prev => {
                             const updated = [...newEvents, ...prev];
                             // Sort again just to be sure
-                            updated.sort((a: any, b: any) => {
+                            updated.sort((a: CalendarEvent, b: CalendarEvent) => {
                                 const dateA = new Date(a.start_date || 0).getTime();
                                 const dateB = new Date(b.start_date || 0).getTime();
                                 return dateB - dateA;
@@ -113,9 +130,10 @@ function CalendarContent() {
                         setTimeout(() => setActiveTab('dashboard'), 1500);
                     }
 
-                } catch (err: any) {
+                } catch (err: unknown) {
+                    const message = err instanceof Error ? err.message : 'Errore sconosciuto';
                     console.error("Submission error:", err);
-                    setError(err.message || dict.calendar.errorTitle);
+                    setError(message || dict.calendar.errorTitle);
                 } finally {
                     setIsProcessing(false);
                 }
@@ -150,7 +168,7 @@ function CalendarContent() {
       }
   };
 
-  const startEditing = (evt: any) => {
+  const startEditing = (evt: CalendarEvent) => {
       setEditingId(evt.id);
       setEditForm({ ...evt });
   };
@@ -176,7 +194,7 @@ function CalendarContent() {
       
       if (result.success && result.events) {
         // Replace all events with Google Calendar data (no merge, Google is source of truth)
-        const sortedEvents = [...result.events].sort((a: any, b: any) => {
+        const sortedEvents = [...result.events].sort((a: CalendarEvent, b: CalendarEvent) => {
           const dateA = new Date(a.start_date || a.date || 0).getTime();
           const dateB = new Date(b.start_date || b.date || 0).getTime();
           return dateB - dateA;
@@ -187,7 +205,7 @@ function CalendarContent() {
         console.error('Errore recupero eventi:', result.error || result.details);
         // Don't show alert, just log - might be temporary network issue
       }
-    } catch (e: any) {
+    } catch (e) {
       console.error("Fetch from Google failed", e);
       // Don't show alert, just log - might be temporary network issue
     } finally {
@@ -196,7 +214,7 @@ function CalendarContent() {
   };
 
   // AUTO SYNC FUNCTION
-  const handleGoogleSync = async (pendingEvents: any[]) => {
+  const handleGoogleSync = async (pendingEvents: CalendarEvent[]) => {
       setIsSyncing(true);
       try {
           // Sync one by one or batch. Current API handles one at a time for simplicity in this loop or needs update.
@@ -230,9 +248,10 @@ function CalendarContent() {
                         : e
                     ));
                 }
-             } catch (e: any) {
+             } catch (e) {
+                 const message = e instanceof Error ? e.message : 'Errore sconosciuto';
                  console.error("Sync failed for event", evt.id, e);
-                 alert(`Errore sync Google: ${e.message || 'Errore sconosciuto'}\n\nControlla i permessi del calendario!`);
+                 alert(`Errore sync Google: ${message}\n\nControlla i permessi del calendario!`);
                  setEvents(prev => prev.map(e => 
                      e.id === evt.id 
                      ? { ...e, syncStatus: 'error' } 
@@ -241,7 +260,7 @@ function CalendarContent() {
              }
           }
 
-      } catch (e: any) {
+      } catch (e) {
           console.error("Global sync error", e);
       } finally {
           setIsSyncing(false);
@@ -263,7 +282,7 @@ function CalendarContent() {
       try {
           const d = new Date(dateString);
           return d.toLocaleString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-      } catch (e) {
+      } catch {
           return dateString;
       }
   };
@@ -540,7 +559,7 @@ function CalendarContent() {
                                 {lastTranscript && (
                                     <div className="pt-6 mt-4 border-t border-white/5 shrink-0">
                                         <div className="text-[10px] font-mono text-slate-600 uppercase mb-2">{dict.calendar.lastTranscript}</div>
-                                        <p className="text-slate-500 text-xs italic leading-relaxed line-clamp-2">"{lastTranscript}"</p>
+                                        <p className="text-slate-500 text-xs italic leading-relaxed line-clamp-2">{`"${lastTranscript}"`}</p>
                                     </div>
                                 )}
                             </div>

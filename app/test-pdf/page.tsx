@@ -36,35 +36,38 @@ export default function TestPDFPage() {
 
   if (!mounted) return null;
 
-  // Dati di esempio personalizzabili
+  // Dati vuoti per vedere il PDF senza dati
   const testData: ReportData = {
-    id: '251220-0310-87A8',
-    date: '20/12/2025, 03:10:14',
+    id: 'N/D',
+    date: 'N/D',
     cliente: {
-      azienda: 'Barilla',
+      azienda: 'N/D',
       referente: 'N/D',
       sede: 'N/D',
     },
     intervento: {
-      tipologia: 'Sostituzione componenti',
-      statoFinale: 'COMPLETATO',
-      descrizione:
-        'Sostituiti 10 motori, 2 encoder, 4 inverter e tutte le cinghie dei trascinatori presso Barilla.',
+      tipologia: 'N/D',
+      statoFinale: 'N/D',
+      descrizione: '',
     },
-    componenti: ['motori', 'encoder', 'inverter', 'cinghie'],
-    noteCritiche: 'Nessuna',
+    componenti: [],
+    noteCritiche: '',
     spese: {
-      viaggio: {
-        destinazione: 'N/D',
-        km: 'N/D',
-        costo: 'N/D',
+      viaggio: { km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
+      vitto: {
+        pranzoPosto: 'N/D',
+        pranzoImporto: 'N/D',
+        cenaPosto: 'N/D',
+        cenaImporto: 'N/D',
       },
-      vitto: 'N/D',
-      pernottamento: 'N/D',
-      varie: '4 viti',
+      pernottamento: {
+        nomeHotel: 'N/D',
+        numeroNotti: 'N/D',
+        importo: 'N/D',
+      },
+      varie: [],
     },
-    trascrizione:
-      'Fatto in Barilla abbiamo sostituito 10 motori, 2 encoder, 4 inverter, tutte le cinghie dei trascinatori, eccetera eccetera. Siamo stati li 2 giorni e bisogna fargli pagare 2 pernottamenti 4 viti e I chilometri andata e ritorno. Ciao',
+    trascrizione: '',
   };
 
   const handleAPIGenerate = async () => {

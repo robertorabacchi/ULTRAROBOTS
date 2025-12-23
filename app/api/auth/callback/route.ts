@@ -69,8 +69,9 @@ export async function GET(req: NextRequest) {
     // Redirect al calendario con successo
     return NextResponse.redirect(new URL('/calendar?connected=true', req.url));
 
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('OAuth Error:', err);
-    return NextResponse.json({ error: 'Authentication failed', details: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Authentication failed', details: message }, { status: 500 });
   }
 }

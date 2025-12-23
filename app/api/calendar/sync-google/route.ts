@@ -39,12 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500, headers: corsHeaders });
     }
 
+    type ServiceCredentials = {
+      client_email?: string;
+      private_key?: string;
+    };
+
     // Parse service account credentials
-    let credentials;
+    let credentials: ServiceCredentials;
     try {
       // Try parsing as-is first
       credentials = JSON.parse(serviceAccountJson);
-    } catch (e) {
+    } catch {
       // If parsing fails, try removing any extra quotes or escaping
       try {
         const cleaned = serviceAccountJson.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '\n');
@@ -97,15 +102,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, eventId: response.data.id }, { headers: corsHeaders });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; errors?: unknown; response?: { data?: unknown } } | null;
     console.error('Google Calendar Sync Error:', {
-      message: error?.message,
-      code: error?.code,
-      errors: error?.errors,
-      responseData: error?.response?.data,
+      message: err?.message,
+      code: err?.code,
+      errors: err?.errors,
+      responseData: err?.response?.data,
     });
     return NextResponse.json(
-      { error: 'Failed to sync event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
+      {
+        error: 'Failed to sync event',
+        details: err?.message,
+        code: err?.code,
+        apiError: err?.errors,
+        responseData: err?.response?.data,
+      },
       { status: 500, headers: corsHeaders }
     );
   }

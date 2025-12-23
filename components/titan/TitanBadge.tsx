@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, Shield, Cpu, X, Server, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '@/context/LanguageContext';
 import clsx from 'clsx';
 
 export interface TitanStatus {
@@ -35,13 +34,13 @@ interface TitanBadgeProps {
 }
 
 export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBadgeProps) {
-  const { dict } = useLanguage();
   const [showDialog, setShowDialog] = useState(false);
   const [data, setData] = useState<TitanStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (showDialog && !data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       fetch('/api/titan-status')
         .then(res => res.json())
@@ -87,10 +86,10 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
       {/* DIALOG MODAL */}
       <AnimatePresence>
         {showDialog && (
-          <div className="fixed inset-0 z-[1000] flex items-start justify-center pt-24 px-4 pb-4">
+          <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4">
             <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm z-[50000]"
                 onClick={() => setShowDialog(false)}
             />
             
@@ -98,7 +97,7 @@ export default function TitanBadge({ version = 'v4.5', className = '' }: TitanBa
                 initial={{ scale: 0.95, opacity: 0, y: -20 }} 
                 animate={{ scale: 1, opacity: 1, y: 0 }} 
                 exit={{ scale: 0.95, opacity: 0, y: -20 }}
-                className="relative bg-[#0a0a0a] border border-sky-500/30 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-120px)] flex flex-col mt-0"
+                className="relative bg-[#0a0a0a] border border-sky-500/30 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden max-h-[calc(100vh-120px)] flex flex-col mt-0 z-[50001]"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-sky-900/30 bg-slate-900/20">

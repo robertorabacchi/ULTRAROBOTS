@@ -9,7 +9,7 @@ export async function GET() {
     const basePath = process.cwd();
     
     // Leggi package.json
-    let packageJson: any = {};
+    let packageJson: { dependencies?: Record<string, string> } = {};
     let urlCount = 18; // Default
     
     try {
@@ -17,7 +17,7 @@ export async function GET() {
       if (fs.existsSync(pkgPath)) {
         packageJson = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
       }
-    } catch (e) {
+    } catch {
       console.warn('package.json read error');
     }
 
@@ -28,7 +28,7 @@ export async function GET() {
         const content = fs.readFileSync(sitemapPath, 'utf-8');
         urlCount = (content.match(/<url>/g) || []).length;
       }
-    } catch (e) {
+    } catch {
       console.warn('sitemap read error');
     }
 

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     let credentials;
     try {
       credentials = JSON.parse(serviceAccountJson);
-    } catch (e) {
+    } catch {
       try {
         const cleaned = serviceAccountJson.replace(/^["']|["']$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '\n');
         credentials = JSON.parse(cleaned);
@@ -76,15 +76,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true }, { headers: corsHeaders });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; errors?: unknown; response?: { data?: unknown } } | null;
     console.error('Google Calendar Delete Error:', {
-      message: error?.message,
-      code: error?.code,
-      errors: error?.errors,
-      responseData: error?.response?.data,
+      message: err?.message,
+      code: err?.code,
+      errors: err?.errors,
+      responseData: err?.response?.data,
     });
     return NextResponse.json(
-      { error: 'Failed to delete event', details: error?.message, code: error?.code, apiError: error?.errors, responseData: error?.response?.data },
+      {
+        error: 'Failed to delete event',
+        details: err?.message,
+        code: err?.code,
+        apiError: err?.errors,
+        responseData: err?.response?.data,
+      },
       { status: 500, headers: corsHeaders }
     );
   }

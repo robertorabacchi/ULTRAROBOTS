@@ -36,7 +36,8 @@ export async function POST(request: NextRequest) {
     });
     
     doc.addPage();
-    (doc.options as any).autoPageBreak = false;
+    const docOptions = doc.options as PDFKit.PDFDocumentOptions & { autoPageBreak?: boolean };
+    docOptions.autoPageBreak = false;
 
     const buffers: Buffer[] = [];
     doc.on('data', buffers.push.bind(buffers));
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
     // ID e DATA a destra
     const rightX = PAGE_WIDTH - MARGIN;
     doc.fontSize(9).font('Helvetica-Bold').fillColor('#333333');
-    const idText = `ID: ${rData.id || rData.unitId || 'N/D'}`;
+    const idText = `ID: ${rData.id || rData.unitId || ''}`;
     doc.text(idText, rightX - doc.widthOfString(idText), 55);
     const dataText = `DATA: ${new Date().toLocaleDateString('it-IT')}`;
     doc.text(dataText, rightX - doc.widthOfString(dataText), 75);
@@ -73,11 +74,11 @@ export async function POST(request: NextRequest) {
     y += 20;
     
     doc.fontSize(9).font('Helvetica').fillColor('#333333');
-    doc.text(`Azienda: ${rData.cliente?.azienda || rData.client || 'N/D'}`, MARGIN + 10, y);
+    doc.text(`Azienda: ${rData.cliente?.azienda || rData.client || ''}`, MARGIN + 10, y);
     y += 15;
-    doc.text(`Referente: ${rData.cliente?.referente || 'N/D'}`, MARGIN + 10, y);
+    doc.text(`Referente: ${rData.cliente?.referente || ''}`, MARGIN + 10, y);
     y += 15;
-    doc.text(`Sede: ${rData.location || rData.cliente?.sede || 'N/D'}`, MARGIN + 10, y);
+    doc.text(`Sede: ${rData.location || rData.cliente?.sede || ''}`, MARGIN + 10, y);
     y += 25;
 
     // 2. DETTAGLI INTERVENTO
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
       y += 20;
       
       doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      doc.text(`Tipologia: ${rData.intervento?.tipo || rData.reportType || 'N/D'}`, MARGIN + 10, y);
+      doc.text(`Tipologia: ${rData.intervento?.tipo || rData.reportType || ''}`, MARGIN + 10, y);
       y += 15;
       doc.text(`Stato: ${rData.intervento?.stato || rData.status || 'COMPLETATO'}`, MARGIN + 10, y);
       y += 20;
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
       y += 20;
       
       doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      rData.intervento.componenti.slice(0, 5).forEach((comp: any) => {
+      rData.intervento.componenti.slice(0, 5).forEach((comp: unknown) => {
         if (y < CONTENT_END - 30) {
           doc.text(`• ${String(comp)}`, MARGIN + 10, y);
           y += 15;

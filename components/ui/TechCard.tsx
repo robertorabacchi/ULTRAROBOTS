@@ -14,13 +14,6 @@ interface TechCardProps {
 }
 
 export default function TechCard({ title, description, icon: Icon, color, partner, delay = 0 }: TechCardProps) {
-  const colors = {
-    cyan: 'border-[#1a1a1a]',
-    blue: 'border-[#1a1a1a]',
-    emerald: 'border-[#1a1a1a]',
-    rose: 'border-[#1a1a1a]',
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -54,7 +47,7 @@ export default function TechCard({ title, description, icon: Icon, color, partne
               color === 'emerald' && 'text-emerald-400 border-emerald-500/30',
               color === 'rose' && 'text-rose-400 border-rose-500/30'
             )}>
-                SYS_0{delay * 10 || 1} // {partner || 'NATIVE'}
+                {`SYS_0${delay * 10 || 1} — ${partner || 'NATIVE'}`}
             </span>
             <Icon className={clsx(
               "w-8 h-8 stroke-1",

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation'; // Re-added this import
 import clsx from 'clsx';
 import { useLanguage } from '@/context/LanguageContext';
-import { Loader2, Menu, X, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo';
@@ -19,6 +19,7 @@ export default function Navbar() {
 
   // Simula un "processing" ad ogni cambio pagina o azione importante
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsProcessing(true);
     const timer = setTimeout(() => setIsProcessing(false), 1500); // 1.5s di "lavoro" finto
     return () => clearTimeout(timer);
@@ -26,6 +27,7 @@ export default function Navbar() {
 
   // Chiudi menu mobile al cambio pagina
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
   }, [pathname]);
 
@@ -54,6 +56,7 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

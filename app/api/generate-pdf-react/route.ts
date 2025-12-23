@@ -164,55 +164,110 @@ export async function POST(request: NextRequest) {
     }
 
     // Imposta valori di default per campi mancanti
+    type VittoObj = {
+      pranzoPosto: string;
+      pranzoImporto: string;
+      cenaPosto: string;
+      cenaImporto: string;
+    };
+
+    type PernottamentoObj = {
+      nomeHotel: string;
+      numeroNotti: string;
+      importo: string;
+    };
+
+    const vittoRaw = reportData.spese?.vitto;
+    const vitto =
+      typeof vittoRaw === 'string'
+        ? vittoRaw || ''
+        : {
+            pranzoPosto:
+              (vittoRaw &&
+                typeof vittoRaw === 'object' &&
+                !Array.isArray(vittoRaw) &&
+                (vittoRaw as Partial<VittoObj>).pranzoPosto) ||
+              '',
+            pranzoImporto:
+              (vittoRaw &&
+                typeof vittoRaw === 'object' &&
+                !Array.isArray(vittoRaw) &&
+                (vittoRaw as Partial<VittoObj>).pranzoImporto) ||
+              '',
+            cenaPosto:
+              (vittoRaw &&
+                typeof vittoRaw === 'object' &&
+                !Array.isArray(vittoRaw) &&
+                (vittoRaw as Partial<VittoObj>).cenaPosto) ||
+              '',
+            cenaImporto:
+              (vittoRaw &&
+                typeof vittoRaw === 'object' &&
+                !Array.isArray(vittoRaw) &&
+                (vittoRaw as Partial<VittoObj>).cenaImporto) ||
+              '',
+          };
+
+    const pernoRaw = reportData.spese?.pernottamento;
+    const pernottamento =
+      typeof pernoRaw === 'string'
+        ? pernoRaw || ''
+        : {
+            nomeHotel:
+              (pernoRaw &&
+                typeof pernoRaw === 'object' &&
+                !Array.isArray(pernoRaw) &&
+                (pernoRaw as Partial<PernottamentoObj>).nomeHotel) ||
+              '',
+            numeroNotti:
+              (pernoRaw &&
+                typeof pernoRaw === 'object' &&
+                !Array.isArray(pernoRaw) &&
+                (pernoRaw as Partial<PernottamentoObj>).numeroNotti) ||
+              '',
+            importo:
+              (pernoRaw &&
+                typeof pernoRaw === 'object' &&
+                !Array.isArray(pernoRaw) &&
+                (pernoRaw as Partial<PernottamentoObj>).importo) ||
+              '',
+          };
+
+    const varieRaw = reportData.spese?.varie;
+    const varie =
+      Array.isArray(varieRaw) ? varieRaw : typeof varieRaw === 'string' ? varieRaw || '' : [];
+
     const completeData: ReportData = {
-      id: reportData.id || 'N/D',
+      id: reportData.id || '',
       date: reportData.date || new Date().toLocaleString('it-IT'),
       cliente: {
-        azienda: reportData.cliente?.azienda || 'N/D',
-        referente: reportData.cliente?.referente || 'N/D',
-        sede: reportData.cliente?.sede || 'N/D',
+        azienda: reportData.cliente?.azienda || '',
+        referente: reportData.cliente?.referente || '',
+        sede: reportData.cliente?.sede || '',
       },
       intervento: {
-        tipologia: reportData.intervento?.tipologia || 'N/D',
-        statoFinale: reportData.intervento?.statoFinale || 'IN CORSO',
-        descrizione: reportData.intervento?.descrizione || 'Nessuna descrizione disponibile',
+        tipologia: reportData.intervento?.tipologia || '',
+        statoFinale: reportData.intervento?.statoFinale || '',
+        descrizione: reportData.intervento?.descrizione || '',
       },
       componenti: reportData.componenti || [],
-      noteCritiche: reportData.noteCritiche || 'Nessuna',
+      noteCritiche: reportData.noteCritiche || '',
       spese: {
         viaggio: {
-          km: reportData.spese?.viaggio?.km || 'N/D',
-          costoKm: reportData.spese?.viaggio?.costoKm || 'N/D',
-          pedaggio: reportData.spese?.viaggio?.pedaggio || 'N/D',
+          km: reportData.spese?.viaggio?.km || '',
+          costoKm: reportData.spese?.viaggio?.costoKm || '',
+          pedaggio: reportData.spese?.viaggio?.pedaggio || '',
         },
-        // Gestisce sia oggetto che stringa (backward compatibility)
-        vitto: typeof reportData.spese?.vitto === 'string' 
-          ? reportData.spese.vitto 
-          : {
-              pranzoPosto: (reportData.spese?.vitto as any)?.pranzoPosto || 'N/D',
-              pranzoImporto: (reportData.spese?.vitto as any)?.pranzoImporto || 'N/D',
-              cenaPosto: (reportData.spese?.vitto as any)?.cenaPosto || 'N/D',
-              cenaImporto: (reportData.spese?.vitto as any)?.cenaImporto || 'N/D',
-            },
-        // Gestisce sia oggetto che stringa (backward compatibility)
-        pernottamento: typeof reportData.spese?.pernottamento === 'string'
-          ? reportData.spese.pernottamento
-          : {
-              nomeHotel: (reportData.spese?.pernottamento as any)?.nomeHotel || 'N/D',
-              numeroNotti: (reportData.spese?.pernottamento as any)?.numeroNotti || 'N/D',
-              importo: (reportData.spese?.pernottamento as any)?.importo || 'N/D',
-            },
-        // Gestisce sia array che stringa (backward compatibility)
-        varie: Array.isArray(reportData.spese?.varie) 
-          ? reportData.spese.varie 
-          : (typeof reportData.spese?.varie === 'string' ? reportData.spese.varie : []),
+        vitto,
+        pernottamento,
+        varie,
       },
-      trascrizione: reportData.trascrizione || 'Nessuna trascrizione disponibile',
+      trascrizione: reportData.trascrizione || '',
     };
 
     // Genera il PDF usando @react-pdf/renderer
     const pdfBuffer = await renderToBuffer(
-      React.createElement(ReportPDF, { data: completeData }) as any
+      React.createElement(ReportPDF, { data: completeData })
     );
 
     // Converti Buffer in Uint8Array per NextResponse

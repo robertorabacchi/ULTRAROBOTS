@@ -2,8 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Battery, MapPin, Clock, Settings, Zap, Gauge, AlertCircle, RefreshCw, Terminal, Lock, X, FileText } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { MapPin, Clock, Settings, Zap, AlertCircle, RefreshCw, Terminal, Lock, X, FileText } from 'lucide-react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -133,7 +133,7 @@ const MOCK_LOGS: Record<string, string[]> = {
 };
 
 export default function PlatformPage() {
-  const [robots, setRobots] = useState<RobotStatus[]>(DEMO_ROBOTS);
+  const [robots] = useState<RobotStatus[]>(DEMO_ROBOTS);
   const { dict } = useLanguage();
   const [selectedRobotLog, setSelectedRobotLog] = useState<RobotStatus | null>(null);
   
@@ -366,7 +366,7 @@ export default function PlatformPage() {
                             <Terminal className="w-5 h-5 text-sky-400" />
                             <div>
                                 <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                                    {dict.platform.logsModal.title} // {selectedRobotLog.id}
+                                    {`${dict.platform.logsModal.title} // ${selectedRobotLog.id}`}
                                 </h3>
                                 <p className="text-[10px] text-slate-500 font-mono">
                                     {selectedRobotLog.model} • {selectedRobotLog.location}

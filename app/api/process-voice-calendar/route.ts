@@ -142,10 +142,11 @@ export async function POST(req: NextRequest) {
       events: analysisData.events || []
     }, { headers: corsHeaders });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('[API Calendar Error]', err);
     return NextResponse.json(
-      { error: 'Internal Server Error', details: err.message },
+      { error: 'Internal Server Error', details: message },
       { status: 500, headers: corsHeaders }
     );
   }

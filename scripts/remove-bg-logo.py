@@ -43,3 +43,10 @@ except Exception as e:
     print(f"❌ Errore: {e}")
     sys.exit(1)
 
+
+
+
+
+
+
+

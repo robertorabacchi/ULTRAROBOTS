@@ -5,6 +5,9 @@ import TitanBadge from "@/components/titan/TitanBadge";
 import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
 
+const baseUrl = process.env.SITE_URL || "https://ultrarobots.netlify.app";
+const ogImage = `${baseUrl}/assets/og-image-cyan-white-oneline.PNG`;
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,6 +33,21 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "ULTRAROBOTS | Meccatronica e AI",
   description: "Il futuro della robotica industriale integrata con l'intelligenza artificiale.",
+  openGraph: {
+    title: "ULTRAROBOTS | Meccatronica e AI",
+    description: "Il futuro della robotica industriale integrata con l'intelligenza artificiale.",
+    url: baseUrl,
+    siteName: "ULTRAROBOTS",
+    images: [{ url: ogImage }],
+    locale: "it_IT",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ULTRAROBOTS | Meccatronica e AI",
+    description: "Il futuro della robotica industriale integrata con l'intelligenza artificiale.",
+    images: [ogImage],
+  },
 };
 
 export default function RootLayout({

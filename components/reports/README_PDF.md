@@ -1,5 +1,188 @@
 # Componente ReportPDF - Documentazione
 
+## 🚨 REGOLA FERREA - NON MODIFICARE MAI LA STRUTTURA PDF
+
+**❌ NON TOCCARE MAI:**
+- Larghezze colonne (compColQta: 10%, compColDesc: 36%, compColBrand: 25%, compColCode: 29%)
+- fontSize (7, 7.5)
+- padding (4, 5, 6)
+- minHeight righe
+- Layout generale
+
+**✅ SE IL TESTO NON ENTRA: SI TRONCA (numberOfLines={1})**
+**✅ NON SI MODIFICA LA STRUTTURA PER FAR STARE IL TESTO!**
+
+---
+
+## ⚠️ ISTRUZIONI CRITICHE PER GPT - DESCRIZIONI COMPONENTI
+
+**REGOLA FERREA:** Le descrizioni dei componenti devono essere BREVI e CONCISE.
+
+### ✅ DESCRIZIONI CORRETTE (esempi):
+- Motore
+- Encoder
+- Inverter
+- Fotocellula
+- Cinghie
+- PLC
+- Relè sicurezza
+- Trasformatore
+- Sensore
+- Azionamento
+- Valvola
+- Cilindro
+- Filtro
+- Interruttore
+- Contattore
+
+### ❌ DESCRIZIONI SBAGLIATE (troppo lunghe):
+- ❌ Motore elettrico trifase asincrono
+- ❌ Encoder incrementale rotativo ad alta risoluzione
+- ❌ Inverter controllo velocità con comunicazione
+- ❌ Sensore fotoelettrico retroriflettente con filtro
+- ❌ PLC programmabile CompactLogix serie 1769
+
+**PERCHÉ:** Le celle della tabella hanno dimensione FISSA. Il testo NON va a capo e viene troncato se troppo lungo (`numberOfLines={1}`).
+
+**LIMITI TECNICI:**
+- fontSize: 7
+- padding: 4
+- numberOfLines: 1 (NO wrap!)
+- Larghezza colonna QTÀ: 10% (centrata)
+- Larghezza colonna DESCRIZIONE: 36% della tabella
+- Larghezza colonna BRAND: 25%
+- Larghezza colonna CODICE: 29%
+
+**QUANDO GENERI REPORT:** Usa SEMPRE descrizioni da 1-2 parole massimo!
+
+---
+
+## ⚠️ REGOLA CRITICA - CALCOLO SPESE DI VIAGGIO
+
+**QUANDO CALCOLI LE SPESE DI VIAGGIO:**
+
+✅ **CALCOLA AUTOMATICAMENTE:**
+- Importo Km = Km totali (andata + ritorno) × **0,8€/km**
+- Esempio: 150 km A/R → Importo Km = 150 × 0,8 = **€120,00**
+- Se l'utente dice solo "andata", moltiplica per 2 per ottenere A/R
+- Il campo `km` deve contenere il totale A/R (es: "150 km A/R")
+- Il campo `costoKm` deve contenere l'importo calcolato (es: "€120,00")
+
+**ESEMPIO CORRETTO:**
+```typescript
+spese: {
+  viaggio: {
+    km: '150 km A/R',           // ✅ Totale andata + ritorno
+    costoKm: '€120,00',          // ✅ Calcolato: 150 × 0,8
+    pedaggio: '€25,00'           // Se presente
+  }
+}
+```
+
+---
+
+## ⚠️ REGOLA CRITICA - SPESE DI VITTO
+
+**QUANDO ESTRAI SPESE DI PRANZO E CENA:**
+
+✅ **FORMATO RICHIESTO:**
+- `pranzoPosto`: nome ristorante/locale (es: "Trattoria del Borgo", "Ristorante La Botte")
+- `pranzoImporto`: formato **"€XX,XX"** (es: "€25,00", "€35,50")
+- `cenaPosto`: nome ristorante/locale (es: "Hotel", "Trattoria del Corso")
+- `cenaImporto`: formato **"€XX,XX"** (es: "€30,00", "€42,00")
+
+**ESEMPI CORRETTI:**
+```typescript
+vitto: {
+  pranzoPosto: 'Trattoria del Borgo',    // ✅ Nome locale
+  pranzoImporto: '€25,00',                // ✅ Formato €XX,XX
+  cenaPosto: 'Hotel',                    // ✅ Nome locale
+  cenaImporto: '€30,00'                  // ✅ Formato €XX,XX
+}
+```
+
+**⚠️⚠️⚠️ VALORI DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️**
+
+Se il tecnico **NON menziona l'importo** MA ha fatto pranzo/cena (dedotto dal contesto):
+- `pranzoImporto`: **"[€ 15,00]"** (parentesi quadre = ipotizzato)
+- `cenaImporto`: **"[€ 30,00]"** (parentesi quadre = ipotizzato)
+
+**REGOLE:**
+- Senza parentesi `€XX,XX` = dichiarato dal tecnico
+- Con parentesi `[€XX,XX]` = ipotizzato da GPT quando non dichiarato
+- Se non ha pranzato/cenato: `"N/D"`
+- Dedurre pranzo/cena dal contesto (durata intervento, orari, menzioni indirette)
+
+---
+
+## ⚠️ REGOLA CRITICA - SPESE DI PERNOTTAMENTO
+
+**QUANDO ESTRAI SPESE DI PERNOTTAMENTO:**
+
+✅ **FORMATO RICHIESTO:**
+- `nomeHotel`: nome hotel/albergo (es: "Hotel Centrale", "Hotel Parma Centro")
+- `numeroNotti`: numero notti come **stringa** (es: "2", "1", "3")
+- `importo`: formato **"€XX,XX"** (es: "€160,00", "€80,00")
+
+**ESEMPI CORRETTI:**
+```typescript
+pernottamento: {
+  nomeHotel: 'Hotel Centrale',           // ✅ Nome hotel
+  numeroNotti: '2',                     // ✅ Stringa, non numero
+  importo: '€160,00'                    // ✅ Formato €XX,XX
+}
+```
+
+**⚠️⚠️⚠️ VALORE DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️**
+
+Se il tecnico **NON menziona l'importo** MA ha pernottato (dedotto dal contesto):
+- Calcola **"[€ 80,00]"** per notte e moltiplica per il numero di notti
+- Esempio: 1 notte → `importo`: **"[€ 80,00]"**
+- Esempio: 2 notti → `importo`: **"[€ 160,00]"** (80 × 2)
+- Se dice prezzo a notte: calcola totale (es. "€80/notte x 2 = € 160,00")
+- Valore standard: **€80/notte** se non dichiarato
+
+**REGOLE:**
+- Senza parentesi `€XX,XX` = dichiarato dal tecnico
+- Con parentesi `[€XX,XX]` = ipotizzato da GPT quando non dichiarato
+- Se non ha pernottato: `"N/D"`
+- Dedurre pernottamento dal contesto (durata intervento, menzioni di "notte", "hotel", ecc.)
+
+**⚠️ FORMATO IMPORTI:**
+- SEMPRE formato **"€XX,XX"** con virgola come separatore decimale
+- Esempi: "€25,00", "€30,50", "€160,00", "€180,75"
+- Se l'utente dice "25 euro", converti in "€25,00"
+- Se l'utente dice "25 e 50", converti in "€25,50"
+
+---
+
+## ⚠️ REGOLA CRITICA - VISUALIZZAZIONE CONDIZIONALE CAMPI
+
+**Nel PDF, alcuni campi vengono mostrati SOLO SE la riga superiore non è "N/D":**
+
+### ✅ VITTO:
+- `pranzoPosto` e `cenaPosto` vengono **SEMPRE mostrati** (anche se "N/D")
+- Importo pranzo viene mostrato **SOLO SE** `pranzoPosto !== 'N/D'` (riga superiore)
+- Importo cena viene mostrato **SOLO SE** `cenaPosto !== 'N/D'` (riga superiore)
+- Se `pranzoPosto` o `cenaPosto` sono "N/D", gli importi **NON vengono mostrati** nel PDF
+
+### ✅ PERNOTTAMENTO:
+- `nomeHotel` viene **SEMPRE mostrato** (anche se "N/D")
+- Notti e Importo vengono mostrati **SOLO SE** `nomeHotel !== 'N/D'` (riga superiore)
+- Se `nomeHotel` è "N/D", notti e importo **NON vengono mostrati** nel PDF
+
+### ✅ VIAGGIO:
+- Km, Importo Km e Importo Pedaggio vengono mostrati **SOLO SE** i rispettivi campi `!== 'N/D'`
+- Se sono "N/D", i campi rimangono **vuoti** nel PDF
+
+### ✅ VARIE:
+- Mostra solo se esistono (`varie[0]`, `varie[1]`, `varie[2]`, `varie[3]`)
+- Se non esistono, il campo rimane **vuoto**
+
+**IMPORTANTE:** Usa `"N/D"` quando il dato non è disponibile, così il PDF nasconde automaticamente i campi correlati!
+
+---
+
 Componente React per generare PDF professionali usando `@react-pdf/renderer`, che replica esattamente il layout del documento ULTRAROBOTS RAPPORTO INTERVENTO.
 
 ## 📦 Installazione
@@ -72,13 +255,22 @@ export default function ReportPage() {
     noteCritiche: 'Nessuna criticità rilevata',
     spese: {
       viaggio: {
-        destinazione: 'Parma',
-        km: '150',
-        costo: '75',
+        km: '150 km A/R',
+        costoKm: '€120,00',
+        pedaggio: '€25,00',
       },
-      vitto: '45',
-      pernottamento: '90',
-      varie: 'Materiali vari',
+      vitto: {
+        pranzoPosto: 'Trattoria del Borgo',
+        pranzoImporto: '€25,00',
+        cenaPosto: 'Hotel',
+        cenaImporto: '[€ 30,00]',
+      },
+      pernottamento: {
+        nomeHotel: 'Hotel Centrale',
+        numeroNotti: '2',
+        importo: '[€ 160,00]',
+      },
+      varie: [{ descrizione: 'Materiali vari', importo: '€30,00' }],
     },
     trascrizione: 'Testo della trascrizione originale...',
   };
@@ -162,21 +354,67 @@ export interface ReportData {
     statoFinale: string;
     descrizione: string;
   };
-  componenti: string[];
+  componenti: string[] | Componente[]; // descrizioni brevi, max ~15 caratteri
   noteCritiche: string;
   spese: {
     viaggio: {
-      destinazione: string;
-      km: string;
-      costo: string;
+      km?: string;
+      costoKm?: string;
+      pedaggio?: string;
+      destinazione?: string; // backward compat
+      costo?: string; // backward compat
     };
-    vitto: string;
-    pernottamento: string;
-    varie: string;
+    vitto?: {
+      pranzoPosto: string;
+      pranzoImporto: string;
+      cenaPosto: string;
+      cenaImporto: string;
+    } | string;
+    pernottamento?: {
+      nomeHotel: string;
+      numeroNotti: string; // es. "2" (solo numero come stringa)
+      importo: string;
+    } | string;
+    varie?: Array<{ descrizione: string; importo?: string }> | string;
   };
   trascrizione: string;
 }
 ```
+
+### Regole spese e visibilità
+- Usa la struttura: viaggio { km, costoKm, pedaggio }, vitto { pranzoPosto, pranzoImporto, cenaPosto, cenaImporto }, pernottamento { nomeHotel, numeroNotti (stringa numerica breve, es. "2"), importo }, varie come array di { descrizione, importo? }.
+- Per nascondere un campo, assegna `"N/D"`: il PDF lo pulisce e la cella resta vuota; le righe legate a quel campo non vengono mostrate.
+- Importi stimati: usa parentesi quadre (es. `"[€ 15,00]"`). Il renderer aggiunge `€ ` davanti, quindi vedrai `€ [ 15,00]`; passa il valore con le parentesi se vuoi mantenerle.
+- Le descrizioni componenti devono essere brevissime (1-2 parole, ~15 caratteri), tutto viene troncato, non va a capo.
+- Non usare fonti esterne (es. Google Places); deduci solo dal contesto fornito.
+
+### Limiti caratteri / righe per ogni campo (troncamento automatico)
+- Azienda + Sede: ~150 caratteri, maxLines 6.
+- Tipologia: ~150 caratteri, maxLines 6.
+- Referente: ~25 caratteri, maxLines 1.
+- Stato finale: ~25 caratteri, maxLines 1.
+- Descrizione attività: ~460 caratteri, maxLines 6.
+- Note critiche: ~460 caratteri, maxLines 6.
+- Componenti (8 righe):
+  - Quantità: max 3 caratteri (tieni su 1 riga).
+  - Descrizione: max 15 caratteri, maxLines 1.
+  - Brand: max 8 caratteri, maxLines 1.
+  - Codice: max 12 caratteri, maxLines 1.
+- Spese viaggio:
+  - Km: ~18 caratteri (es. `Km: 150`), maxLines 1.
+  - Importo Km: ~20 caratteri (es. `Importo Km: €120,00`), maxLines 1.
+  - Pedaggio: ~20 caratteri, maxLines 1.
+- Spese vitto:
+  - PranzoPosto: max 24 caratteri, maxLines 1.
+  - PranzoImporto: ~20 caratteri, maxLines 1.
+  - CenaPosto: max 24 caratteri, maxLines 1.
+  - CenaImporto: ~22 caratteri (mantieni 1 riga).
+- Spese pernottamento:
+  - NomeHotel: max 24 caratteri, maxLines 1.
+  - NumeroNotti: max 12 caratteri, maxLines 1 (solo numero come stringa, es. "2").
+  - Importo: ~20 caratteri, maxLines 1.
+- Spese varie (fino a 4 voci): ciascuna ~24 caratteri su 1 riga (descrizione + eventuale importo).
+- Trascrizione originale: ~460 caratteri, maxLines 6.
 
 ## 🎨 Personalizzazione Stili
 
@@ -280,13 +518,24 @@ Il componente gestisce automaticamente il flusso delle pagine quando il contenut
     "noteCritiche": "Nessuna",
     "spese": {
       "viaggio": {
-        "destinazione": "Milano",
-        "km": "150",
-        "costo": "50"
+        "km": "150 km A/R",
+        "costoKm": "€120,00",
+        "pedaggio": "€25,00"
       },
-      "vitto": "30",
-      "pernottamento": "80",
-      "varie": "Materiali"
+      "vitto": {
+        "pranzoPosto": "Trattoria del Borgo",
+        "pranzoImporto": "€25,00",
+        "cenaPosto": "Hotel",
+        "cenaImporto": "[€ 30,00]"
+      },
+      "pernottamento": {
+        "nomeHotel": "Hotel Centrale",
+        "numeroNotti": "2",
+        "importo": "[€ 160,00]"
+      },
+      "varie": [
+        { "descrizione": "Materiali", "importo": "€30,00" }
+      ]
     },
     "trascrizione": "..."
   }

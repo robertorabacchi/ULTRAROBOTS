@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Image,
+  type TextProps,
 } from '@react-pdf/renderer';
 
 /**
@@ -190,6 +191,8 @@ const styles = StyleSheet.create({
   },
   tableRowLast: {
     flexDirection: 'row',
+    minHeight: 18,  // ⚠️ ALTEZZA MINIMA FISSA! STESSA DELLE ALTRE RIGHE!
+    // ⚠️ NON ha borderBottomWidth perché è l'ultima riga della tabella
   },
   tableHeader: {
     backgroundColor: '#F5F5F5',
@@ -223,6 +226,8 @@ const styles = StyleSheet.create({
     width: '48.5%',
     borderWidth: 1,
     borderColor: '#CCCCCC',
+    // Minimo calibrato su 1 header + 4 righe da 18px: evita spazio extra sotto l'ultima riga
+    minHeight: 90,
   },
   descriptionBox: {
     padding: 8,
@@ -344,6 +349,56 @@ const styles = StyleSheet.create({
   },
 });
 
+// Normalizza i valori: rimuove "N/D" e valori falsy, così i campi vuoti restano vuoti nel PDF
+const clean = (value?: string) => (value && value !== 'N/D' ? value : '');
+const truncateClean = (value: string | undefined, max: number) => {
+  const v = clean(value);
+  if (!v) return '';
+  return v.length > max ? `${v.slice(0, max - 1)}…` : v;
+};
+const formatKmValue = (value?: string) => {
+  const v = clean(value);
+  if (!v) return '';
+  const match = v.match(/[\d.,]+/);
+  return match ? match[0] : v;
+};
+const formatEuro = (value?: string) => {
+  const v = clean(value);
+  if (!v) return '';
+  return `€ ${v.replace(/€/g, '').trim()}`;
+};
+const max1: Pick<TextProps, 'maxLines'> = { maxLines: 1 };
+const max6: Pick<TextProps, 'maxLines'> = { maxLines: 6 };
+const isComponente = (comp: unknown): comp is Componente =>
+  typeof comp === 'object' && comp !== null && 'descrizione' in comp;
+
+const normalizeComp = (comp: string | Componente | undefined) => {
+  if (!comp) {
+    return { quantita: '', descrizione: '', brand: '', codice: '' };
+  }
+  if (isComponente(comp)) {
+    return {
+      quantita: clean(comp.quantita),
+      descrizione: clean(comp.descrizione),
+      brand: clean(comp.brand),
+      codice: clean(comp.codice),
+    };
+  }
+  const val = clean(comp);
+  return {
+    quantita: val,
+    descrizione: val,
+    brand: '',
+    codice: '',
+  };
+};
+const joinWithDash = (left?: string, right?: string) => {
+  const a = clean(left);
+  const b = clean(right);
+  if (a && b) return `${a} - ${b}`;
+  return a || b || '';
+};
+
 /**
  * ⚠️⚠️⚠️ REGOLA FERREA - NON MODIFICARE MAI QUESTA STRUTTURA ⚠️⚠️⚠️
  * 
@@ -371,6 +426,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
           <Image
             style={styles.logoImage}
             src="/assets/SVG_PNG/logo-wordmark-black.png"
+            alt=""
           />
         </View>
         <View style={styles.headerRight}>
@@ -384,16 +440,20 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
           <View style={styles.tableRow}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>AZIENDA</Text></View>
             <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { minHeight: 65 }]}>
-              <Text>{data.cliente.azienda} - {data.cliente.sede}</Text>
+              <Text {...max6}>{truncateClean(joinWithDash(data.cliente.azienda, data.cliente.sede), 150)}</Text>
             </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>TIPOLOGIA</Text></View>
-            <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text>{data.intervento.tipologia}</Text></View>
+                <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text {...max6}>{truncateClean(data.intervento.tipologia, 150)}</Text></View>
           </View>
           <View style={styles.tableRowLast}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>REFERENTE</Text></View>
-            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder]}><Text>{data.cliente.referente}</Text></View>
+                <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { minHeight: 20 }]}>
+                  <Text {...max1}>{truncateClean(data.cliente.referente, 25)}</Text>
+                </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>STATO FINALE</Text></View>
-            <View style={[styles.tableCell, styles.colValue]}><Text>{data.intervento.statoFinale}</Text></View>
+                <View style={[styles.tableCell, styles.colValue, { minHeight: 20 }]}>
+                  <Text {...max1}>{truncateClean(data.intervento.statoFinale, 25)}</Text>
+                </View>
           </View>
         </View>
       </View>
@@ -401,7 +461,12 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>DESCRIZIONE ATTIVITÀ</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text style={styles.descriptionText}>{data.intervento.descrizione}</Text>
+          <Text
+            style={styles.descriptionText}
+            {...max6} // fino a 6 righe, poi tronca
+          >
+            {truncateClean(data.intervento.descrizione, 460)}
+          </Text>
         </View>
       </View>
 
@@ -417,13 +482,39 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
               <View style={[styles.componentHeader, styles.compColCode]}><Text>CODICE</Text></View>
             </View>
             {Array.from({ length: 4 }, (_, idx) => {
-              const comp = data.componenti[idx];
+              const comp = normalizeComp(data.componenti[idx] as string | Componente | undefined);
+              if (idx === 3) {
+                return (
+                  <View key={`comp-left-${idx}`} style={[styles.tableRowLast, { minHeight: 18 }]}>
+                    <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
+                      <Text>{truncateClean(comp.quantita, 3)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
+                      <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
+                      <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColCode]}>
+                      <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
+                    </View>
+                  </View>
+                );
+              }
               return (
-                <View key={`comp-left-${idx}`} style={idx === 3 ? styles.tableRowLast : styles.tableRow}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
-                  <View style={[styles.componentCell, styles.compColCode]}><Text>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
+                <View key={`comp-left-${idx}`} style={[styles.tableRow, { minHeight: 18 }]}>
+                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
+                    <Text>{truncateClean(comp.quantita, 3)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
+                    <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
+                    <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColCode]}>
+                    <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
+                  </View>
                 </View>
               );
             })}
@@ -438,13 +529,39 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
               <View style={[styles.componentHeader, styles.compColCode]}><Text>CODICE</Text></View>
             </View>
             {Array.from({ length: 4 }, (_, idx) => {
-              const comp = data.componenti[idx + 4];
+              const comp = normalizeComp(data.componenti[idx + 4] as string | Componente | undefined);
+              if (idx === 3) {
+                return (
+                  <View key={`comp-right-${idx}`} style={[styles.tableRowLast, { minHeight: 18 }]}>
+                    <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
+                      <Text>{truncateClean(comp.quantita, 3)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
+                      <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
+                      <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
+                    </View>
+                    <View style={[styles.componentCell, styles.compColCode]}>
+                      <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
+                    </View>
+                  </View>
+                );
+              }
               return (
-                <View key={`comp-right-${idx}`} style={idx === 3 ? styles.tableRowLast : styles.tableRow}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.quantita : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.descrizione : (comp || '')}</Text></View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}><Text>{typeof comp === 'object' && comp ? comp.brand : ''}</Text></View>
-                  <View style={[styles.componentCell, styles.compColCode]}><Text>{typeof comp === 'object' && comp ? comp.codice : ''}</Text></View>
+                <View key={`comp-right-${idx}`} style={[styles.tableRow, { minHeight: 18 }]}>
+                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
+                    <Text>{truncateClean(comp.quantita, 3)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
+                    <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
+                    <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
+                  </View>
+                  <View style={[styles.componentCell, styles.compColCode]}>
+                    <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
+                  </View>
                 </View>
               );
             })}
@@ -455,13 +572,18 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>NOTE CRITICHE</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text style={styles.descriptionText}>{data.noteCritiche}</Text>
+          <Text
+            style={styles.descriptionText}
+            {...max6} // fino a 6 righe, poi tronca
+          >
+            {truncateClean(data.noteCritiche, 460)}
+          </Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>SPESE DI TRASFERTA</Text>
-        <View style={styles.table}>
+        <View style={[styles.table, { minHeight: 90 }]}>
           <View style={styles.tableRow}>
             <View style={[styles.spesaHeader, styles.col4, styles.tableCellBorder]}><Text>VIAGGIO</Text></View>
             <View style={[styles.spesaHeader, styles.col4, styles.tableCellBorder]}><Text>VITTO</Text></View>
@@ -469,28 +591,28 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
             <View style={[styles.spesaHeader, styles.col4]}><Text>VARIE</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.km !== 'N/D' ? `Km (A/R): ${data.spese.viaggio.km}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.pranzoPosto : (typeof data.spese.vitto === 'string' ? data.spese.vitto : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento ? data.spese.pernottamento.nomeHotel : (typeof data.spese.pernottamento === 'string' ? data.spese.pernottamento : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[0] ? `${data.spese.varie[0].descrizione}: ${data.spese.varie[0].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.km) ? truncateClean(`Km: ${formatKmValue(data.spese.viaggio.km)}`, 18) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? truncateClean(data.spese.vitto.pranzoPosto, 24) : (typeof data.spese.vitto === 'string' ? truncateClean(data.spese.vitto, 24) : '')}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento ? truncateClean(data.spese.pernottamento.nomeHotel, 24) : (typeof data.spese.pernottamento === 'string' ? truncateClean(data.spese.pernottamento, 24) : '')}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[0] ? truncateClean(`${clean(data.spese.varie[0].descrizione)}${clean(data.spese.varie[0].importo) ? `: ${clean(data.spese.varie[0].importo)}` : ''}`, 24) : ''}</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.costoKm !== 'N/D' ? `Importo Km: ${data.spese.viaggio.costoKm}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.pranzoPosto !== 'N/D' ? `Importo: ${data.spese.vitto.pranzoImporto}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Notti: ${data.spese.pernottamento.numeroNotti}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[1] ? `${data.spese.varie[1].descrizione}: ${data.spese.varie[1].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.costoKm) ? truncateClean(`Importo Km: ${formatEuro(data.spese.viaggio.costoKm)}`, 20) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto && clean(data.spese.vitto.pranzoPosto) ? truncateClean(`Importo: ${formatEuro(data.spese.vitto.pranzoImporto)}`, 20) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && clean(data.spese.pernottamento.nomeHotel) ? truncateClean(`Notti: ${clean(data.spese.pernottamento.numeroNotti)}`, 12) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[1] ? truncateClean(`${clean(data.spese.varie[1].descrizione)}${clean(data.spese.varie[1].importo) ? `: ${clean(data.spese.varie[1].importo)}` : ''}`, 24) : ''}</Text></View>
           </View>
           <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{data.spese.viaggio.pedaggio !== 'N/D' ? `Importo Pedaggio: ${data.spese.viaggio.pedaggio}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto ? data.spese.vitto.cenaPosto : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && data.spese.pernottamento.nomeHotel !== 'N/D' ? `Importo: ${data.spese.pernottamento.importo}` : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[2] ? `${data.spese.varie[2].descrizione}: ${data.spese.varie[2].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.pedaggio) ? truncateClean(`Importo Pedaggio: ${formatEuro(data.spese.viaggio.pedaggio)}`, 20) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? truncateClean(data.spese.vitto.cenaPosto, 24) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && clean(data.spese.pernottamento.nomeHotel) ? truncateClean(`Importo: ${formatEuro(data.spese.pernottamento.importo)}`, 20) : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[2] ? truncateClean(`${clean(data.spese.varie[2].descrizione)}${clean(data.spese.varie[2].importo) ? `: ${clean(data.spese.varie[2].importo)}` : ''}`, 24) : ''}</Text></View>
           </View>
           <View style={[styles.tableRowLast, { minHeight: 18 }]}>
             <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && data.spese.vitto.cenaPosto !== 'N/D' ? `Importo: ${data.spese.vitto.cenaImporto}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && clean(data.spese.vitto.cenaPosto) ? truncateClean(`Importo: ${formatEuro(data.spese.vitto.cenaImporto)}`, 22) : ''}</Text></View>
             <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text>{Array.isArray(data.spese.varie) && data.spese.varie[3] ? `${data.spese.varie[3].descrizione}: ${data.spese.varie[3].importo}` : ''}</Text></View>
+            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[3] ? truncateClean(`${clean(data.spese.varie[3].descrizione)}${clean(data.spese.varie[3].importo) ? `: ${clean(data.spese.varie[3].importo)}` : ''}`, 24) : ''}</Text></View>
           </View>
         </View>
       </View>
@@ -498,14 +620,16 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>TRASCRIZIONE ORIGINALE</Text>
         <View style={styles.transcriptionBox}>
-          <Text style={styles.transcriptionText}>{data.trascrizione}</Text>
+          <Text style={styles.transcriptionText} {...max6}>
+            {truncateClean(data.trascrizione, 460)}
+          </Text>
         </View>
       </View>
 
       <View style={styles.footer} fixed>
-        <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" />
+        <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" alt="" />
         <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" />
+        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" alt="" />
         <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
       </View>
     </Page>
@@ -520,7 +644,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
 export const sampleReportData: ReportData = {
   id: '251220-0310-87A8',
   date: '20/12/2025, 03:10:14',
-  cliente: { azienda: 'Barilla', referente: 'N/D', sede: 'N/D' },
+  cliente: { azienda: 'Barilla', referente: '', sede: '' },
   intervento: {
     tipologia: 'Sostituzione componenti',
     statoFinale: 'COMPLETATO',
