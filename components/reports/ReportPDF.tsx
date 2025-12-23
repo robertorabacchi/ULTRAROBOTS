@@ -6,70 +6,169 @@ import {
   View,
   StyleSheet,
   Image,
-  type TextProps,
-  type DocumentProps,
 } from '@react-pdf/renderer';
 
 /**
- * ⚠️⚠️⚠️ ISTRUZIONI CRITICHE PER GPT - LIMITI CAMPI PDF ⚠️⚠️⚠️
+ * ⚠️⚠️⚠️ ISTRUZIONI DEFINITIVE PER GPT - COMPILAZIONE PDF RAPPORTO INTERVENTO ⚠️⚠️⚠️
  * 
- * TUTTI I CAMPI HANNO LIMITI DI TRONCAMENTO AUTOMATICO!
+ * 📋 LIMITI CARATTERI E RIGHE PER OGNI CAMPO
  * 
- * 📋 CAMPI CON LIMITI:
+ * REGOLA FONDAMENTALE: GPT DEVE RISPETTARE I LIMITI DI CARATTERI, NON LE RIGHE!
+ * Le righe sono un limite tecnico del PDF, MA IL CONTROLLO VA FATTO SUI CARATTERI!
  * 
- * 1. AZIENDA (con sede): numberOfLines={3}
- *    ✅ Formato: "Nome Azienda - Sede"
- *    ⚠️ Se troppo lungo viene TRONCATO a 3 righe
+ * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * 2. TIPOLOGIA: numberOfLines={3}
- *    ✅ Esempi: "Sostituzione componenti", "Manutenzione preventiva"
- *    ⚠️ Se troppo lungo viene TRONCATO a 3 righe
+ * 1️⃣ AZIENDA
+ *    - Max righe PDF: 6 (tecnico)
+ *    - Max caratteri: ~150 TOTALI (~25 per riga)
+ *    - Struttura dati da GPT (se disponibili):
+ *      1. Ragione Sociale
+ *      2. Via e Numero Civico
+ *      3. CAP + Città + Provincia (XX)
+ *      4. Partita IVA
+ *      5. Telefono
+ *      6. Email
+ *    - ⚠️ GPT: Se non hai tutti i dati, usa ciò che hai. Max 150 caratteri totali!
  * 
- * 3. REFERENTE: numberOfLines={1}
- *    ✅ Esempi: "Mario Rossi", "N/D"
- *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 2️⃣ TIPOLOGIA
+ *    - Max righe PDF: 6 (tecnico)
+ *    - Max caratteri: ~150 TOTALI (~25 per riga)
+ *    - Testo continuo
+ *    - ⚠️ GPT: Descrizione breve del tipo di intervento. Max 150 caratteri!
  * 
- * 4. STATO FINALE: numberOfLines={1}
- *    ✅ Esempi: "COMPLETATO", "IN CORSO", "ANNULLATO"
- *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 3️⃣ REFERENTE
+ *    - Max righe PDF: 1
+ *    - Max caratteri: 25
+ *    - ⚠️ GPT: Nome e cognome del referente. Max 25 caratteri!
  * 
- * 5. DESCRIZIONE ATTIVITÀ: numberOfLines={4}
- *    ✅ Descrizione breve dell'intervento (max 4 righe)
- *    ⚠️ Se troppo lunga viene TRONCATO a 4 righe
+ * 4️⃣ STATO FINALE
+ *    - Max righe PDF: 1
+ *    - Max caratteri: 25
+ *    - Valori tipici: "COMPLETATO", "IN CORSO", "ANNULLATO"
+ *    - ⚠️ GPT: Max 25 caratteri!
  * 
- * 6. COMPONENTI - DESCRIZIONE: numberOfLines={1}, MAX 15 caratteri!
- *    REGOLA ASSOLUTA: Le descrizioni devono essere BREVI (1-2 parole MAX)
- *    ✅ DESCRIZIONI CORRETTE:
- *       - Motore, Encoder, Inverter, Fotocellula, Cinghie, PLC, Relè sicurezza
- *       - Trasformatore, Sensore, Azionamento, Valvola, Cilindro, Filtro
- *    ❌ DESCRIZIONI SBAGLIATE (verranno TRONCATE):
- *       - "Motore elettrico trifase" ❌
- *       - "Encoder incrementale rotativo" ❌
- *       - "Sensore fotoelettrico retroriflettente" ❌
- *    MOTIVO: fontSize: 7, numberOfLines: 1, celle FISSE
- *    Solo 15-20 caratteri visibili nella colonna DESCRIZIONE!
+ * 5️⃣ DESCRIZIONE ATTIVITÀ
+ *    - Max righe PDF: 6 (tecnico, ininfluente)
+ *    - Max caratteri: 460 ⚠️⚠️⚠️
+ *    - Testo continuo
+ *    - ⚠️ GPT: Descrizione dettagliata dell'intervento. MAX 460 CARATTERI!
  * 
- * 7. NOTE CRITICHE: numberOfLines={4}
- *    ✅ Note brevi (max 4 righe)
- *    ⚠️ Se troppo lunghe vengono TRONCATE a 4 righe
+ * 6️⃣ COMPONENTI (MAX 8 TOTALI: 4 colonna SX + 4 colonna DX)
+ *    - Max righe per cella: 1
+ *    - Limiti caratteri per colonna:
+ *      • Quantità: 3 caratteri MAX
+ *      • Descrizione: 15 caratteri MAX ⚠️⚠️⚠️ (1-2 PAROLE!)
+ *      • Brand: 8 caratteri MAX
+ *      • Codice: 12 caratteri MAX
+ *    
+ *    ✅ DESCRIZIONI CORRETTE (1-2 parole, max 15 caratteri):
+ *       Motore, Encoder, Inverter, Fotocellula, Cinghie, PLC, Relè sicurezza,
+ *       Trasformatore, Sensore, Azionamento, Valvola, Cilindro, Filtro
+ *    
+ *    ❌ DESCRIZIONI SBAGLIATE (troppo lunghe):
+ *       "Motore elettrico trifase" ❌ → "Motore" ✅
+ *       "Encoder incrementale rotativo" ❌ → "Encoder" ✅
+ *    
+ *    ⚠️ GPT: DESCRIZIONI COMPONENTI DEVONO ESSERE BREVISSIME! MAX 15 CARATTERI!
  * 
- * 8. SPESE DI TRASFERTA (tutte le celle): numberOfLines={1}
- *    ✅ Formato breve per ogni campo (viaggio, vitto, pernottamento, varie)
- *    ⚠️ Se troppo lungo viene TRONCATO a 1 riga
+ * 7️⃣ NOTE CRITICHE
+ *    - Max righe PDF: 6 (tecnico, ininfluente)
+ *    - Max caratteri: 460 ⚠️⚠️⚠️
+ *    - Testo continuo
+ *    - ⚠️ GPT: Note importanti sull'intervento. MAX 460 CARATTERI!
  * 
- * 9. TRASCRIZIONE ORIGINALE: numberOfLines={7}
- *    ✅ Trascrizione completa (max 7 righe)
- *    ⚠️ Se troppo lunga viene TRONCATO a 7 righe
+ * 8️⃣ TRASCRIZIONE ORIGINALE
+ *    - Max righe PDF: 6 (tecnico, ininfluente)
+ *    - Max caratteri: 460 ⚠️⚠️⚠️
+ *    - Testo continuo
+ *    - ⚠️ GPT: Trascrizione vocale originale. MAX 460 CARATTERI!
  * 
- * ⚠️ REGOLA GENERALE: Se il testo supera numberOfLines, viene TRONCATO automaticamente!
- * NON modificare mai numberOfLines per far stare il testo!
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * 9️⃣ SPESE DI TRASFERTA (TUTTA LA TABELLA: 1 RIGA PER CELLA!)
+ * 
+ * 🚗 VIAGGIO (4 righe):
+ *    • Riga 1: Km (4 caratteri per numero)
+ *      Formato: "Km: XXXX"
+ *      Etichetta "Km:" mostrata SOLO se c'è valore
+ *    
+ *    • Riga 2: Importo Km
+ *      Formato: "Importo Km: xxxx,xx €"
+ *      Etichetta "Importo Km:" mostrata SOLO se c'è valore
+ *      ⚠️ CALCOLO AUTOMATICO: Km totali A/R × 0,8€/km
+ *      Esempio: 150 km A/R → 150 × 0,8 = 120,00 €
+ *    
+ *    • Riga 3: Pedaggio
+ *      Formato: "Importo Pedaggio: xxxx,xx €"
+ *      Etichetta "Importo Pedaggio:" mostrata SOLO se c'è valore
+ *    
+ *    • Riga 4: vuota
+ * 
+ * 🍽️ VITTO (4 righe):
+ *    • Riga 1: Posto Pranzo (20 caratteri max) - SENZA etichetta
+ *    • Riga 2: Importo Pranzo
+ *      Formato: "Importo: xxxx,xx €"
+ *      Etichetta "Importo:" SEMPRE presente
+ *      ⚠️ DEFAULT se non dichiarato: 15,00 € (con parentesi quadre: [15,00 €])
+ *    
+ *    • Riga 3: Posto Cena (20 caratteri max) - SENZA etichetta
+ *    • Riga 4: Importo Cena
+ *      Formato: "Importo: xxxx,xx €"
+ *      Etichetta "Importo:" SEMPRE presente
+ *      ⚠️ DEFAULT se non dichiarato: 35,00 € (con parentesi quadre: [35,00 €])
+ * 
+ * 🏨 PERNOTTAMENTO (4 righe):
+ *    • Riga 1: Nome Hotel (20 caratteri max) - SENZA etichetta
+ *    • Riga 2: Notti
+ *      Formato: "Notti: XXX"
+ *      Etichetta "Notti:" SEMPRE presente
+ *    
+ *    • Riga 3: Importo
+ *      Formato: "Importo: xxxx,xx €"
+ *      Etichetta "Importo:" SEMPRE presente
+ *      ⚠️ DEFAULT se non dichiarato: 80,00 € per notte
+ *      Esempio: 2 notti → [160,00 €] (con parentesi quadre)
+ *    
+ *    • Riga 4: vuota
+ * 
+ * 💼 VARIE (4 righe):
+ *    • 4 celle da 20 caratteri max ciascuna
+ *    • NESSUNA etichetta
+ *    • Formato libero: "Descrizione: importo"
+ * 
+ * ⚠️⚠️⚠️ FORMATO IMPORTI CRITICO ⚠️⚠️⚠️
+ *    - SEMPRE formato italiano: xxxx,xx € (virgola, € DOPO)
+ *    - Esempi corretti: "120,00 €", "15,00 €", "1.250,50 €"
+ *    - ❌ MAI: "€120,00", "120.00 €", "EUR 120,00"
+ * 
+ * ⚠️⚠️⚠️ PARENTESI QUADRE PER VALORI IPOTIZZATI ⚠️⚠️⚠️
+ *    - Senza parentesi: valore dichiarato dal tecnico → "25,00 €"
+ *    - Con parentesi: valore ipotizzato da GPT → "[15,00 €]"
+ *    - Usa "N/D" se la spesa NON è stata fatta
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * 🎯 CHECKLIST GPT PRIMA DI GENERARE IL PDF:
+ * 
+ * [ ] AZIENDA: max 150 caratteri
+ * [ ] TIPOLOGIA: max 150 caratteri
+ * [ ] REFERENTE: max 25 caratteri
+ * [ ] STATO FINALE: max 25 caratteri
+ * [ ] DESCRIZIONE: max 460 caratteri
+ * [ ] COMPONENTI descrizioni: max 15 caratteri (1-2 parole!)
+ * [ ] COMPONENTI max 8 totali (4 SX + 4 DX)
+ * [ ] NOTE CRITICHE: max 460 caratteri
+ * [ ] TRASCRIZIONE: max 460 caratteri
+ * [ ] IMPORTI formato italiano: xxxx,xx €
+ * [ ] CALCOLO KM corretto: A/R × 0,8€/km
+ * [ ] DEFAULT pranzo: [15,00 €] se non dichiarato
+ * [ ] DEFAULT cena: [35,00 €] se non dichiarato
+ * [ ] DEFAULT pernotto: [80,00 €] per notte se non dichiarato
+ * [ ] Parentesi quadre SOLO per valori ipotizzati
+ * [ ] "N/D" SOLO se spesa non fatta
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
  */
-export interface Componente {
-  quantita: string;
-  descrizione: string; // ⚠️ MAX 15 caratteri! Es: "Motore", "Encoder", "PLC"
-  brand: string;
-  codice: string;
-}
 
 export interface ReportData {
   id: string;
@@ -84,33 +183,17 @@ export interface ReportData {
     statoFinale: string;
     descrizione: string;
   };
-  // Supporta sia array di stringhe (vecchio formato) che array di oggetti (nuovo formato)
-  componenti: string[] | Componente[];
+  componenti: string[];
   noteCritiche: string;
   spese: {
     viaggio: {
-      km?: string;
-      costoKm?: string;
-      pedaggio?: string;
-      // Vecchio formato (backward compatibility)
-      destinazione?: string;
-      costo?: string;
+      destinazione: string;
+      km: string;
+      costo: string;
     };
-    // Nuovo formato (oggetto) o vecchio formato (stringa) per backward compatibility
-    vitto?: {
-      pranzoPosto: string;
-      pranzoImporto: string;
-      cenaPosto: string;
-      cenaImporto: string;
-    } | string;
-    // Nuovo formato (oggetto) o vecchio formato (stringa) per backward compatibility
-    pernottamento?: {
-      nomeHotel: string;
-      numeroNotti: string;
-      importo: string;
-    } | string;
-    // Nuovo formato (array) o vecchio formato (stringa) per backward compatibility
-    varie?: Array<{ descrizione: string; importo?: string }> | string;
+    vitto: string;
+    pernottamento: string;
+    varie: string;
   };
   trascrizione: string;
 }
@@ -125,7 +208,7 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 10,
     borderBottom: '2pt solid #000000',
-    paddingBottom: 8,
+    paddingBottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -167,10 +250,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
     marginTop: 10,
-    marginBottom: 0,
+    marginBottom: 2,
   },
   section: {
-    marginBottom: 13,
+    marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 10,
@@ -192,8 +275,6 @@ const styles = StyleSheet.create({
   },
   tableRowLast: {
     flexDirection: 'row',
-    minHeight: 18,  // ⚠️ ALTEZZA MINIMA FISSA! STESSA DELLE ALTRE RIGHE!
-    // ⚠️ NON ha borderBottomWidth perché è l'ultima riga della tabella
   },
   tableHeader: {
     backgroundColor: '#F5F5F5',
@@ -218,18 +299,6 @@ const styles = StyleSheet.create({
   colFull: { width: '100%' },
   colHeader: { width: '15%' },
   colValue: { width: '35%' },
-  // Tabella componenti doppia
-  componentsContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  componentTable: {
-    width: '48.5%',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    // Minimo calibrato su 1 header + 4 righe da 18px: evita spazio extra sotto l'ultima riga
-    minHeight: 90,
-  },
   descriptionBox: {
     padding: 8,
     backgroundColor: '#FAFAFA',
@@ -280,18 +349,9 @@ const styles = StyleSheet.create({
     right: 40,
     borderTop: '2pt solid #000000',
     paddingTop: 10,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-  },
-  footerLogo: {
-    height: 12,  // ⚠️ PICCOLO! NON MODIFICARE L'ALTEZZA FOOTER
-    width: 'auto',
-  },
-  footerLogoDigitalEngineered: {
-    height: 20,  // ⚠️ PIÙ GRANDE del logo ULTRAROBOTS per migliore visibilità
-    width: 'auto',
+    textAlign: 'center',
   },
   footerText: {
     fontSize: 7,
@@ -306,168 +366,43 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginTop: 2,
   },
-  // ⚠️ NON MODIFICARE MAI QUESTE LARGHEZZE! STRUTTURA APPROVATA E FINALE!
-  compColQta: { width: '10%', textAlign: 'center' },  // ❌ NON TOCCARE
-  compColDesc: { width: '36%' },  // ❌ NON TOCCARE
-  compColBrand: { width: '25%' },  // ❌ NON TOCCARE
-  compColCode: { width: '29%' },  // ❌ NON TOCCARE
-  // Totale: 100% - Se testo non entra = TRONCA, NON modificare larghezze!
-  // ⚠️ NON MODIFICARE padding e fontSize! STRUTTURA FINALE APPROVATA!
-  spesaCell: {
-    padding: 4,  // ❌ NON TOCCARE
-    fontSize: 7,  // ❌ NON TOCCARE
-    fontFamily: 'Helvetica',
-    color: '#000000',
-  },
-  spesaHeader: {
-    backgroundColor: '#F5F5F5',
-    fontFamily: 'Helvetica',
-    fontWeight: 'bold',
-    fontSize: 7.5,
-    padding: 5,
-  },
-  // ⚠️ NON MODIFICARE padding e fontSize! STRUTTURA FINALE APPROVATA!
-  componentCell: {
-    padding: 4,  // ❌ NON TOCCARE
-    fontSize: 7,  // ❌ NON TOCCARE
-    fontFamily: 'Helvetica',
-    color: '#000000',
-  },
-  componentHeader: {
-    backgroundColor: '#F5F5F5',
-    fontFamily: 'Helvetica',
-    fontWeight: 'bold',
-    fontSize: 7.5,
-    padding: 5,
-  },
-  componentHeaderQta: {
-    backgroundColor: '#F5F5F5',
-    fontFamily: 'Helvetica',
-    fontWeight: 'bold',
-    fontSize: 7.5,
-    padding: 5,
-    textAlign: 'center',
-  },
 });
 
-// Normalizza i valori: rimuove "N/D" e valori falsy, così i campi vuoti restano vuoti nel PDF
-const clean = (value?: string) => (value && value !== 'N/D' ? value : '');
-const truncateClean = (value: string | undefined, max: number) => {
-  const v = clean(value);
-  if (!v) return '';
-  return v.length > max ? `${v.slice(0, max - 1)}…` : v;
-};
-const formatKmValue = (value?: string) => {
-  const v = clean(value);
-  if (!v) return '';
-  const match = v.match(/[\d.,]+/);
-  return match ? match[0] : v;
-};
-const formatEuro = (value?: string) => {
-  const v = clean(value);
-  if (!v) return '';
-  return `€ ${v.replace(/€/g, '').trim()}`;
-};
-// Tipi @react-pdf/renderer non espongono maxLines in TextProps: forziamo con any.
-const max1 = { maxLines: 1 } as any;
-const max6 = { maxLines: 6 } as any;
-const isComponente = (comp: unknown): comp is Componente =>
-  typeof comp === 'object' && comp !== null && 'descrizione' in comp;
-
-const normalizeComp = (comp: string | Componente | undefined) => {
-  if (!comp) {
-    return { quantita: '', descrizione: '', brand: '', codice: '' };
-  }
-  if (isComponente(comp)) {
-    return {
-      quantita: clean(comp.quantita),
-      descrizione: clean(comp.descrizione),
-      brand: clean(comp.brand),
-      codice: clean(comp.codice),
-    };
-  }
-  const val = clean(comp);
-  return {
-    quantita: val,
-    descrizione: val,
-    brand: '',
-    codice: '',
-  };
-};
-const joinWithDash = (left?: string, right?: string) => {
-  const a = clean(left);
-  const b = clean(right);
-  if (a && b) return `${a} - ${b}`;
-  return a || b || '';
-};
-
-/**
- * ⚠️⚠️⚠️ REGOLA FERREA - NON MODIFICARE MAI QUESTA STRUTTURA ⚠️⚠️⚠️
- * 
- * ❌ NON TOCCARE:
- * - Larghezze colonne (compColQta, compColDesc, compColBrand, compColCode)
- * - fontSize (7, 7.5)
- * - padding (4, 5, 6)
- * - minHeight delle righe
- * - Layout generale
- * 
- * ✅ SE IL TESTO È TROPPO LUNGO: SI TRONCA AUTOMATICAMENTE (numberOfLines={1})
- * ✅ NON SI MODIFICA LA STRUTTURA PER FAR STARE IL TESTO!
- * 
- * QUESTA STRUTTURA È FINALE E APPROVATA. NON SI TOCCA MAI!
- */
-type ReportPDFProps = DocumentProps & { 
-  data: ReportData;
-  logoUltrarobots?: string;
-  logoDigitalEngineered?: string;
-};
-
-const baseUrl = process.env.SITE_URL || 'http://localhost:3000';
-
-const ReportPDF: React.FC<ReportPDFProps> = ({ data, logoUltrarobots, logoDigitalEngineered, ...documentProps }) => {
-  // Usa i loghi base64 se forniti, altrimenti fallback agli URL
-  const ultrarobotsLogo = logoUltrarobots || `${baseUrl}/assets/SVG_PNG/logo-wordmark-black.png`;
-  const digitalEngineeredLogo = logoDigitalEngineered || `${baseUrl}/assets/SVG_PNG/digitalengineered.wordmark-black.png`;
-
-  return (
-    <Document {...documentProps}>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.reportTitle}>RAPPORTO DI</Text>
-            <Text style={[styles.reportTitle, { marginTop: -2 }]}>INTERVENTO</Text>
-          </View>
-          <View style={styles.headerCenter}>
-            <Image
-              style={styles.logoImage}
-              src={ultrarobotsLogo}
-            />
-          </View>
-          <View style={styles.headerRight}>
-            <Text style={styles.reportId}>ID REPORT: {data.id}</Text>
-            <Text style={styles.reportDate}>DATA: {data.date}</Text>
-          </View>
+const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.reportTitle}>RAPPORTO DI</Text>
+          <Text style={styles.reportTitle}>INTERVENTO</Text>
         </View>
+        <View style={styles.headerCenter}>
+          <Image
+            style={styles.logoImage}
+            src="/assets/SVG_PNG/logo-wordmark-black.png"
+          />
+        </View>
+        <View style={styles.headerRight}>
+          <Text style={styles.reportId}>ID REPORT: {data.id}</Text>
+          <Text style={styles.reportDate}>DATA: {data.date}</Text>
+        </View>
+      </View>
 
       <View style={styles.section}>
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>AZIENDA</Text></View>
             <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { minHeight: 65 }]}>
-              <Text {...max6}>{truncateClean(joinWithDash(data.cliente.azienda, data.cliente.sede), 150)}</Text>
+              <Text>{data.cliente.azienda} - {data.cliente.sede}</Text>
             </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>TIPOLOGIA</Text></View>
-                <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text {...max6}>{truncateClean(data.intervento.tipologia, 150)}</Text></View>
+            <View style={[styles.tableCell, styles.colValue, { minHeight: 65 }]}><Text>{data.intervento.tipologia}</Text></View>
           </View>
           <View style={styles.tableRowLast}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>REFERENTE</Text></View>
-                <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { minHeight: 20 }]}>
-                  <Text {...max1}>{truncateClean(data.cliente.referente, 25)}</Text>
-                </View>
+            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder]}><Text>{data.cliente.referente}</Text></View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>STATO FINALE</Text></View>
-                <View style={[styles.tableCell, styles.colValue, { minHeight: 20 }]}>
-                  <Text {...max1}>{truncateClean(data.intervento.statoFinale, 25)}</Text>
-                </View>
+            <View style={[styles.tableCell, styles.colValue]}><Text>{data.intervento.statoFinale}</Text></View>
           </View>
         </View>
       </View>
@@ -475,158 +410,38 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ data, logoUltrarobots, logoDigita
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>DESCRIZIONE ATTIVITÀ</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text
-            style={styles.descriptionText}
-            {...max6} // fino a 6 righe, poi tronca
-          >
-            {truncateClean(data.intervento.descrizione, 460)}
-          </Text>
+          <Text style={styles.descriptionText}>{data.intervento.descrizione}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>COMPONENTI</Text>
-        <View style={styles.componentsContainer}>
-          {/* Tabella SX */}
-          <View style={styles.componentTable}>
-            <View style={styles.tableRow}>
-              <View style={[styles.componentHeaderQta, styles.compColQta, styles.tableCellBorder]}><Text>QTÀ</Text></View>
-              <View style={[styles.componentHeader, styles.compColDesc, styles.tableCellBorder]}><Text>DESCRIZIONE</Text></View>
-              <View style={[styles.componentHeader, styles.compColBrand, styles.tableCellBorder]}><Text>BRAND</Text></View>
-              <View style={[styles.componentHeader, styles.compColCode]}><Text>CODICE</Text></View>
-            </View>
-            {Array.from({ length: 4 }, (_, idx) => {
-              const comp = normalizeComp(data.componenti[idx] as string | Componente | undefined);
-              if (idx === 3) {
-                return (
-                  <View key={`comp-left-${idx}`} style={[styles.tableRowLast, { minHeight: 18 }]}>
-                    <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
-                      <Text>{truncateClean(comp.quantita, 3)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
-                      <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
-                      <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColCode]}>
-                      <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
-                    </View>
-                  </View>
-                );
-              }
-              return (
-                <View key={`comp-left-${idx}`} style={[styles.tableRow, { minHeight: 18 }]}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
-                    <Text>{truncateClean(comp.quantita, 3)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
-                    <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
-                    <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColCode]}>
-                    <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-
-          {/* Tabella DX */}
-          <View style={styles.componentTable}>
-            <View style={styles.tableRow}>
-              <View style={[styles.componentHeaderQta, styles.compColQta, styles.tableCellBorder]}><Text>QTÀ</Text></View>
-              <View style={[styles.componentHeader, styles.compColDesc, styles.tableCellBorder]}><Text>DESCRIZIONE</Text></View>
-              <View style={[styles.componentHeader, styles.compColBrand, styles.tableCellBorder]}><Text>BRAND</Text></View>
-              <View style={[styles.componentHeader, styles.compColCode]}><Text>CODICE</Text></View>
-            </View>
-            {Array.from({ length: 4 }, (_, idx) => {
-              const comp = normalizeComp(data.componenti[idx + 4] as string | Componente | undefined);
-              if (idx === 3) {
-                return (
-                  <View key={`comp-right-${idx}`} style={[styles.tableRowLast, { minHeight: 18 }]}>
-                    <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
-                      <Text>{truncateClean(comp.quantita, 3)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
-                      <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
-                      <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
-                    </View>
-                    <View style={[styles.componentCell, styles.compColCode]}>
-                      <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
-                    </View>
-                  </View>
-                );
-              }
-              return (
-                <View key={`comp-right-${idx}`} style={[styles.tableRow, { minHeight: 18 }]}>
-                  <View style={[styles.componentCell, styles.compColQta, styles.tableCellBorder]}>
-                    <Text>{truncateClean(comp.quantita, 3)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColDesc, styles.tableCellBorder]}>
-                    <Text {...max1}>{truncateClean(comp.descrizione, 15)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColBrand, styles.tableCellBorder]}>
-                    <Text {...max1}>{truncateClean(comp.brand, 8)}</Text>
-                  </View>
-                  <View style={[styles.componentCell, styles.compColCode]}>
-                    <Text {...max1}>{truncateClean(comp.codice, 12)}</Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
+        <View style={[styles.descriptionBox, { minHeight: 75 }]}>
+          <Text style={styles.descriptionText}>{data.componenti.join(' • ')}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>NOTE CRITICHE</Text>
         <View style={[styles.descriptionBox, { minHeight: 75 }]}>
-          <Text
-            style={styles.descriptionText}
-            {...max6} // fino a 6 righe, poi tronca
-          >
-            {truncateClean(data.noteCritiche, 460)}
-          </Text>
+          <Text style={styles.descriptionText}>{data.noteCritiche}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>SPESE DI TRASFERTA</Text>
-        <View style={[styles.table, { minHeight: 90 }]}>
+        <View style={styles.table}>
           <View style={styles.tableRow}>
-            <View style={[styles.spesaHeader, styles.col4, styles.tableCellBorder]}><Text>VIAGGIO</Text></View>
-            <View style={[styles.spesaHeader, styles.col4, styles.tableCellBorder]}><Text>VITTO</Text></View>
-            <View style={[styles.spesaHeader, styles.col4, styles.tableCellBorder]}><Text>PERNOTTO</Text></View>
-            <View style={[styles.spesaHeader, styles.col4]}><Text>VARIE</Text></View>
+            <View style={[styles.tableHeader, styles.col4, styles.tableCellBorder]}><Text>VIAGGIO</Text></View>
+            <View style={[styles.tableHeader, styles.col4, styles.tableCellBorder]}><Text>VITTO</Text></View>
+            <View style={[styles.tableHeader, styles.col4, styles.tableCellBorder]}><Text>PERNOTTO</Text></View>
+            <View style={[styles.tableHeader, styles.col4]}><Text>VARIE</Text></View>
           </View>
-          <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.km) ? truncateClean(`Km: ${formatKmValue(data.spese.viaggio.km)}`, 18) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? truncateClean(data.spese.vitto.pranzoPosto, 24) : (typeof data.spese.vitto === 'string' ? truncateClean(data.spese.vitto, 24) : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento ? truncateClean(data.spese.pernottamento.nomeHotel, 24) : (typeof data.spese.pernottamento === 'string' ? truncateClean(data.spese.pernottamento, 24) : '')}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[0] ? truncateClean(`${clean(data.spese.varie[0].descrizione)}${clean(data.spese.varie[0].importo) ? `: ${clean(data.spese.varie[0].importo)}` : ''}`, 24) : ''}</Text></View>
-          </View>
-          <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.costoKm) ? truncateClean(`Importo Km: ${formatEuro(data.spese.viaggio.costoKm)}`, 20) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto && clean(data.spese.vitto.pranzoPosto) ? truncateClean(`Importo: ${formatEuro(data.spese.vitto.pranzoImporto)}`, 20) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && clean(data.spese.pernottamento.nomeHotel) ? truncateClean(`Notti: ${clean(data.spese.pernottamento.numeroNotti)}`, 12) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[1] ? truncateClean(`${clean(data.spese.varie[1].descrizione)}${clean(data.spese.varie[1].importo) ? `: ${clean(data.spese.varie[1].importo)}` : ''}`, 24) : ''}</Text></View>
-          </View>
-          <View style={[styles.tableRow, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{clean(data.spese.viaggio.pedaggio) ? truncateClean(`Importo Pedaggio: ${formatEuro(data.spese.viaggio.pedaggio)}`, 20) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.vitto === 'object' && data.spese.vitto ? truncateClean(data.spese.vitto.cenaPosto, 24) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text {...max1}>{typeof data.spese.pernottamento === 'object' && data.spese.pernottamento && clean(data.spese.pernottamento.nomeHotel) ? truncateClean(`Importo: ${formatEuro(data.spese.pernottamento.importo)}`, 20) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[2] ? truncateClean(`${clean(data.spese.varie[2].descrizione)}${clean(data.spese.varie[2].importo) ? `: ${clean(data.spese.varie[2].importo)}` : ''}`, 24) : ''}</Text></View>
-          </View>
-          <View style={[styles.tableRowLast, { minHeight: 18 }]}>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text>{typeof data.spese.vitto === 'object' && data.spese.vitto && clean(data.spese.vitto.cenaPosto) ? truncateClean(`Importo: ${formatEuro(data.spese.vitto.cenaImporto)}`, 22) : ''}</Text></View>
-            <View style={[styles.spesaCell, styles.col4, styles.tableCellBorder]}><Text></Text></View>
-            <View style={[styles.spesaCell, styles.col4]}><Text {...max1}>{Array.isArray(data.spese.varie) && data.spese.varie[3] ? truncateClean(`${clean(data.spese.varie[3].descrizione)}${clean(data.spese.varie[3].importo) ? `: ${clean(data.spese.varie[3].importo)}` : ''}`, 24) : ''}</Text></View>
+          <View style={styles.tableRow}>
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>Dest: {data.spese.viaggio.destinazione}</Text></View>
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>{data.spese.vitto}</Text></View>
+            <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { minHeight: 45 }]}><Text>{data.spese.pernottamento}</Text></View>
+            <View style={[styles.tableCell, styles.col4, { minHeight: 45 }]}><Text>{data.spese.varie}</Text></View>
           </View>
         </View>
       </View>
@@ -634,63 +449,33 @@ const ReportPDF: React.FC<ReportPDFProps> = ({ data, logoUltrarobots, logoDigita
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>TRASCRIZIONE ORIGINALE</Text>
         <View style={styles.transcriptionBox}>
-          <Text style={styles.transcriptionText} {...max6}>
-            {truncateClean(data.trascrizione, 460)}
-          </Text>
+          <Text style={styles.transcriptionText}>{data.trascrizione}</Text>
         </View>
       </View>
 
       <View style={styles.footer} fixed>
-        <Image style={styles.footerLogo} src={ultrarobotsLogo} />
-        <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogoDigitalEngineered} src={digitalEngineeredLogo} />
-        <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
+        <Text style={styles.footerText}>ULTRAROBOTS.AI        TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY DIGITALENGINEERED.AI     ALL RIGHT RESERVED</Text>
       </View>
     </Page>
   </Document>
-  );
-};
+);
 
-/**
- * ⚠️ GPT: QUESTO È L'ESEMPIO DA SEGUIRE!
- * NOTA BENE: Le descrizioni sono BREVI (1-2 parole)
- * NON usare MAI descrizioni lunghe come "Motore elettrico trifase"!
- */
 export const sampleReportData: ReportData = {
   id: '251220-0310-87A8',
   date: '20/12/2025, 03:10:14',
-  cliente: { azienda: 'Barilla', referente: '', sede: '' },
+  cliente: { azienda: 'Barilla', referente: 'N/D', sede: 'N/D' },
   intervento: {
     tipologia: 'Sostituzione componenti',
     statoFinale: 'COMPLETATO',
-    descrizione: 'Sostituiti motori ed encoder difettosi, sostituiti inverter e cinghie del sistema di trascinamento.',
+    descrizione: 'Sostituiti 10 motori, 2 encoder, 4 inverter e tutte le cinghie dei trascinatori presso Barilla.',
   },
-  componenti: [
-    // ✅ Descrizioni CORRETTE: brevi, 1-2 parole, max 15 caratteri
-    { quantita: '10', descrizione: 'Motore', brand: 'Siemens', codice: '1LA7096-4AA60' },
-    { quantita: '2', descrizione: 'Encoder', brand: 'Heidenhain', codice: 'ERN420-1024' },
-    { quantita: '4', descrizione: 'Inverter', brand: 'ABB', codice: 'ACS580-025A' },
-    { quantita: '5', descrizione: 'Cinghie', brand: 'Gates', codice: '5M-15-HTD' },
-    { quantita: '8', descrizione: 'Fotocellula', brand: 'Sick', codice: 'WTB4-3P3161' },
-    { quantita: '1', descrizione: 'PLC', brand: 'Allen Bradley', codice: '1769-L32E' },
-    { quantita: '6', descrizione: 'Relè sicurezza', brand: 'Pilz', codice: 'PNOZ X3' }, // Max 2 parole OK
-    { quantita: '3', descrizione: 'Trasformatore', brand: 'Schneider', codice: 'ABL6TS25U' },
-  ],
+  componenti: ['motori', 'encoder', 'inverter', 'cinghie'],
   noteCritiche: 'Nessuna',
   spese: {
-    viaggio: { km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
-    vitto: {
-      pranzoPosto: 'Trattoria del Borgo',
-      pranzoImporto: '€ 25,00',
-      cenaPosto: 'Hotel',
-      cenaImporto: '[€ 30,00]',
-    },
-    pernottamento: {
-      nomeHotel: 'Hotel Centrale',
-      numeroNotti: '2 notti',
-      importo: '[€ 160,00]',
-    },
-    varie: [],
+    viaggio: { destinazione: 'N/D', km: 'N/D', costo: 'N/D' },
+    vitto: 'N/D',
+    pernottamento: 'N/D',
+    varie: '4 viti',
   },
   trascrizione: 'Fatto in Barilla abbiamo sostituito 10 motori, 2 encoder, 4 inverter, tutte le cinghie dei trascinatori, eccetera eccetera. Siamo stati li 2 giorni e bisogna fargli pagare 2 pernottamenti 4 viti e I chilometri andata e ritorno. Ciao',
 };

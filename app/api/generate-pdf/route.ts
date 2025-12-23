@@ -3,6 +3,36 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 
+/**
+ * ⚠️⚠️⚠️ ISTRUZIONI DEFINITIVE PER GPT - COMPILAZIONE PDF RAPPORTO INTERVENTO ⚠️⚠️⚠️
+ * 
+ * Vedi istruzioni complete in: components/reports/ReportPDF.tsx
+ * 
+ * 📋 RIEPILOGO RAPIDO LIMITI:
+ * 
+ * - AZIENDA: max 150 caratteri (~25 per riga, 6 righe)
+ * - TIPOLOGIA: max 150 caratteri (~25 per riga, 6 righe)
+ * - REFERENTE: max 25 caratteri (1 riga)
+ * - STATO FINALE: max 25 caratteri (1 riga)
+ * - DESCRIZIONE ATTIVITÀ: max 460 caratteri (6 righe)
+ * - COMPONENTI descrizione: max 15 caratteri (1-2 PAROLE!)
+ * - COMPONENTI quantità: max 3 caratteri
+ * - COMPONENTI brand: max 8 caratteri
+ * - COMPONENTI codice: max 12 caratteri
+ * - COMPONENTI max 8 totali (4 SX + 4 DX)
+ * - NOTE CRITICHE: max 460 caratteri (6 righe)
+ * - TRASCRIZIONE: max 460 caratteri (6 righe)
+ * 
+ * SPESE:
+ * - Formato importi: xxxx,xx € (virgola, € DOPO)
+ * - Km: calcolo automatico A/R × 0,8€/km
+ * - Default pranzo: [15,00 €] se non dichiarato
+ * - Default cena: [35,00 €] se non dichiarato
+ * - Default pernotto: [80,00 €] per notte se non dichiarato
+ * - Parentesi quadre [] SOLO per valori ipotizzati
+ * - "N/D" SOLO se spesa non fatta
+ */
+
 export const dynamic = 'force-dynamic';
 
 export async function OPTIONS() {
