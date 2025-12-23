@@ -121,9 +121,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 10,
     borderBottom: '2pt solid #000000',
-    paddingBottom: 10,
+    paddingBottom: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -165,10 +165,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
     marginTop: 10,
-    marginBottom: 2,
+    marginBottom: 0,
   },
   section: {
-    marginBottom: 15,
+    marginBottom: 13,
   },
   sectionTitle: {
     fontSize: 10,
@@ -283,6 +283,10 @@ const styles = StyleSheet.create({
     height: 12,  // ⚠️ PICCOLO! NON MODIFICARE L'ALTEZZA FOOTER
     width: 'auto',
   },
+  footerLogoDigitalEngineered: {
+    height: 20,  // ⚠️ PIÙ GRANDE del logo ULTRAROBOTS per migliore visibilità
+    width: 'auto',
+  },
   footerText: {
     fontSize: 7,
     fontFamily: 'Helvetica',
@@ -361,7 +365,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.reportTitle}>RAPPORTO DI</Text>
-          <Text style={styles.reportTitle}>INTERVENTO</Text>
+          <Text style={[styles.reportTitle, { marginTop: -2 }]}>INTERVENTO</Text>
         </View>
         <View style={styles.headerCenter}>
           <Image
@@ -501,7 +505,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => (
       <View style={styles.footer} fixed>
         <Image style={styles.footerLogo} src="/assets/SVG_PNG/logo-wordmark-black.png" />
         <Text style={styles.footerText}>TITAN 4.5 PROTOCOL EMBEDED      CORE  DESIGNED  BY</Text>
-        <Image style={styles.footerLogo} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" />
+        <Image style={styles.footerLogoDigitalEngineered} src="/assets/SVG_PNG/digitalengineered.wordmark-black.png" />
         <Text style={styles.footerText}>ALL RIGHT RESERVED</Text>
       </View>
     </Page>
