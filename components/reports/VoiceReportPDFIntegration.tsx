@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import VoiceReport from '@/components/voice/VoiceReport';
 import { ReportData } from '@/components/reports/ReportPDF';
-import { convertOldToNewFormat } from '@/lib/pdf-data-converter';
 
 /**
  * Esempio di integrazione tra VoiceReport e il nuovo sistema PDF
@@ -30,7 +29,7 @@ export default function VoiceReportPDFIntegration() {
       formData.append('audio', audioBlob, 'recording.webm');
       
       // 2. Invia l'audio all'API per la trascrizione e l'analisi
-      const processResponse = await fetch('/api/process-voice-report', {
+      const processResponse = await fetch('/api/process-audio', {
         method: 'POST',
         body: formData,
       });
@@ -42,15 +41,15 @@ export default function VoiceReportPDFIntegration() {
       const processedData = await processResponse.json();
       console.log('Dati processati:', processedData);
 
-      // 3. Converti i dati al nuovo formato
-      const reportData: ReportData = convertOldToNewFormat({
-        id: processedData.reportData?.id,
-        cliente: processedData.reportData?.cliente,
-        intervento: processedData.reportData?.intervento,
-        spese: processedData.reportData?.spese,
-        noteCritiche: processedData.reportData?.noteCritiche,
-        transcript: processedData.transcript || transcript,
-      });
+      // 3. Usa i dati già normalizzati dall'API
+      if (!processedData.reportData) {
+        throw new Error('Report data non disponibile');
+      }
+
+      const reportData: ReportData = {
+        ...processedData.reportData,
+        trascrizione: processedData.transcript || processedData.reportData.trascrizione || transcript,
+      };
 
       // 4. Genera il PDF con il nuovo sistema
       const pdfResponse = await fetch('/api/generate-pdf', {

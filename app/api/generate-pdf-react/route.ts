@@ -28,53 +28,130 @@ export async function OPTIONS() {
 /**
  * API Route per generare PDF usando @react-pdf/renderer
  * 
- * ⚠️⚠️⚠️ ISTRUZIONI CRITICHE E MILLIMETRICHE PER GPT - COMPILAZIONE PDF ⚠️⚠️⚠️
+ * ⚠️⚠️⚠️ REGOLA FERREA - NON MODIFICARE MAI LA STRUTTURA PDF ⚠️⚠️⚠️
  * 
- * ⏱️ TEMPO MASSIMO RICERCA DATI ESTERNI: 30 SECONDI TOTALI.
- * Se non trovi info su Azienda/Hotel/Ristoranti in 30s → USA "N/D" o dati generici plausibili.
- * NON BLOCCARE IL PROCESSO PER CERCARE DATI. VELOCITÀ > PERFEZIONE.
+ * ❌ NON MODIFICARE MAI:
+ * - Larghezze colonne tabelle
+ * - fontSize (7, 7.5)
+ * - padding (4, 5, 6)
+ * - Layout generale
+ * - Struttura ReportPDF.tsx
  * 
- * 📏 REGOLE DI FORMATTAZIONE E LIMITI (RISPETTARE TASSATIVAMENTE):
+ * ✅ SE TESTO TROPPO LUNGO: SI TRONCA (numberOfLines limitato per OGNI sezione)
+ * ✅ NON SI MODIFICA LA STRUTTURA PER FAR STARE IL TESTO!
  * 
- * 1. 🏢 SEZIONE AZIENDA (6 Righe FISSE - Altezza 13pt l'una):
- *    - Riga 1 (Azienda): Max 150 char.
- *    - Riga 2 (Indirizzo): Max 150 char.
- *    - Riga 3 (Città): Max 150 char.
- *    - Riga 4 (P.IVA): Formato "P.IVA: XXXXX".
- *    - Riga 5 (Telefono): SOLO IL NUMERO. ❌ NO prefissi "Tel:", "Cell:". Max 1 riga.
- *    - Riga 6 (Email): SOLO EMAIL. ❌ NO prefissi "Email:", "PEC:". Max 1 riga.
+ * LIMITI TESTO PER SEZIONE:
+ * - AZIENDA/TIPOLOGIA: max 3 righe
+ * - REFERENTE/STATO FINALE: max 1 riga
+ * - DESCRIZIONE ATTIVITÀ: max 4 righe (circa 200 caratteri)
+ * - COMPONENTI descrizioni: max 1 riga, MAX 15 caratteri (1-2 parole)
+ * - NOTE CRITICHE: max 4 righe (circa 200 caratteri)
+ * - SPESE: max 1 riga per cella
+ * - TRASCRIZIONE: max 7 righe (circa 400 caratteri)
  * 
- * 2. 🔧 COMPONENTI (Tabella Rigida - Altezza riga 18.25pt):
- *    - Q.TÀ: Max 3 char (es: "10", "5"). CENTRATO.
- *    - DESCRIZIONE: Max 15 char (1-2 parole chiave). ES: "Motore", "Sensore", "Cinghia".
- *      ❌ NO: "Motore elettrico trifase asincrono..." (VERRÀ TRONCATO!)
- *    - BRAND: Max 8 char. Es: "Siemens", "Omron".
- *    - CODICE: Max 12 char. Es: "1LA7096...".
+ * COMPONENTI - DESCRIZIONI DEVONO ESSERE BREVI (MAX 15 caratteri, 1-2 parole)
  * 
- * 3. 💸 SPESE (Formatta SEMPRE come valuta):
- *    - Formato: "€120,00" (Virgola per decimali, € davanti).
- *    - Km: "150 km A/R" (Totale andata/ritorno).
- *    - Costo Km: Km totali * 0.80.
+ * ✅ CORRETTO:
+ * componenti: [
+ *   { quantita: '10', descrizione: 'Motore', brand: 'Siemens', codice: '1LA7096-4AA60' },
+ *   { quantita: '2', descrizione: 'Encoder', brand: 'Heidenhain', codice: 'ERN420-1024' },
+ *   { quantita: '8', descrizione: 'Fotocellula', brand: 'Sick', codice: 'WTB4-3P3161' },
+ * ]
  * 
- * 4. 🧠 USO DELLA CONOSCENZA (TIMEBOX 30s):
- *    - Se l'utente dice "Barilla Parma":
- *      → Cerca RAPIDAMENTE indirizzo Barilla Parma.
- *      → Cerca RAPIDAMENTE 1 hotel e 1 ristorante in zona.
- *      → Se trovi in <30s: INSERISCI.
- *      → Se NON trovi: "N/D" o "Hotel in zona Parma".
+ * ❌ SBAGLIATO (verranno TRONCATE nel PDF):
+ * componenti: [
+ *   { descrizione: 'Motore elettrico trifase asincrono' },  // ❌ TROPPO LUNGO!
+ *   { descrizione: 'Encoder incrementale rotativo' },       // ❌ TROPPO LUNGO!
+ * ]
  * 
- * 5. 🚫 DIVIETI ASSOLUTI:
- *    - MAI inventare codici tecnici se non specificati.
- *    - MAI scrivere testi lunghi nelle celle piccole (Componenti).
- *    - MAI usare formati data americani.
+ * ⚠️⚠️⚠️ REGOLA CRITICA - CALCOLO SPESE DI VIAGGIO ⚠️⚠️⚠️
+ * Quando ricevi dati con chilometri, VERIFICA che il calcolo sia corretto:
+ * - Importo Km = Km totali (andata + ritorno) × 0,8€/km
+ * - Esempio: km: "150 km A/R" → costoKm deve essere "€120,00" (150 × 0,8)
+ * - Se km contiene solo andata, moltiplica per 2 prima di calcolare
+ * - Il campo "km" deve contenere il totale A/R (es: "150 km A/R")
+ * - Il campo "costoKm" deve contenere l'importo calcolato (es: "€120,00")
  * 
- * ✅ CHECKLIST FINALE RAPIDA:
- * □ Ho rispettato i 30s?
- * □ Telefono e Email sono "puliti" (senza prefissi)?
- * □ Descrizioni componenti sono < 15 caratteri?
- * □ Importi hanno la virgola?
+ * ⚠️⚠️⚠️ REGOLA CRITICA - SPESE DI VITTO ⚠️⚠️⚠️
+ * Formato richiesto per vitto:
+ * - pranzoPosto: nome ristorante/locale (es: "Trattoria del Borgo")
+ * - pranzoImporto: formato "€XX,XX" (es: "€25,00")
+ * - cenaPosto: nome ristorante/locale (es: "Hotel")
+ * - cenaImporto: formato "€XX,XX" (es: "€30,00")
  * 
- * SE SÌ → GENERA JSON.
+ * ⚠️⚠️⚠️ VALORI DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️
+ * Se il tecnico NON menziona l'importo MA ha fatto pranzo/cena (dedotto dal contesto):
+ * - pranzoImporto: "[€ 15,00]" (parentesi quadre = ipotizzato)
+ * - cenaImporto: "[€ 30,00]" (parentesi quadre = ipotizzato)
+ * 
+ * ⚠️⚠️⚠️ REGOLA CRITICA - SPESE DI PERNOTTAMENTO ⚠️⚠️⚠️
+ * Formato richiesto per pernottamento:
+ * - nomeHotel: nome hotel/albergo (es: "Hotel Centrale")
+ * - numeroNotti: numero notti come stringa (es: "2", "1")
+ * - importo: formato "€XX,XX" (es: "€160,00")
+ * 
+ * ⚠️⚠️⚠️ VALORE DI DEFAULT TRA PARENTESI QUADRE [ ] ⚠️⚠️⚠️
+ * Se il tecnico NON menziona l'importo MA ha pernottato (dedotto dal contesto):
+ * - Calcola "[€ 80,00]" per notte e moltiplica per il numero di notti
+ * - Esempio: 1 notte → importo: "[€ 80,00]"
+ * - Esempio: 2 notti → importo: "[€ 160,00]" (80 × 2)
+ * - Se dice prezzo a notte: calcola totale (es. "€80/notte x 2 = € 160,00")
+ * - Valore standard: €80/notte se non dichiarato
+ * 
+ * ⚠️ FORMATO IMPORTI:
+ * - SEMPRE formato "€XX,XX" con virgola come separatore decimale
+ * - Esempi: "€25,00", "€30,50", "€160,00"
+ * - Senza parentesi "€XX,XX" = dichiarato dal tecnico
+ * - Con parentesi "[€XX,XX]" = ipotizzato da GPT quando non dichiarato
+ * 
+ * ⚠️⚠️⚠️ REGOLA CRITICA - VISUALIZZAZIONE CONDIZIONALE CAMPI ⚠️⚠️⚠️
+ * Nel PDF, alcuni campi vengono mostrati SOLO SE la riga superiore non è "N/D":
+ * 
+ * ✅ VITTO:
+ * - pranzoPosto e cenaPosto vengono SEMPRE mostrati (anche se "N/D")
+ * - Importo pranzo viene mostrato SOLO SE pranzoPosto !== 'N/D' (riga superiore)
+ * - Importo cena viene mostrato SOLO SE cenaPosto !== 'N/D' (riga superiore)
+ * - Se pranzoPosto o cenaPosto sono "N/D", gli importi NON vengono mostrati nel PDF
+ * 
+ * ✅ PERNOTTAMENTO:
+ * - nomeHotel viene SEMPRE mostrato (anche se "N/D")
+ * - Notti e Importo vengono mostrati SOLO SE nomeHotel !== 'N/D' (riga superiore)
+ * - Se nomeHotel è "N/D", notti e importo NON vengono mostrati nel PDF
+ * 
+ * ✅ VIAGGIO:
+ * - Km, Importo Km e Importo Pedaggio vengono mostrati SOLO SE i rispettivi campi !== 'N/D'
+ * - Se sono "N/D", i campi rimangono vuoti nel PDF
+ * 
+ * ✅ VARIE:
+ * - Mostra solo se esistono (varie[0], varie[1], varie[2], varie[3])
+ * - Se non esistono, il campo rimane vuoto
+ * 
+ * UTILIZZO:
+ * 
+ * POST /api/generate-pdf-react
+ * Body: {
+ *   reportData: {
+ *     id: "251220-0310-87A8",
+ *     date: "20/12/2025, 03:10:14",
+ *     cliente: { azienda: "Barilla", referente: "N/D", sede: "N/D" },
+ *     intervento: {
+ *       tipologia: "Sostituzione componenti",
+ *       statoFinale: "COMPLETATO",
+ *       descrizione: "Descrizione dettagliata..."
+ *     },
+ *     componenti: [
+ *       { quantita: '10', descrizione: 'Motore', brand: 'Siemens', codice: '1LA7096-4AA60' }
+ *     ],
+ *     noteCritiche: "Nessuna",
+ *     spese: {
+ *       viaggio: { km: "150", costoKm: "€0.50", pedaggio: "€10.00" },
+ *       vitto: { pranzoPosto: "Trattoria", pranzoImporto: "€25.00", cenaPosto: "Hotel", cenaImporto: "€30.00" },
+ *       pernottamento: { nomeHotel: "Hotel Centrale", numeroNotti: "2", importo: "€160.00" },
+ *       varie: [{ descrizione: "Materiale", importo: "€45.00" }]
+ *     },
+ *     trascrizione: "Testo della trascrizione..."
+ *   }
+ * }
  */
 
 export async function POST(request: NextRequest) {

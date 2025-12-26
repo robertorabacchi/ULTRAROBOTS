@@ -1,121 +1,70 @@
-# 📄 DOCUMENTAZIONE TECNICA: SISTEMA GENERAZIONE REPORT PDF
+# 🏗️ SPECIFICHE TECNICHE STAND-ALONE: GENERATORE PDF V2
 
-> **STATO:** 🟢 FUNZIONANTE (Stress Test Superato)  
-> **DATA ULTIMO AGGIORNAMENTO:** 20/12/2025 (Versione Finale Incorruttibile)  
-> **TECNOLOGIA:** `@react-pdf/renderer` v3.x  
-> **FILE CHIAVE:** `components/reports/ReportPDF.tsx`
+Questo blueprint permette di replicare integralmente il sistema di generazione report, garantendo stabilità grafica e precisione nei dati reali.
 
 ---
 
-## 🔒 ISTRUZIONI DI SICUREZZA E RIPRISTINO
+## 1. Architettura di Popolamento (Pipeline Deterministica)
 
-Il file sorgente `components/reports/ReportPDF.tsx` è stato messo in **lock** per prevenire modifiche accidentali che potrebbero corrompere il layout.
+Il sistema deve processare i dati in questa sequenza esatta:
 
-### 🆘 PROCEDURA DI EMERGENZA
-Se il PDF non viene generato correttamente o il layout si rompe dopo una modifica:
+1. **Analisi Vocale (GPT-4o)**  
+   - Estrazione di Ragione Sociale, attività e importi dinamici (Pranzo, Cena, Pernotto).
 
-1.  Apri il terminale nella root del progetto.
-2.  Esegui il comando:
-    ```bash
-    ./restore_pdf_report.sh
-    ```
-3.  Conferma con `s`. Il file verrà sovrascritto con l'ultima versione funzionante salvata in `backups/pdf_report_final/`.
+2. **Validazione Azienda (Nominatim)**  
+   - Ricerca per Ragione Sociale.  
+   - Override: sovrascrivere l'indirizzo dell'AI con quello ufficiale (es. Via Artigianale 65, Flero).
 
----
+3. **Ricerca Punti di Interesse (Nearby POI)**  
+   - Basandosi sulle coordinate dell'azienda, il sistema deve interrogare Nominatim per:  
+     - `amenity=restaurant` (raggio 5 km) → inserire nome reale in VITTO.  
+     - `amenity=hotel` (raggio 10 km) → inserire nome reale in PERNOTTO.
 
-## ⚙️ SPECIFICHE TECNICHE DI IMPLEMENTAZIONE (DETTAGLIO COMPLETO)
-
-### 1. Libreria e Rendering
-Utilizziamo **@react-pdf/renderer** per generare PDF lato server (Next.js API Route).
-- **NON** usiamo `pdfkit` (rimosso dal progetto).
-- **Usiamo componenti React nativi per PDF:** `<Document>`, `<Page>`, `<View>`, `<Text>`, `<Image>`.
-
-### 2. Layout e Styling (REGOLE FERREE)
-Per garantire che il PDF rimanga intatto anche con dati lunghi ("Stress Test"), sono state applicate le seguenti regole CSS/StyleSheet:
-
-#### A. Tabella COMPONENTI (Sezione Critica)
-*   **Struttura:** Griglia fissa con altezza riga `18.25pt`.
-*   **Stili Celle (Sovrascritti per evitare clipping):**
-    *   `padding: 2` (ridotto da 6 default).
-    *   `justifyContent: 'center'` (allineamento verticale).
-    *   `overflow: 'hidden'` (previene sbordature).
-*   **Stili Testo:**
-    *   `fontSize: 8` (ridotto da 9 default).
-    *   **Nessun** `numberOfLines` (gestito da truncate).
-*   **Dimensioni Colonne:**
-    1.  **Q.TÀ:** Larghezza **13%** | Allineamento **Center** (`alignItems: 'center'`, `textAlign: 'center'`).
-    2.  **DESCRIZIONE:** Larghezza **33%** | Allineamento Left.
-    3.  **BRAND:** Larghezza **25%** | Allineamento Left.
-    4.  **CODICE:** Larghezza **29%** | Allineamento Left.
-
-#### B. Sezione AZIENDA (Cliente)
-*   **Righe 1-4:** Stile standard con `borderBottom`.
-*   **Riga 5 (Telefono):**
-    *   Altezza fissa: `13pt`.
-    *   Padding Left: `4`.
-    *   Font Size: `9`.
-    *   Limitazione: `numberOfLines={1}`.
-    *   **Contenuto:** Solo il numero (Nessun prefisso "Tel:").
-*   **Riga 6 (Email):**
-    *   Altezza fissa: `13pt`.
-    *   Padding Left: `4`.
-    *   Font Size: `9`.
-    *   Limitazione: `numberOfLines={1}`.
-    *   **Contenuto:** Solo l'email (Nessun prefisso "Email:").
-    *   **Nota:** Nessun bordo inferiore (ultima riga).
-
-#### C. Footer (Loghi)
-*   Posizione assoluta `bottom: 30`.
-*   **ULTRAROBOTS.AI:**
-    *   Altezza: **15**.
-    *   Margine Destro: 8.
-*   **DIGITALENGINEERED.AI:**
-    *   Altezza: **25**.
-    *   Margini: 10 (sx/dx).
-*   I loghi sono caricati come stringhe Base64 da `lib/pdf-logos-base64.ts`.
-
-### 3. Logica di Troncamento (`truncate` helper)
-Poiché le celle hanno altezza fissa, il testo **DEVE** essere troncato per non rompere il layout.
-La funzione helper `truncate(text, limit)` taglia nettamente la stringa al numero di caratteri specificato.
-
-*   Q.TÀ: Max **3** caratteri.
-*   DESCRIZIONE: Max **15** caratteri.
-*   BRAND: Max **8** caratteri.
-*   CODICE: Max **12** caratteri.
-*   DESCRIZIONI ATTIVITÀ: Max **460** caratteri.
-*   REFERENTE/STATO: Max **25** caratteri.
-*   ID REPORT: Max **15** caratteri.
+4. **Calcolo Chilometrico (OSRM)**  
+   - Distanza reale A/R tra base e azienda validata.
 
 ---
 
-## 📂 STRUTTURA FILES
+## 2. Regole Ferree di Formattazione (Stress Test)
 
-1.  **`components/reports/ReportPDF.tsx`**  
-    *   Il "cuore" del sistema. Contiene il layout, gli stili e la logica di rendering.
-    *   **ATTENZIONE:** Contiene header di blocco. Modificare con estrema cautela.
+Ogni riga deve essere processata dalla funzione `truncate(text, limit)` prima del rendering.
 
-2.  **`app/api/generate-pdf/route.ts`**  
-    *   Endpoint di produzione.
+### A. Sezione AZIENDA (6 Righe - Lato Sinistro)
 
-3.  **`app/api/test-pdf-gen/route.ts`**  
-    *   Endpoint di test. Genera `report-stress.pdf`.
+Tutte le righe hanno un limite tassativo di 25 caratteri.
 
-4.  **`lib/pdf-logos-base64.ts`**  
-    *   Asset statici (Loghi Base64).
+| Riga | Contenuto | Regola |
+| --- | --- | --- |
+| 1 | Ragione Sociale | Uppercase, Max 25 caratteri |
+| 2 | Indirizzo | Solo Via + Civico, Max 25 caratteri |
+| 3 | Località | `CAP Città (PR)`, Max 25 caratteri |
+| 4 | P.IVA | Prefisso “P.IVA: ” + 11 cifre, Max 25 caratteri |
+| 5 | Telefono | Solo numero, Font 9, Altezza 13pt, no “Tel:”, Max 25 caratteri |
+| 6 | Email | Solo email, Font 9, Altezza 13pt, no bordo, Max 25 caratteri |
+
+> **Nota:** Il limite di 25 caratteri va applicato direttamente nella fase di popolamento dati (route.ts), prima che il componente PDF riceva i valori.
+
+### B. Gestione Spese e Importi
+
+- **Importi Dinamici:** devono riflettere fedelmente il parlato (es. Pranzo €15,00; Cena €35,00; Pernotto €80,00).  
+- **Nomi Attività:** anche i nomi dei ristoranti/hotel trovati tramite API devono essere troncati a 25 caratteri per non uscire dai bordi della tabella (troncamento applicato subito dopo la fetch).
+
+### C. Tabella Componenti (Altezza 18.25pt)
+
+- Q.TÀ: Max 3 caratteri (Centrato).  
+- DESCRIZIONE: Max 15 caratteri.  
+- BRAND: Max 8 caratteri.  
+- CODICE: Max 12 caratteri.
 
 ---
 
-## 🧪 COME TESTARE
+## 3. Parametri di Rendering
 
-1.  Assicurarsi che il server dev sia attivo.
-2.  Andare su `http://localhost:3000/test-pdf`.
-3.  Cliccare su **"Stress Test PDF Generation"**.
-4.  Scaricare `report-stress.pdf` e verificare:
-    *   Loghi corretti (15/25).
-    *   Q.TÀ centrata.
-    *   Tabelle allineate.
-    *   Nessun testo mancante o tagliato a metà.
+- **Tecnologia:** `@react-pdf/renderer` v3.x  
+- **Footer:** Loghi Base64 con `bottom: 30` (altezze 15 e 25).  
+- **Limiti Testo:** Referente Max 25 caratteri, Descrizione attività Max 460 caratteri.
 
 ---
 
-> **NOTA FINALE:** Ogni modifica futura al layout deve essere testata OBBLIGATORIAMENTE con lo Stress Test prima di andare in produzione.
+> Questo documento è la sorgente di verità per qualsiasi implementazione o migrazione futura del generatore PDF. Ogni nuova release deve rispettare queste regole prima di andare in produzione.
+

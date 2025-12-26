@@ -8,6 +8,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useState } from 'react';
 import { FileText, Download, CheckCircle, Activity, Mic, Loader2, AlertTriangle } from 'lucide-react';
 import clsx from 'clsx';
+import type { ReportData } from '@/components/reports/ReportPDF';
 
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
@@ -16,7 +17,10 @@ type ReportAnalysis = {
   client?: string;
   intervento?: { 
     tipo?: string; 
-    componenti?: { quantita: string; descrizione: string; brand: string; codice: string }[]; 
+    componenti?: Array<
+      | string
+      | { quantita?: string; descrizione?: string; brand?: string; codice?: string }
+    >; 
     descrizione?: string; 
     statoFinale?: string 
   };
@@ -29,12 +33,14 @@ type ReportAnalysis = {
     varie?: { descrizione: string; importo: string }[];
   };
   transcript?: string;
+  status?: string;
 };
 
 type ReportResult = {
   id: string;
   transcript: string;
   analysis: ReportAnalysis;
+  reportData: ReportData;
   status: 'success' | 'error';
 };
 
@@ -65,13 +71,14 @@ export default function ReportsPage() {
 
         const data = await response.json();
         
-        if (data.error) {
-            setError(data.error);
+        if (data.error || !data.reportData) {
+            setError(data.error || dict.reports.error.msg);
         } else {
             setReportResult({
-                id: 'REP-' + Math.floor(Math.random() * 10000),
+                id: data.reportData.id || 'REP-' + Math.floor(Math.random() * 10000),
                 transcript: data.transcript,
                 analysis: data.analysis as ReportAnalysis,
+                reportData: data.reportData as ReportData,
                 status: 'success'
             });
         }
@@ -86,58 +93,22 @@ export default function ReportsPage() {
   };
 
   const handleDownloadPdf = async () => {
-      if (!reportResult) return;
+      if (!reportResult?.reportData) return;
       
       try {
-          const timestamp = Date.now().toString().slice(-8); // Ultimi 8 caratteri del timestamp
-          const uniqueId = `REP-${timestamp}`; // Totale 12 caratteri (REP- + 8 cifre)
+          const timestamp = Date.now().toString().slice(-8);
+          const uniqueId = `REP-${timestamp}`;
+          const finalReportData: ReportData = {
+              ...reportResult.reportData,
+              id: uniqueId,
+              date: new Date().toLocaleString('it-IT'),
+              trascrizione: reportResult.transcript || reportResult.reportData.trascrizione,
+          };
           
           const response = await fetch('/api/generate-pdf', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  reportData: {
-                      id: uniqueId,
-                      date: new Date().toLocaleString('it-IT'),
-                      cliente: {
-                        azienda: reportResult.analysis.cliente?.azienda || reportResult.analysis.client || 'N/D',
-                        referente: reportResult.analysis.cliente?.referente || 'N/D',
-                        sede: reportResult.analysis.cliente?.sede || 'N/D',
-                      },
-                      intervento: {
-                        tipologia: reportResult.analysis.intervento?.tipo || 'N/D',
-                        statoFinale: reportResult.analysis.intervento?.statoFinale || 'COMPLETATO',
-                        descrizione: reportResult.analysis.intervento?.descrizione || 'N/D',
-                      },
-                      componenti: (reportResult.analysis.intervento?.componenti || []).map(c => ({
-                          quantita: c.quantita || '1',
-                          descrizione: c.descrizione || 'Comp.',
-                          brand: c.brand || 'N/D',
-                          codice: c.codice || 'N/D'
-                      })),
-                      noteCritiche: reportResult.analysis.noteCritiche || reportResult.analysis.summary || 'N/D',
-                      spese: {
-                        viaggio: {
-                            km: reportResult.analysis.spese?.viaggio?.km || 'N/D',
-                            costoKm: reportResult.analysis.spese?.viaggio?.costoKm || 'N/D',
-                            pedaggio: reportResult.analysis.spese?.viaggio?.pedaggio || 'N/D'
-                        },
-                        vitto: {
-                            pranzoPosto: reportResult.analysis.spese?.vitto?.pranzoPosto || 'N/D',
-                            pranzoImporto: reportResult.analysis.spese?.vitto?.pranzoImporto || 'N/D',
-                            cenaPosto: reportResult.analysis.spese?.vitto?.cenaPosto || 'N/D',
-                            cenaImporto: reportResult.analysis.spese?.vitto?.cenaImporto || 'N/D'
-                        },
-                        pernottamento: {
-                            nomeHotel: reportResult.analysis.spese?.pernottamento?.nomeHotel || 'N/D',
-                            numeroNotti: reportResult.analysis.spese?.pernottamento?.numeroNotti || 'N/D',
-                            importo: reportResult.analysis.spese?.pernottamento?.importo || 'N/D'
-                        },
-                        varie: reportResult.analysis.spese?.varie || [],
-                      },
-                      trascrizione: reportResult.transcript || 'N/D',
-                  }
-              })
+              body: JSON.stringify({ reportData: finalReportData })
           });
           
           if (!response.ok) {
@@ -148,8 +119,8 @@ export default function ReportsPage() {
           const url = window.URL.createObjectURL(blob);
           
           const dateStr = new Date().toISOString().slice(0, 10);
-          const clienteRaw = reportResult.analysis.cliente?.azienda || "CLIENTE";
-          const tipoRaw = reportResult.analysis.intervento?.tipo || "REPORT";
+          const clienteRaw = finalReportData.cliente.azienda || "CLIENTE";
+          const tipoRaw = finalReportData.intervento.tipologia || "REPORT";
           const safeCliente = clienteRaw.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
           const safeTipo = tipoRaw.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
           const finalCliente = safeCliente.length > 20 ? safeCliente.substring(0, 20) : (safeCliente || "ND");
@@ -329,11 +300,16 @@ export default function ReportsPage() {
                                             <div>
                                             <div className="text-[10px] font-mono text-slate-500 uppercase mb-2">{dict.reports.result.components}</div>
                                             <div className="flex flex-wrap gap-2">
-                                                {reportResult.analysis.intervento.componenti.map((comp, i) => (
-                                                    <span key={i} className="text-xs bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300">
-                                                        {comp}
-                                                    </span>
-                                                ))}
+                                                {reportResult.analysis.intervento.componenti.map((comp, i) => {
+                                                    const label = typeof comp === 'string'
+                                                        ? comp
+                                                        : `${comp.quantita ? `${comp.quantita}× ` : ''}${comp.descrizione || 'Comp.'}${comp.brand ? ` - ${comp.brand}` : ''}${comp.codice ? ` (${comp.codice})` : ''}`;
+                                                    return (
+                                                        <span key={i} className="text-xs bg-slate-800 border border-slate-700 px-2 py-1 rounded text-slate-300">
+                                                            {label}
+                                                        </span>
+                                                    );
+                                                })}
                                             </div>
                                             </div>
                                         )}

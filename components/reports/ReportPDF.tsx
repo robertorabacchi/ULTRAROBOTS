@@ -98,6 +98,8 @@ export interface ReportData {
   };
   componenti: Componente[];
   noteCritiche: string;
+  vitto_nome?: string;
+  pernotto_nome?: string;
   spese: {
     viaggio: {
       km: string;
@@ -333,7 +335,15 @@ const LinedBackground = ({ rows, totalHeight }: { rows: number, totalHeight: num
   );
 };
 
-const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigitalEngineered?: string }> = ({ data, logoUltrarobots, logoDigitalEngineered }) => (
+const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigitalEngineered?: string }> = ({ data, logoUltrarobots, logoDigitalEngineered }) => {
+  const vittoDisplayName = hasValue(data.vitto_nome) ? truncate(data.vitto_nome, 25) : '';
+  const pernottoDisplayName = hasValue(data.pernotto_nome)
+    ? truncate(data.pernotto_nome, 25)
+    : hasValue(data.spese.pernottamento.nomeHotel)
+    ? truncate(data.spese.pernottamento.nomeHotel, 25)
+    : '';
+
+  return (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
@@ -365,27 +375,31 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
             <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { height: 78, position: 'relative', padding: 0 }]}>
               {/* Riga 1: Ragione Sociale (Azienda) */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.azienda)}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.azienda), 25)}</Text>
               </View>
               {/* Riga 2: Via e Numero Civico */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.indirizzo) || clean(data.cliente.sede)}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>
+                   {truncate(clean(data.cliente.indirizzo) || clean(data.cliente.sede), 25)}
+                 </Text>
               </View>
               {/* Riga 3: CAP + Città + Provincia */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.citta)}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.citta), 25)}</Text>
               </View>
               {/* Riga 4: Partita IVA */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.piva) ? `P.IVA: ${clean(data.cliente.piva)}` : ''}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>
+                   {truncate(clean(data.cliente.piva) ? `P.IVA: ${clean(data.cliente.piva)}` : '', 25)}
+                 </Text>
               </View>
               {/* Riga 5: Telefono */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.telefono)}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.telefono), 25)}</Text>
               </View>
                {/* Riga 6: Email */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4 }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{clean(data.cliente.email)}</Text>
+                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.email), 25)}</Text>
               </View>
             </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>TIPOLOGIA</Text></View>
@@ -485,6 +499,10 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
 
             {/* VITTO */}
             <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { height: 60 }]}>
+              {/* Riga 0: Locale rilevato */}
+              <Text style={{ height: 12, fontSize: 8 }}>
+                {vittoDisplayName ? `Locale: ${vittoDisplayName}` : ''}
+              </Text>
               {/* Riga 1: Posto Pranzo */}
               <Text style={{ height: 12, fontSize: 8, fontWeight: 'bold' }}>
                 {hasValue(data.spese.vitto.pranzoPosto) ? truncate(data.spese.vitto.pranzoPosto, 24) : ''}
@@ -507,7 +525,7 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
             <View style={[styles.tableCell, styles.col4, styles.tableCellBorder, { height: 60 }]}>
               {/* Riga 1: Nome Hotel */}
               <Text style={{ height: 12, fontSize: 8, fontWeight: 'bold' }}>
-                {hasValue(data.spese.pernottamento.nomeHotel) ? truncate(data.spese.pernottamento.nomeHotel, 24) : ''}
+                {pernottoDisplayName}
               </Text>
               {/* Riga 2: Notti */}
               <Text style={{ height: 12, fontSize: 8 }}>
@@ -560,7 +578,8 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
       </View>
     </Page>
   </Document>
-);
+  );
+};
 
 export const sampleReportData: ReportData = {
   id: '251220-0310-87A8',
