@@ -8,7 +8,6 @@
 import ReportPDF from './ReportPDF';
 import type { ReportData } from './ReportPDF';
 import { sampleReportData } from './ReportPDF';
-import ReportPDFExample from './ReportPDFExample';
 import VoiceReportPDFIntegration from './VoiceReportPDFIntegration';
 
 // Test import centralizzato
@@ -16,7 +15,6 @@ import {
   ReportPDF as ReportPDF2,
   ReportData as ReportData2,
   sampleReportData as sampleData2,
-  ReportPDFExample as Example2,
   VoiceReportPDFIntegration as Integration2,
 } from './index';
 
@@ -33,7 +31,6 @@ console.log('✅ Tutti gli import funzionano correttamente!');
 
 export const testData: ReportData = sampleReportData;
 export const testComponent = ReportPDF;
-export const testExample = ReportPDFExample;
 export const testIntegration = VoiceReportPDFIntegration;
 export const testUtils = {
   convertOldToNewFormat,

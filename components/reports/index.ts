@@ -10,8 +10,7 @@ export { default as ReportPDF } from './ReportPDF';
 export type { ReportData } from './ReportPDF';
 export { sampleReportData } from './ReportPDF';
 
-// Componente esempio
-export { default as ReportPDFExample } from './ReportPDFExample';
+// Componente esempio (rimosso: file non presente)
 
 // Dashboard reports esistente
 export { default as ReportsDashboard } from './ReportsDashboard';
