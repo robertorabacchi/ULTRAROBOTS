@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
-  // Ensure pdfkit is treated as a server package and not bundled by Webpack
-  serverExternalPackages: ['pdfkit'],
+  serverExternalPackages: [],
 };
 
 export default nextConfig;

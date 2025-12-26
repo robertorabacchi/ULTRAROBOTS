@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import ReportPDF, { sampleReportData, ReportData } from './ReportPDF';
+import { LOGOS } from '@/lib/pdf-logos-base64';
 
 const PDFViewer = dynamic(
   () => import('@react-pdf/renderer').then((mod) => ({ default: mod.PDFViewer })),
@@ -50,7 +51,11 @@ const ReportPDFExample: React.FC<ReportPDFExampleProps> = ({
     return (
       <div style={{ width: '100%', height: '100vh' }}>
         <PDFViewer width="100%" height="100%">
-          <ReportPDF data={data} />
+          <ReportPDF 
+            data={data} 
+            logoUltrarobots={LOGOS.ultrarobots} 
+            logoDigitalEngineered={LOGOS.digitalengineered} 
+          />
         </PDFViewer>
       </div>
     );
@@ -59,7 +64,13 @@ const ReportPDFExample: React.FC<ReportPDFExampleProps> = ({
   return (
     <div style={{ padding: '20px' }}>
       <PDFDownloadLink
-        document={<ReportPDF data={data} />}
+        document={
+          <ReportPDF 
+            data={data} 
+            logoUltrarobots={LOGOS.ultrarobots} 
+            logoDigitalEngineered={LOGOS.digitalengineered} 
+          />
+        }
         fileName={stableFileName}
       >
         {({ loading }) => (

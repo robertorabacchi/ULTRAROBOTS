@@ -81,7 +81,7 @@ Dopo il deploy, testa:
 
 ### PDF non si scarica
 - Controlla la console del browser per errori
-- Verifica che `pdfkit` sia installato correttamente (`npm install pdfkit`)
+- Verifica che la generazione PDF usi `@react-pdf/renderer`
 
 ### CORS Errors
 - Gli header CORS sono già configurati nel codice
@@ -91,5 +91,5 @@ Dopo il deploy, testa:
 
 - Le API routes Next.js funzionano automaticamente su Netlify come serverless functions
 - Non serve configurazione aggiuntiva per CORS (già gestito nel codice)
-- Il PDF generation usa `pdfkit` che funziona su Node.js runtime di Netlify
+- Il PDF generation usa `@react-pdf/renderer`
 

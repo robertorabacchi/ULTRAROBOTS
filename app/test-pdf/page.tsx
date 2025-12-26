@@ -150,6 +150,38 @@ export default function TestPDFPage() {
           >
             🚀 API Generate
           </button>
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/test-pdf-gen');
+                const data = await res.json();
+                if (data.success && data.files) {
+                  data.files.forEach((file: string) => {
+                    const link = document.createElement('a');
+                    link.href = file;
+                    link.download = file.split('/').pop() || 'report.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  });
+                }
+              } catch (e) {
+                console.error(e);
+                alert('Errore generazione Stress Test');
+              }
+            }}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#DC2626',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            🔥 Stress Test
+          </button>
         </div>
       </div>
 

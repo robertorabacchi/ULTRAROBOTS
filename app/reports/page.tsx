@@ -12,11 +12,22 @@ import clsx from 'clsx';
 const Scene = dynamic(() => import('@/components/3d/Scene'), { ssr: false });
 
 type ReportAnalysis = {
-  summary?: string;
-  status?: string;
-  cliente?: { azienda?: string };
+  cliente?: { azienda?: string; referente?: string; sede?: string };
   client?: string;
-  intervento?: { tipo?: string; componenti?: string[]; descrizione?: string };
+  intervento?: { 
+    tipo?: string; 
+    componenti?: { quantita: string; descrizione: string; brand: string; codice: string }[]; 
+    descrizione?: string; 
+    statoFinale?: string 
+  };
+  summary?: string;
+  noteCritiche?: string;
+  spese?: {
+    viaggio?: { km?: string; costoKm?: string; pedaggio?: string };
+    vitto?: { pranzoPosto?: string; pranzoImporto?: string; cenaPosto?: string; cenaImporto?: string };
+    pernottamento?: { nomeHotel?: string; numeroNotti?: string; importo?: string };
+    varie?: { descrizione: string; importo: string }[];
+  };
   transcript?: string;
 };
 
@@ -78,30 +89,51 @@ export default function ReportsPage() {
       if (!reportResult) return;
       
       try {
+          const timestamp = Date.now().toString().slice(-8); // Ultimi 8 caratteri del timestamp
+          const uniqueId = `REP-${timestamp}`; // Totale 12 caratteri (REP- + 8 cifre)
+          
           const response = await fetch('/api/generate-pdf', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                   reportData: {
-                      id: `REP-${Date.now()}`,
+                      id: uniqueId,
                       date: new Date().toLocaleString('it-IT'),
                       cliente: {
-                        azienda: reportResult.analysis.cliente?.azienda || 'N/D',
-                        referente: 'N/D',
-                        sede: 'N/D',
+                        azienda: reportResult.analysis.cliente?.azienda || reportResult.analysis.client || 'N/D',
+                        referente: reportResult.analysis.cliente?.referente || 'N/D',
+                        sede: reportResult.analysis.cliente?.sede || 'N/D',
                       },
                       intervento: {
                         tipologia: reportResult.analysis.intervento?.tipo || 'N/D',
-                        statoFinale: 'N/D',
+                        statoFinale: reportResult.analysis.intervento?.statoFinale || 'COMPLETATO',
                         descrizione: reportResult.analysis.intervento?.descrizione || 'N/D',
                       },
-                      componenti: reportResult.analysis.intervento?.componenti || [],
-                      noteCritiche: reportResult.analysis.summary || 'N/D',
+                      componenti: (reportResult.analysis.intervento?.componenti || []).map(c => ({
+                          quantita: c.quantita || '1',
+                          descrizione: c.descrizione || 'Comp.',
+                          brand: c.brand || 'N/D',
+                          codice: c.codice || 'N/D'
+                      })),
+                      noteCritiche: reportResult.analysis.noteCritiche || reportResult.analysis.summary || 'N/D',
                       spese: {
-                        viaggio: { destinazione: 'N/D', km: 'N/D', costoKm: 'N/D', pedaggio: 'N/D' },
-                        vitto: 'N/D',
-                        pernottamento: 'N/D',
-                        varie: [],
+                        viaggio: {
+                            km: reportResult.analysis.spese?.viaggio?.km || 'N/D',
+                            costoKm: reportResult.analysis.spese?.viaggio?.costoKm || 'N/D',
+                            pedaggio: reportResult.analysis.spese?.viaggio?.pedaggio || 'N/D'
+                        },
+                        vitto: {
+                            pranzoPosto: reportResult.analysis.spese?.vitto?.pranzoPosto || 'N/D',
+                            pranzoImporto: reportResult.analysis.spese?.vitto?.pranzoImporto || 'N/D',
+                            cenaPosto: reportResult.analysis.spese?.vitto?.cenaPosto || 'N/D',
+                            cenaImporto: reportResult.analysis.spese?.vitto?.cenaImporto || 'N/D'
+                        },
+                        pernottamento: {
+                            nomeHotel: reportResult.analysis.spese?.pernottamento?.nomeHotel || 'N/D',
+                            numeroNotti: reportResult.analysis.spese?.pernottamento?.numeroNotti || 'N/D',
+                            importo: reportResult.analysis.spese?.pernottamento?.importo || 'N/D'
+                        },
+                        varie: reportResult.analysis.spese?.varie || [],
                       },
                       trascrizione: reportResult.transcript || 'N/D',
                   }

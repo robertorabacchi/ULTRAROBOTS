@@ -2,7 +2,7 @@
 import { ReportData } from '@/components/reports/ReportPDF';
 
 /**
- * Utility per convertire i dati dal vecchio formato (usato con pdfkit)
+ * Utility per convertire i dati dal vecchio formato
  * al nuovo formato per @react-pdf/renderer
  */
 

@@ -1,37 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
-
-/**
- * ⚠️⚠️⚠️ ISTRUZIONI DEFINITIVE PER GPT - COMPILAZIONE PDF RAPPORTO INTERVENTO ⚠️⚠️⚠️
- * 
- * Vedi istruzioni complete in: components/reports/ReportPDF.tsx
- * 
- * 📋 RIEPILOGO RAPIDO LIMITI:
- * 
- * - AZIENDA: max 150 caratteri (~25 per riga, 6 righe)
- * - TIPOLOGIA: max 150 caratteri (~25 per riga, 6 righe)
- * - REFERENTE: max 25 caratteri (1 riga)
- * - STATO FINALE: max 25 caratteri (1 riga)
- * - DESCRIZIONE ATTIVITÀ: max 460 caratteri (6 righe)
- * - COMPONENTI descrizione: max 15 caratteri (1-2 PAROLE!)
- * - COMPONENTI quantità: max 3 caratteri
- * - COMPONENTI brand: max 8 caratteri
- * - COMPONENTI codice: max 12 caratteri
- * - COMPONENTI max 8 totali (4 SX + 4 DX)
- * - NOTE CRITICHE: max 460 caratteri (6 righe)
- * - TRASCRIZIONE: max 460 caratteri (6 righe)
- * 
- * SPESE:
- * - Formato importi: xxxx,xx € (virgola, € DOPO)
- * - Km: calcolo automatico A/R × 0,8€/km
- * - Default pranzo: [15,00 €] se non dichiarato
- * - Default cena: [35,00 €] se non dichiarato
- * - Default pernotto: [80,00 €] per notte se non dichiarato
- * - Parentesi quadre [] SOLO per valori ipotizzati
- * - "N/D" SOLO se spesa non fatta
- */
+import { renderToBuffer, type DocumentProps } from '@react-pdf/renderer';
+import ReportPDF, { ReportData } from '@/components/reports/ReportPDF';
+import React, { type ReactElement } from 'react';
+import { LOGOS } from '@/lib/pdf-logos-base64';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,216 +17,211 @@ export async function OPTIONS() {
   });
 }
 
+/**
+ * API Route per generare PDF usando @react-pdf/renderer
+ * 
+ * ⚠️⚠️⚠️ ISTRUZIONI CRITICHE E MILLIMETRICHE PER GPT - COMPILAZIONE PDF ⚠️⚠️⚠️
+ * 
+ * ⏱️ TEMPO MASSIMO RICERCA DATI ESTERNI: 30 SECONDI TOTALI.
+ * Se non trovi info su Azienda/Hotel/Ristoranti in 30s → USA "N/D" o dati generici plausibili.
+ * NON BLOCCARE IL PROCESSO PER CERCARE DATI. VELOCITÀ > PERFEZIONE.
+ * 
+ * 📏 REGOLE DI FORMATTAZIONE E LIMITI (RISPETTARE TASSATIVAMENTE):
+ * 
+ * 1. 🏢 SEZIONE AZIENDA (6 Righe FISSE - Altezza 13pt l'una):
+ *    - Riga 1 (Azienda): Max 150 char.
+ *    - Riga 2 (Indirizzo): Max 150 char.
+ *    - Riga 3 (Città): Max 150 char.
+ *    - Riga 4 (P.IVA): Formato "P.IVA: XXXXX".
+ *    - Riga 5 (Telefono): SOLO IL NUMERO. ❌ NO prefissi "Tel:", "Cell:". Max 1 riga.
+ *    - Riga 6 (Email): SOLO EMAIL. ❌ NO prefissi "Email:", "PEC:". Max 1 riga.
+ * 
+ * 2. 🔧 COMPONENTI (Tabella Rigida - Altezza riga 18.25pt):
+ *    - Q.TÀ: Max 3 char (es: "10", "5"). CENTRATO.
+ *    - DESCRIZIONE: Max 15 char (1-2 parole chiave). ES: "Motore", "Sensore", "Cinghia".
+ *      ❌ NO: "Motore elettrico trifase asincrono..." (VERRÀ TRONCATO!)
+ *    - BRAND: Max 8 char. Es: "Siemens", "Omron".
+ *    - CODICE: Max 12 char. Es: "1LA7096...".
+ * 
+ * 3. 💸 SPESE (Formatta SEMPRE come valuta):
+ *    - Formato: "€120,00" (Virgola per decimali, € davanti).
+ *    - Km: "150 km A/R" (Totale andata/ritorno).
+ *    - Costo Km: Km totali * 0.80.
+ * 
+ * 4. 🧠 USO DELLA CONOSCENZA (TIMEBOX 30s):
+ *    - Se l'utente dice "Barilla Parma":
+ *      → Cerca RAPIDAMENTE indirizzo Barilla Parma.
+ *      → Cerca RAPIDAMENTE 1 hotel e 1 ristorante in zona.
+ *      → Se trovi in <30s: INSERISCI.
+ *      → Se NON trovi: "N/D" o "Hotel in zona Parma".
+ * 
+ * 5. 🚫 DIVIETI ASSOLUTI:
+ *    - MAI inventare codici tecnici se non specificati.
+ *    - MAI scrivere testi lunghi nelle celle piccole (Componenti).
+ *    - MAI usare formati data americani.
+ * 
+ * ✅ CHECKLIST FINALE RAPIDA:
+ * □ Ho rispettato i 30s?
+ * □ Telefono e Email sono "puliti" (senza prefissi)?
+ * □ Descrizioni componenti sono < 15 caratteri?
+ * □ Importi hanno la virgola?
+ * 
+ * SE SÌ → GENERA JSON.
+ */
+
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
-    const rData = data.reportData || {}; 
+    const body = await request.json();
+    const reportData = body.reportData as ReportData;
 
-    // Costanti pagina
-    const MARGIN = 40;
-    const PAGE_WIDTH = 595.28;
-    const PAGE_HEIGHT = 841.89;
-    const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
-    const HEADER_HEIGHT = 100;
-    const FOOTER_HEIGHT = 60;
-    const CONTENT_START = MARGIN + HEADER_HEIGHT;
-    const CONTENT_END = PAGE_HEIGHT - FOOTER_HEIGHT;
-
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 0,
-      autoFirstPage: false
-    });
-    
-    doc.addPage();
-    const docOptions = doc.options as PDFKit.PDFDocumentOptions & { autoPageBreak?: boolean };
-    docOptions.autoPageBreak = false;
-
-    const buffers: Buffer[] = [];
-    doc.on('data', buffers.push.bind(buffers));
-
-    // --- HEADER FISSO ---
-    doc.rect(0, 0, PAGE_WIDTH, HEADER_HEIGHT)
-       .fill('#FFFFFF')
-       .stroke('#CCCCCC');
-    
-    // Logo ULTRAROBOTS (sinistra)
-    try {
-      const logoPath = path.join(process.cwd(), 'public', 'assets', 'SVG_PNG', 'logo-wordmark-black-cyan.png');
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, MARGIN, 20, { width: 120 });
-      }
-    } catch (e) {
-      console.error('Logo non caricato:', e);
-    }
-    
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333');
-    doc.text('RAPPORTO INTERVENTO', MARGIN, 55);
-    
-    doc.fontSize(10).font('Helvetica').fillColor('#666666');
-    doc.text('TITAN PROTOCOL v4.5', MARGIN, 75);
-    
-    // ID e DATA a destra
-    const rightX = PAGE_WIDTH - MARGIN;
-    doc.fontSize(9).font('Helvetica-Bold').fillColor('#333333');
-    const idText = `ID: ${rData.id || rData.unitId || ''}`;
-    doc.text(idText, rightX - doc.widthOfString(idText), 55);
-    const dataText = `DATA: ${new Date().toLocaleDateString('it-IT')}`;
-    doc.text(dataText, rightX - doc.widthOfString(dataText), 75);
-
-    // --- CONTENUTO ---
-    let y = CONTENT_START + 10;
-
-    // 1. DATI CLIENTE
-    doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-    doc.text('1. DATI CLIENTE', MARGIN, y);
-    y += 20;
-    
-    doc.fontSize(9).font('Helvetica').fillColor('#333333');
-    doc.text(`Azienda: ${rData.cliente?.azienda || rData.client || ''}`, MARGIN + 10, y);
-    y += 15;
-    doc.text(`Referente: ${rData.cliente?.referente || ''}`, MARGIN + 10, y);
-    y += 15;
-    doc.text(`Sede: ${rData.location || rData.cliente?.sede || ''}`, MARGIN + 10, y);
-    y += 25;
-
-    // 2. DETTAGLI INTERVENTO
-    if (y < CONTENT_END - 100) {
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-      doc.text('2. DETTAGLI INTERVENTO', MARGIN, y);
-      y += 20;
-      
-      doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      doc.text(`Tipologia: ${rData.intervento?.tipo || rData.reportType || ''}`, MARGIN + 10, y);
-      y += 15;
-      doc.text(`Stato: ${rData.intervento?.stato || rData.status || 'COMPLETATO'}`, MARGIN + 10, y);
-      y += 20;
-      
-      const desc = rData.intervento?.descrizione || rData.summary || rData.description || '';
-      if (desc && y < CONTENT_END - 50) {
-        doc.fontSize(9).font('Helvetica-Bold').fillColor('#000000');
-        doc.text('Descrizione:', MARGIN + 10, y);
-        y += 15;
-        doc.fontSize(8).font('Helvetica').fillColor('#333333');
-        const descHeight = Math.min(60, CONTENT_END - y - 20);
-        doc.text(desc, MARGIN + 10, y, { width: CONTENT_WIDTH - 20, height: descHeight, ellipsis: true });
-        y += descHeight + 15;
-      }
-      y += 10;
-    }
-
-    // 3. COMPONENTI
-    if (rData.intervento?.componenti && Array.isArray(rData.intervento.componenti) && rData.intervento.componenti.length > 0 && y < CONTENT_END - 50) {
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-      doc.text('3. COMPONENTI', MARGIN, y);
-      y += 20;
-      
-      doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      rData.intervento.componenti.slice(0, 5).forEach((comp: unknown) => {
-        if (y < CONTENT_END - 30) {
-          doc.text(`• ${String(comp)}`, MARGIN + 10, y);
-          y += 15;
+    // Validazione base dei dati
+    if (!reportData || !reportData.id) {
+      return NextResponse.json(
+        { error: 'Dati del report mancanti o incompleti' },
+        {
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          },
         }
-      });
-      y += 10;
+      );
     }
 
-    // 4. NOTE CRITICHE
-    if (y < CONTENT_END - 50) {
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-      doc.text('4. NOTE CRITICHE', MARGIN, y);
-      y += 20;
-      
-      doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      const noteText = rData.noteCritiche || 'Nessuna criticità rilevata.';
-      const noteHeight = Math.min(40, CONTENT_END - y - 20);
-      doc.text(noteText, MARGIN + 10, y, { width: CONTENT_WIDTH - 20, height: noteHeight, ellipsis: true });
-      y += noteHeight + 15;
+    // Imposta valori di default per campi mancanti
+    type VittoObj = {
+      pranzoPosto: string;
+      pranzoImporto: string;
+      cenaPosto: string;
+      cenaImporto: string;
+    };
+
+    type PernottamentoObj = {
+      nomeHotel: string;
+      numeroNotti: string;
+      importo: string;
+    };
+
+    const vittoRaw = reportData.spese?.vitto;
+    let vitto: VittoObj;
+
+    if (typeof vittoRaw === 'object' && vittoRaw !== null && !Array.isArray(vittoRaw)) {
+        // È già un oggetto strutturato (nuovo formato)
+        vitto = {
+            pranzoPosto: (vittoRaw as any).pranzoPosto || '',
+            pranzoImporto: (vittoRaw as any).pranzoImporto || '',
+            cenaPosto: (vittoRaw as any).cenaPosto || '',
+            cenaImporto: (vittoRaw as any).cenaImporto || ''
+        };
+    } else {
+        // Fallback per vecchi dati o stringhe
+        vitto = {
+            pranzoPosto: '',
+            pranzoImporto: '',
+            cenaPosto: '',
+            cenaImporto: ''
+        };
     }
 
-    // 5. SPESE
-    if (y < CONTENT_END - 50) {
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-      doc.text('5. SPESE DI TRASFERTA', MARGIN, y);
-      y += 20;
-      
-      doc.fontSize(9).font('Helvetica').fillColor('#333333');
-      doc.text(`Viaggio: ${rData.spese?.viaggio?.costo || '0'}€`, MARGIN + 10, y);
-      y += 15;
-      doc.text(`Vitto: ${rData.spese?.vitto || '0'}€`, MARGIN + 10, y);
-      y += 15;
-      doc.text(`Pernottamento: ${rData.spese?.pernottamento || '0'}€`, MARGIN + 10, y);
-      y += 15;
-      doc.text(`Varie: ${rData.spese?.varie || '0'}€`, MARGIN + 10, y);
-      y += 15;
+    const pernoRaw = reportData.spese?.pernottamento;
+    let pernottamento: PernottamentoObj;
+
+    if (typeof pernoRaw === 'object' && pernoRaw !== null && !Array.isArray(pernoRaw)) {
+         // È già un oggetto strutturato
+        pernottamento = {
+            nomeHotel: (pernoRaw as any).nomeHotel || '',
+            numeroNotti: (pernoRaw as any).numeroNotti || '',
+            importo: (pernoRaw as any).importo || ''
+        };
+    } else {
+        pernottamento = {
+            nomeHotel: '',
+            numeroNotti: '',
+            importo: ''
+        };
     }
 
-    // TRASCRIZIONE (se c'è spazio)
-    if (y < CONTENT_END - 40) {
-      doc.fontSize(12).font('Helvetica-Bold').fillColor('#000000');
-      doc.text('TRASCRIZIONE ORIGINALE', MARGIN, y);
-      y += 20;
-      
-      const transcript = rData.transcript || 'Nessuna trascrizione disponibile.';
-      const transcriptHeight = Math.max(30, CONTENT_END - y - 20);
-      doc.fontSize(8).font('Courier').fillColor('#333333');
-      doc.text(transcript, MARGIN + 10, y, { width: CONTENT_WIDTH - 20, height: transcriptHeight, ellipsis: true });
-    }
-
-    // --- FOOTER FISSO ---
-    const footerY = PAGE_HEIGHT - FOOTER_HEIGHT;
-    doc.rect(0, footerY, PAGE_WIDTH, FOOTER_HEIGHT)
-       .fill('#FFFFFF')
-       .stroke('#CCCCCC');
+    const varieRaw = reportData.spese?.varie;
+    // Gestione Varie: assicuriamoci che sia un array di oggetti {descrizione, importo}
+    let varie: { descrizione: string; importo: string }[] = [];
     
-    doc.moveTo(MARGIN, footerY + 15)
-       .lineTo(PAGE_WIDTH - MARGIN, footerY + 15)
-       .strokeColor('#CCCCCC')
-       .lineWidth(1)
-       .stroke();
-    
-    // Logo DigitalEngineered nel footer
-    try {
-      const deLogoPath = path.join(process.cwd(), 'public', 'assets', 'SVG_PNG', 'digitalengineered.wordmark-black.png');
-      if (fs.existsSync(deLogoPath)) {
-        const logoWidth = 100;
-        doc.image(deLogoPath, (PAGE_WIDTH - logoWidth) / 2, footerY + 22, { width: logoWidth });
-      }
-    } catch (e) {
-      console.error('Logo footer non caricato:', e);
-      doc.fontSize(8).font('Helvetica-Bold').fillColor('#000000');
-      const footerText1 = 'DIGITALENGINEERED.AI';
-      doc.text(footerText1, (PAGE_WIDTH - doc.widthOfString(footerText1)) / 2, footerY + 25);
+    if (Array.isArray(varieRaw)) {
+        varie = varieRaw.map(v => ({
+            descrizione: v.descrizione || '',
+            importo: v.importo || ''
+        }));
+    } else if (typeof varieRaw === 'string' && varieRaw) {
+        // Se arriva come stringa, prova a metterla nel primo elemento
+        varie = [{ descrizione: varieRaw, importo: '' }];
     }
-    
-    doc.fontSize(7).font('Courier').fillColor('#666666');
-    const footerText2 = '[ ULTRAROBOTS :: NEURAL SYSTEM ]';
-    doc.text(footerText2, (PAGE_WIDTH - doc.widthOfString(footerText2)) / 2, footerY + 45);
 
-    doc.end();
+    const completeData: ReportData = {
+      id: reportData.id || '',
+      date: reportData.date || new Date().toLocaleString('it-IT'),
+      cliente: {
+        azienda: reportData.cliente?.azienda || '',
+        referente: reportData.cliente?.referente || '',
+        sede: reportData.cliente?.sede || '',
+        indirizzo: (reportData.cliente as any)?.indirizzo || '',
+        citta: (reportData.cliente as any)?.citta || '',
+        piva: (reportData.cliente as any)?.piva || '',
+        telefono: (reportData.cliente as any)?.telefono || '',
+        email: (reportData.cliente as any)?.email || '',
+      },
+      intervento: {
+        tipologia: reportData.intervento?.tipologia || '',
+        statoFinale: reportData.intervento?.statoFinale || '',
+        descrizione: reportData.intervento?.descrizione || '',
+      },
+      componenti: (reportData.componenti || []).map((c: any) => ({
+        quantita: c.quantita || '',
+        descrizione: c.descrizione || '',
+        brand: c.brand || '',
+        codice: c.codice || ''
+      })),
+      noteCritiche: reportData.noteCritiche || '',
+      spese: {
+        viaggio: {
+          km: reportData.spese?.viaggio?.km || '',
+          costoKm: reportData.spese?.viaggio?.costoKm || '',
+          pedaggio: reportData.spese?.viaggio?.pedaggio || '',
+        },
+        vitto,
+        pernottamento,
+        varie,
+      },
+      trascrizione: reportData.trascrizione || '',
+    };
 
-    const pdfBuffer = await new Promise<Buffer>((resolve) => {
-      doc.on('end', () => {
-        resolve(Buffer.concat(buffers));
-      });
+    // Genera il PDF usando @react-pdf/renderer con i loghi in base64
+    const element = React.createElement(ReportPDF, { 
+      data: completeData,
+      logoUltrarobots: LOGOS.ultrarobots,
+      logoDigitalEngineered: LOGOS.digitalengineered
     });
+    const pdfBuffer = await renderToBuffer(element as ReactElement<DocumentProps>);
 
-    return new NextResponse(pdfBuffer as unknown as BodyInit, {
+    // Converti Buffer in Uint8Array per NextResponse
+    const pdfArray = new Uint8Array(pdfBuffer);
+
+    // Restituisce il PDF come response
+    return new NextResponse(pdfArray, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="report-${rData.id || 'export'}-${Date.now()}.pdf"`,
+        'Content-Disposition': `attachment; filename="report-${completeData.id}-${Date.now()}.pdf"`,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
     });
-
   } catch (error) {
     console.error('PDF generation error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : 'Unknown error' },
-      { 
+      {
+        error: 'Errore nella generazione del PDF',
+        details: error instanceof Error ? error.message : 'Errore sconosciuto',
+      },
+      {
         status: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -266,3 +232,20 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

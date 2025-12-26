@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
       buffer,
       {
-        model: 'nova-2',
+        model: 'nova-3',
         smart_format: true,
         language: 'it',
       }
@@ -81,15 +81,29 @@ export async function POST(req: NextRequest) {
           
           LIMITI TESTO (numberOfLines limitato):
           - Azienda/Tipologia: max 3 righe
-          - Referente/Stato: max 1 riga
+          - Referente: MAX 25 CARATTERI (RIGOROSO - 1 RIGA SOLO!)
+          - Stato Finale: MAX 20 CARATTERI (RIGOROSO - 1 RIGA SOLO!)
           - Descrizione intervento: max 4 righe (~200 char)
           - Note critiche: max 4 righe (~200 char)
           - Trascrizione: max 7 righe (~400 char)
           
           Quando estrai dati, mantieni testi CONCISI!
           
+          ⚠️⚠️⚠️ REGOLA CRITICA - REFERENTE E STATO FINALE ⚠️⚠️⚠️
+          Il campo "Referente" e "Stato Finale" DEVONO rimanere su UNA SOLA RIGA.
+          
+          ✅ ESEMPI REFERENTE:
+          - "Mario Rossi" (OK)
+          - "Ing. Bianchi" (OK)
+          - "Capo Reparto" (OK)
+          
+          ❌ ESEMPI SBAGLIATI (Verranno troncati!):
+          - "Mario Rossi responsabile di produzione turno mattutino" ❌ (TROPPO LUNGO!)
+          - "Ing. Bianchi supervisione lavori elettrici" ❌ (TROPPO LUNGO!)
+          
           ⚠️⚠️⚠️ REGOLA CRITICA - NOMI COMPONENTI ⚠️⚠️⚠️
           I nomi dei componenti devono essere BREVI (MAX 15 caratteri, 1-2 parole).
+          OGNI COLONNA HA 1 SOLA RIGA!
           
           ✅ ESEMPI CORRETTI:
           - "Motore" (NON "Motore elettrico trifase")
@@ -100,7 +114,7 @@ export async function POST(req: NextRequest) {
           - "Relè sicurezza" (OK, 2 parole)
           - "Trasformatore" (OK, 1 parola)
           
-          ❌ ESEMPI SBAGLIATI:
+          ❌ ESEMPI SBAGLIATI (Verranno troncati!):
           - "Motore elettrico trifase asincrono da 5.5kW" ❌
           - "Encoder incrementale rotativo ad alta risoluzione" ❌
           
