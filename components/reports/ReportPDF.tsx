@@ -375,31 +375,31 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
             <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { height: 78, position: 'relative', padding: 0 }]}>
               {/* Riga 1: Ragione Sociale (Azienda) */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.azienda), 25)}</Text>
+                 <Text wrap={false} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.azienda), 25)}</Text>
               </View>
               {/* Riga 2: Via e Numero Civico */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>
+                 <Text wrap={false} style={{ fontSize: 9 }}>
                    {truncate(clean(data.cliente.indirizzo) || clean(data.cliente.sede), 25)}
                  </Text>
               </View>
               {/* Riga 3: CAP + Città + Provincia */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.citta), 25)}</Text>
+                 <Text wrap={false} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.citta), 25)}</Text>
               </View>
               {/* Riga 4: Partita IVA */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>
+                 <Text wrap={false} style={{ fontSize: 9 }}>
                    {truncate(clean(data.cliente.piva) ? `P.IVA: ${clean(data.cliente.piva)}` : '', 25)}
                  </Text>
               </View>
               {/* Riga 5: Telefono */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4, borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.telefono), 25)}</Text>
+                 <Text wrap={false} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.telefono), 25)}</Text>
               </View>
                {/* Riga 6: Email */}
               <View style={{ height: 13, justifyContent: 'center', paddingLeft: 4 }}>
-                 <Text numberOfLines={1} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.email), 25)}</Text>
+                 <Text wrap={false} style={{ fontSize: 9 }}>{truncate(clean(data.cliente.email), 25)}</Text>
               </View>
             </View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>TIPOLOGIA</Text></View>
@@ -407,9 +407,9 @@ const ReportPDF: React.FC<{ data: ReportData; logoUltrarobots?: string; logoDigi
           </View>
           <View style={[styles.tableRowLast, { height: 25 }]}>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>REFERENTE</Text></View>
-            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { overflow: 'hidden' }]}><Text numberOfLines={1} style={{ textOverflow: 'ellipsis' }}>{truncate(data.cliente.referente, 25)}</Text></View>
+            <View style={[styles.tableCell, styles.colValue, styles.tableCellBorder, { overflow: 'hidden' }]}><Text wrap={false}>{truncate(data.cliente.referente, 25)}</Text></View>
             <View style={[styles.tableHeader, styles.colHeader, styles.tableCellBorder]}><Text>STATO FINALE</Text></View>
-            <View style={[styles.tableCell, styles.colValue, { overflow: 'hidden' }]}><Text numberOfLines={1} style={{ textOverflow: 'ellipsis' }}>{truncate(data.intervento.statoFinale, 25)}</Text></View>
+            <View style={[styles.tableCell, styles.colValue, { overflow: 'hidden' }]}><Text wrap={false}>{truncate(data.intervento.statoFinale, 25)}</Text></View>
           </View>
         </View>
       </View>
