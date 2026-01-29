@@ -152,95 +152,95 @@ export const dictionaries = {
       }
     },
     reports: {
-        tag: 'INTELLIGENZA OPERATIVA V4.5',
-        interface: 'INTERFACCIA // V.2.0.4',
-        title: 'REPORT DI SISTEMA',
-        subtitle: 'GESTIONE INTERVENTI E ANALISI ASSETS',
-        placeholder: 'INSERISCI_CODICE_OVERRIDE',
-        tabs: {
-          create: 'NUOVO INTERVENTO',
-          dashboard: 'DASHBOARD'
-        },
-        inputTitle: 'INPUT VOCALE',
-        processing: {
-          title: 'ELABORAZIONE AI IN CORSO',
-          steps: {
-            upload: 'UPLOADING AUDIO STREAM... OK',
-            transcribe: 'ANALYSIS BY TITAN 4.5 PROTOCOL - ALL RIGHTS RESERVED',
-            analysis: 'TRANSCRIPTIONS BY TITAN 4.5 PROTOCOL - ALL RIGHTS RESERVED'
-          }
-        },
-        error: {
-          title: 'ERRORE ELABORAZIONE',
-          msg: 'Errore durante l\'elaborazione del rapporto.',
-          retry: 'RIPROVA'
-        },
-        idle: {
-          title: 'PRONTO A REGISTRARE',
-          msg: 'Il sistema ascolterà il tuo rapporto, trascriverà il testo e genererà automaticamente un documento PDF formattato con i dati dell\'intervento.'
-        },
-        result: {
-          title: 'REPORT COMPLETATO',
-          status: 'STATO',
-          summary: 'RIEPILOGO AI',
-          client: 'CLIENTE',
-          type: 'TIPO',
-          desc: 'DESCRIZIONE TECNICA',
-          components: 'COMPONENTI',
-          transcript: 'TRASCRIZIONE ORIGINALE',
-          download: 'SCARICA PDF'
-        },
-        exec: 'ESEGUI',
-        target: 'UNITÀ_TARGET',
-        type: 'TIPO_ANALISI',
-        types: {
-            predictive: 'MANUTENZIONE_PREDITTIVA',
-            oee: 'EFFICIENZA_OPERATIVA',
-            logs: 'DUMP_LOG_ERRORI'
-        },
-        initiate: 'AVVIA_SEQUENZA',
-        abort: 'INTERROMPI_PROCESSO',
-        status_complete: 'STATO: COMPLETATO',
-        download_base64: 'SCARICA_BASE64',
-        download_file: 'SCARICA_FILE',
-        terminal: {
-            ready: 'kernel_pronto',
-            handshake: 'handshake_init',
-            decrypt: 'decriptazione_shards...',
-            warning: 'attenzione: latenza_nodo_04_alta',
-            rerouting: 'reinstradamento...',
-            weights: 'compilazione_pesi_neurali...',
-            generating: 'generazione_struttura...',
-            complete: 'processo_completato',
-            closed: 'connessione_chiusa',
-            abort: 'SIGINT_RICEVUTO_ABORT_UTENTE'
+      tag: 'INTELLIGENZA OPERATIVA V4.5',
+      interface: 'INTERFACCIA // V.2.0.4',
+      title: 'REPORT DI SISTEMA',
+      subtitle: 'GESTIONE INTERVENTI E ANALISI ASSETS',
+      placeholder: 'INSERISCI_CODICE_OVERRIDE',
+      tabs: {
+        create: 'NUOVO INTERVENTO',
+        dashboard: 'DASHBOARD'
+      },
+      inputTitle: 'INPUT VOCALE',
+      processing: {
+        title: 'ELABORAZIONE AI IN CORSO',
+        steps: {
+          upload: 'UPLOADING AUDIO STREAM... OK',
+          transcribe: 'ANALYSIS BY TITAN 4.5 PROTOCOL - ALL RIGHTS RESERVED',
+          analysis: 'TRANSCRIPTIONS BY TITAN 4.5 PROTOCOL - ALL RIGHTS RESERVED'
         }
+      },
+      error: {
+        title: 'ERRORE ELABORAZIONE',
+        msg: 'Errore durante l\'elaborazione del rapporto.',
+        retry: 'RIPROVA'
+      },
+      idle: {
+        title: 'PRONTO A REGISTRARE',
+        msg: 'Il sistema ascolterà il tuo rapporto, trascriverà il testo e genererà automaticamente un documento PDF formattato con i dati dell\'intervento.'
+      },
+      result: {
+        title: 'REPORT COMPLETATO',
+        status: 'STATO',
+        summary: 'RIEPILOGO AI',
+        client: 'CLIENTE',
+        type: 'TIPO',
+        desc: 'DESCRIZIONE TECNICA',
+        components: 'COMPONENTI',
+        transcript: 'TRASCRIZIONE ORIGINALE',
+        download: 'SCARICA PDF'
+      },
+      exec: 'ESEGUI',
+      target: 'UNITÀ_TARGET',
+      type: 'TIPO_ANALISI',
+      types: {
+        predictive: 'MANUTENZIONE_PREDITTIVA',
+        oee: 'EFFICIENZA_OPERATIVA',
+        logs: 'DUMP_LOG_ERRORI'
+      },
+      initiate: 'AVVIA_SEQUENZA',
+      abort: 'INTERROMPI_PROCESSO',
+      status_complete: 'STATO: COMPLETATO',
+      download_base64: 'SCARICA_BASE64',
+      download_file: 'SCARICA_FILE',
+      terminal: {
+        ready: 'kernel_pronto',
+        handshake: 'handshake_init',
+        decrypt: 'decriptazione_shards...',
+        warning: 'attenzione: latenza_nodo_04_alta',
+        rerouting: 'reinstradamento...',
+        weights: 'compilazione_pesi_neurali...',
+        generating: 'generazione_struttura...',
+        complete: 'processo_completato',
+        closed: 'connessione_chiusa',
+        abort: 'SIGINT_RICEVUTO_ABORT_UTENTE'
+      }
     },
     aiDocs: {
-        tag: 'KNOWLEDGE BASE',
-        title: 'MANUALI AI',
-        subtitle: 'Interroga i manuali tecnici con linguaggio naturale. Powered by RAG.',
-        indexing: 'INDICIZZAZIONE: ATTIVA',
-        availableManuals: 'MANUALI DISPONIBILI',
-        loadingManuals: 'Caricamento manuali...',
-        pages: 'pagine',
-        updated: 'Aggiornato il',
-        placeholder: 'Es: Come calibrare i sensori del Titan X?',
-        button: 'QUERY',
-        processing: 'ELABORAZIONE',
-        responseTitle: 'RISPOSTA AI',
-        confidence: 'Confidenza',
-        sources: 'FONTI',
-        page: 'Pagina',
-        examplesTitle: 'ESEMPI DI QUERY',
-        examples: [
-            'Come eseguire la calibrazione del Titan X?',
-            'Cosa significa errore E-104?',
-            'Come configurare le camere Atlas Vision?',
-            'Procedura di Emergency Stop',
-            'API REST endpoint disponibili',
-            'Manutenzione preventiva Nexus'
-        ]
+      tag: 'KNOWLEDGE BASE',
+      title: 'MANUALI AI',
+      subtitle: 'Interroga i manuali tecnici con linguaggio naturale. Powered by RAG.',
+      indexing: 'INDICIZZAZIONE: ATTIVA',
+      availableManuals: 'MANUALI DISPONIBILI',
+      loadingManuals: 'Caricamento manuali...',
+      pages: 'pagine',
+      updated: 'Aggiornato il',
+      placeholder: 'Es: Come calibrare i sensori del Titan X?',
+      button: 'QUERY',
+      processing: 'ELABORAZIONE',
+      responseTitle: 'RISPOSTA AI',
+      confidence: 'Confidenza',
+      sources: 'FONTI',
+      page: 'Pagina',
+      examplesTitle: 'ESEMPI DI QUERY',
+      examples: [
+        'Come eseguire la calibrazione del Titan X?',
+        'Cosa significa errore E-104?',
+        'Come configurare le camere Atlas Vision?',
+        'Procedura di Emergency Stop',
+        'API REST endpoint disponibili',
+        'Manutenzione preventiva Nexus'
+      ]
     },
     voice: {
       calendarMode: 'MODALITÀ CALENDARIO',
@@ -254,49 +254,49 @@ export const dictionaries = {
       generate: 'GENERA REPORT'
     },
     contact: {
-        tag: 'CONNETTITI',
-        title: 'CONTATTACI',
-        subtitle: 'Richiedi una consulenza tecnica o un preventivo personalizzato',
-        infoTitle: 'INFO DI CONTATTO',
-        emailLabel: 'EMAIL',
-        phoneLabel: 'TELEFONO',
-        addressLabel: 'INDIRIZZO',
-        addressValue: 'Via delle Moie, 10',
-        addressCity: '25062 Concesio (BS), Italia',
-        docsTitle: 'DOCUMENTAZIONE',
-        links: {
-            tech: 'Stack Tecnologico',
-            fleet: 'Stato Flotta',
-            manuals: 'Manuali AI'
-        },
-        form: {
-            title: 'Invia un Messaggio',
-            subtitle: 'Ti risponderemo entro 24 ore.',
-            successTitle: 'MESSAGGIO INVIATO',
-            successMsg: 'Ti risponderemo entro 24 ore',
-            newMsg: 'Invia un altro messaggio',
-            name: 'NOME',
-            email: 'EMAIL',
-            company: 'AZIENDA',
-            message: 'MESSAGGIO',
-            placeholderName: 'Mario Rossi',
-            placeholderEmail: 'mario.rossi@azienda.it',
-            placeholderCompany: 'Nome Azienda Srl',
-            placeholderMsg: 'Descrivi la tua esigenza...',
-            errorSend: 'Errore durante l\'invio. Riprova.',
-            errorNet: 'Errore di rete. Verifica la connessione.',
-            sending: 'INVIO IN CORSO',
-            submit: 'INVIA RICHIESTA'
-        }
+      tag: 'CONNETTITI',
+      title: 'CONTATTACI',
+      subtitle: 'Richiedi una consulenza tecnica o un preventivo personalizzato',
+      infoTitle: 'INFO DI CONTATTO',
+      emailLabel: 'EMAIL',
+      phoneLabel: 'TELEFONO',
+      addressLabel: 'INDIRIZZO',
+      addressValue: 'Via Roma, 44/B',
+      addressCity: '41052 Guiglia (MO), Italia',
+      docsTitle: 'DOCUMENTAZIONE',
+      links: {
+        tech: 'Stack Tecnologico',
+        fleet: 'Stato Flotta',
+        manuals: 'Manuali AI'
+      },
+      form: {
+        title: 'Invia un Messaggio',
+        subtitle: 'Ti risponderemo entro 24 ore.',
+        successTitle: 'MESSAGGIO INVIATO',
+        successMsg: 'Ti risponderemo entro 24 ore',
+        newMsg: 'Invia un altro messaggio',
+        name: 'NOME',
+        email: 'EMAIL',
+        company: 'AZIENDA',
+        message: 'MESSAGGIO',
+        placeholderName: 'Mario Rossi',
+        placeholderEmail: 'mario.rossi@azienda.it',
+        placeholderCompany: 'Nome Azienda Srl',
+        placeholderMsg: 'Descrivi la tua esigenza...',
+        errorSend: 'Errore durante l\'invio. Riprova.',
+        errorNet: 'Errore di rete. Verifica la connessione.',
+        sending: 'INVIO IN CORSO',
+        submit: 'INVIA RICHIESTA'
+      }
     },
     footer: {
       systemSecure: 'SISTEMA SICURO // PROTOCOLLO TITAN',
       architecture: 'ARCHITETTURA DELL\'INFINITO',
       loading: 'Caricamento dati di sistema...',
       sections: {
-          security: 'Sicurezza Sistema',
-          arch: 'Architettura',
-          perf: 'Prestazioni'
+        security: 'Sicurezza Sistema',
+        arch: 'Architettura',
+        perf: 'Prestazioni'
       }
     }
   },
@@ -451,95 +451,95 @@ export const dictionaries = {
       }
     },
     reports: {
-        tag: 'OPERATIONAL INTELLIGENCE V4.5',
-        interface: 'INTERFACE // V.2.0.4',
-        title: 'SYSTEM REPORTS',
-        subtitle: 'INTERVENTION MANAGEMENT & ASSETS ANALYSIS',
-        placeholder: 'ENTER_OVERRIDE_CODE',
-        tabs: {
-          create: 'NEW INTERVENTION',
-          dashboard: 'DASHBOARD'
-        },
-        inputTitle: 'VOICE INPUT',
-        processing: {
-          title: 'AI PROCESSING ACTIVE',
-          steps: {
-            upload: 'UPLOADING AUDIO STREAM... OK',
-            transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
-            analysis: 'GPT-4O ANALYSIS... PENDING'
-          }
-        },
-        error: {
-          title: 'PROCESSING ERROR',
-          msg: 'Error processing report.',
-          retry: 'RETRY'
-        },
-        idle: {
-          title: 'READY TO RECORD',
-          msg: 'The system will listen to your report, transcribe the text, and automatically generate a formatted PDF document with intervention data.'
-        },
-        result: {
-          title: 'REPORT COMPLETED',
-          status: 'STATUS',
-          summary: 'AI SUMMARY',
-          client: 'CLIENT',
-          type: 'TYPE',
-          desc: 'TECHNICAL DESCRIPTION',
-          components: 'COMPONENTS',
-          transcript: 'ORIGINAL TRANSCRIPT',
-          download: 'DOWNLOAD PDF'
-        },
-        exec: 'EXEC',
-        target: 'TARGET_UNIT',
-        type: 'ANALYSIS_TYPE',
-        types: {
-            predictive: 'PREDICTIVE_MAINTENANCE',
-            oee: 'OPERATIONAL_EFFICIENCY',
-            logs: 'ERROR_LOGS_DUMP'
-        },
-        initiate: 'INITIATE_SEQUENCE',
-        abort: 'ABORT_PROCESS',
-        status_complete: 'STATUS: COMPLETE',
-        download_base64: 'DOWNLOAD_BASE64',
-        download_file: 'DOWNLOAD_FILE',
-        terminal: {
-            ready: 'kernel_ready',
-            handshake: 'handshake_init',
-            decrypt: 'decrypting_shards...',
-            warning: 'warning: high_latency_node_04',
-            rerouting: 'rerouting...',
-            weights: 'neural_weights_compiling...',
-            generating: 'generating_structure...',
-            complete: 'process_complete',
-            closed: 'connection_closed',
-            abort: 'SIGINT_RECEIVED_USER_ABORT'
+      tag: 'OPERATIONAL INTELLIGENCE V4.5',
+      interface: 'INTERFACE // V.2.0.4',
+      title: 'SYSTEM REPORTS',
+      subtitle: 'INTERVENTION MANAGEMENT & ASSETS ANALYSIS',
+      placeholder: 'ENTER_OVERRIDE_CODE',
+      tabs: {
+        create: 'NEW INTERVENTION',
+        dashboard: 'DASHBOARD'
+      },
+      inputTitle: 'VOICE INPUT',
+      processing: {
+        title: 'AI PROCESSING ACTIVE',
+        steps: {
+          upload: 'UPLOADING AUDIO STREAM... OK',
+          transcribe: 'DEEPGRAM TRANSCRIPTION... RUNNING',
+          analysis: 'GPT-4O ANALYSIS... PENDING'
         }
+      },
+      error: {
+        title: 'PROCESSING ERROR',
+        msg: 'Error processing report.',
+        retry: 'RETRY'
+      },
+      idle: {
+        title: 'READY TO RECORD',
+        msg: 'The system will listen to your report, transcribe the text, and automatically generate a formatted PDF document with intervention data.'
+      },
+      result: {
+        title: 'REPORT COMPLETED',
+        status: 'STATUS',
+        summary: 'AI SUMMARY',
+        client: 'CLIENT',
+        type: 'TYPE',
+        desc: 'TECHNICAL DESCRIPTION',
+        components: 'COMPONENTS',
+        transcript: 'ORIGINAL TRANSCRIPT',
+        download: 'DOWNLOAD PDF'
+      },
+      exec: 'EXEC',
+      target: 'TARGET_UNIT',
+      type: 'ANALYSIS_TYPE',
+      types: {
+        predictive: 'PREDICTIVE_MAINTENANCE',
+        oee: 'OPERATIONAL_EFFICIENCY',
+        logs: 'ERROR_LOGS_DUMP'
+      },
+      initiate: 'INITIATE_SEQUENCE',
+      abort: 'ABORT_PROCESS',
+      status_complete: 'STATUS: COMPLETE',
+      download_base64: 'DOWNLOAD_BASE64',
+      download_file: 'DOWNLOAD_FILE',
+      terminal: {
+        ready: 'kernel_ready',
+        handshake: 'handshake_init',
+        decrypt: 'decrypting_shards...',
+        warning: 'warning: high_latency_node_04',
+        rerouting: 'rerouting...',
+        weights: 'neural_weights_compiling...',
+        generating: 'generating_structure...',
+        complete: 'process_complete',
+        closed: 'connection_closed',
+        abort: 'SIGINT_RECEIVED_USER_ABORT'
+      }
     },
     aiDocs: {
-        tag: 'KNOWLEDGE BASE',
-        title: 'AI MANUALS',
-        subtitle: 'Query technical manuals with natural language. Powered by RAG.',
-        indexing: 'INDEXING: ACTIVE',
-        availableManuals: 'AVAILABLE MANUALS',
-        loadingManuals: 'Loading manuals...',
-        pages: 'pages',
-        updated: 'Updated on',
-        placeholder: 'Ex: How to calibrate Titan X sensors?',
-        button: 'QUERY',
-        processing: 'PROCESSING',
-        responseTitle: 'AI RESPONSE',
-        confidence: 'Confidence',
-        sources: 'SOURCES',
-        page: 'Page',
-        examplesTitle: 'EXAMPLE QUERIES',
-        examples: [
-            'How to perform Titan X calibration?',
-            'What does error E-104 mean?',
-            'How to configure Atlas Vision cameras?',
-            'Emergency Stop procedure',
-            'Available REST API endpoints',
-            'Nexus preventive maintenance'
-        ]
+      tag: 'KNOWLEDGE BASE',
+      title: 'AI MANUALS',
+      subtitle: 'Query technical manuals with natural language. Powered by RAG.',
+      indexing: 'INDEXING: ACTIVE',
+      availableManuals: 'AVAILABLE MANUALS',
+      loadingManuals: 'Loading manuals...',
+      pages: 'pages',
+      updated: 'Updated on',
+      placeholder: 'Ex: How to calibrate Titan X sensors?',
+      button: 'QUERY',
+      processing: 'PROCESSING',
+      responseTitle: 'AI RESPONSE',
+      confidence: 'Confidence',
+      sources: 'SOURCES',
+      page: 'Page',
+      examplesTitle: 'EXAMPLE QUERIES',
+      examples: [
+        'How to perform Titan X calibration?',
+        'What does error E-104 mean?',
+        'How to configure Atlas Vision cameras?',
+        'Emergency Stop procedure',
+        'Available REST API endpoints',
+        'Nexus preventive maintenance'
+      ]
     },
     voice: {
       calendarMode: 'CALENDAR MODE',
@@ -553,49 +553,49 @@ export const dictionaries = {
       generate: 'GENERA REPORT'
     },
     contact: {
-        tag: 'CONNECT',
-        title: 'CONTACT US',
-        subtitle: 'Request technical consultation or a custom quote',
-        infoTitle: 'CONTACT INFO',
-        emailLabel: 'EMAIL',
-        phoneLabel: 'PHONE',
-        addressLabel: 'ADDRESS',
-        addressValue: 'Via delle Moie, 10',
-        addressCity: '25062 Concesio (BS), Italy',
-        docsTitle: 'DOCUMENTATION',
-        links: {
-            tech: 'Technology Stack',
-            fleet: 'Fleet Status',
-            manuals: 'AI Manuals'
-        },
-        form: {
-            title: 'Send a Message',
-            subtitle: 'We will respond within 24 hours.',
-            successTitle: 'MESSAGE SENT',
-            successMsg: 'We will reply within 24 hours',
-            newMsg: 'Send another message',
-            name: 'NAME',
-            email: 'EMAIL',
-            company: 'COMPANY',
-            message: 'MESSAGE',
-            placeholderName: 'John Doe',
-            placeholderEmail: 'john.doe@company.com',
-            placeholderCompany: 'Company Name Inc.',
-            placeholderMsg: 'Describe your needs...',
-            errorSend: 'Error sending message. Please try again.',
-            errorNet: 'Network error. Check your connection.',
-            sending: 'SENDING',
-            submit: 'SEND REQUEST'
-        }
+      tag: 'CONNECT',
+      title: 'CONTACT US',
+      subtitle: 'Request technical consultation or a custom quote',
+      infoTitle: 'CONTACT INFO',
+      emailLabel: 'EMAIL',
+      phoneLabel: 'PHONE',
+      addressLabel: 'ADDRESS',
+      addressValue: 'Via Roma, 44/B',
+      addressCity: '41052 Guiglia (MO), Italy',
+      docsTitle: 'DOCUMENTATION',
+      links: {
+        tech: 'Technology Stack',
+        fleet: 'Fleet Status',
+        manuals: 'AI Manuals'
+      },
+      form: {
+        title: 'Send a Message',
+        subtitle: 'We will respond within 24 hours.',
+        successTitle: 'MESSAGE SENT',
+        successMsg: 'We will reply within 24 hours',
+        newMsg: 'Send another message',
+        name: 'NAME',
+        email: 'EMAIL',
+        company: 'COMPANY',
+        message: 'MESSAGE',
+        placeholderName: 'John Doe',
+        placeholderEmail: 'john.doe@company.com',
+        placeholderCompany: 'Company Name Inc.',
+        placeholderMsg: 'Describe your needs...',
+        errorSend: 'Error sending message. Please try again.',
+        errorNet: 'Network error. Check your connection.',
+        sending: 'SENDING',
+        submit: 'SEND REQUEST'
+      }
     },
     footer: {
       systemSecure: 'SYSTEM SECURE // TITAN PROTOCOL',
       architecture: 'THE ARCHITECTURE OF INFINITY',
       loading: 'Loading system data...',
       sections: {
-          security: 'System Security',
-          arch: 'Architecture',
-          perf: 'Performance'
+        security: 'System Security',
+        arch: 'Architecture',
+        perf: 'Performance'
       }
     }
   }
