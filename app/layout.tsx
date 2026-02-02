@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     images: [ogImage],
   },
   verification: {
-    google: "INSERISCI_CODICE_SEARCH_CONSOLE_QUI",
+    google: "googleada500566d52068d",
   },
 };
 
