@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-# Disallow duplicate content from URL parameters
-Disallow: /*?*
-Disallow: /*?ref=
-Disallow: /*?utm_
-
-Sitemap: https://ultrarobots.ai/sitemap.xml
-
