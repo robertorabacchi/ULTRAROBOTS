@@ -1,6 +1,6 @@
-import type { MetadataRoute } from 'next';
+import { MetadataRoute } from 'next';
 
-const baseUrl = process.env.SITE_URL || 'https://ultrarobots.netlify.app';
+const baseUrl = process.env.SITE_URL || 'https://ultrarobots.ai';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,12 +8,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
+        disallow: [
+          '/*?*',
+          '/*?ref=',
+          '/*?utm_',
+        ],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   };
 }
-
-
-

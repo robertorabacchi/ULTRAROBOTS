@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, Phone, Loader2, CheckCircle } from 'lucide-react';
+import { Send, Mail, MapPin, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -16,24 +16,11 @@ export default function ContactPage() {
     company: '',
     message: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    // Simple client-side success (Netlify Forms disabled for runtime stability)
-    try {
-      setSuccess(true);
-      setFormData({ name: '', email: '', company: '', message: '' });
-    } catch {
-      setError(dict.contact.form.errorNet);
-    } finally {
-      setLoading(false);
-    }
+    console.log('Form submitted:', formData);
+    // In un caso reale, qui invieresti i dati a un server
   };
 
   return (
@@ -134,118 +121,77 @@ export default function ContactPage() {
             {/* Glossy top border */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/50 to-transparent"></div>
 
-            {success ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 flex flex-col items-center justify-center h-full"
-              >
-                <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20">
-                  <CheckCircle className="w-10 h-10 text-emerald-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">
-                  {dict.contact.form.successTitle}
-                </h3>
-                <p className="text-slate-400 font-sans mb-8 max-w-sm">
-                  {dict.contact.form.successMsg}
-                </p>
-                <button
-                  onClick={() => setSuccess(false)}
-                  className="text-xs font-mono uppercase text-sky-400 hover:text-sky-300 transition-colors tracking-widest border-b border-sky-500/30 pb-1 hover:border-sky-400"
-                >
-                  {dict.contact.form.newMsg}
-                </button>
-              </motion.div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-2">{dict.contact.form.title}</h3>
-                  <p className="text-sm text-slate-400">{dict.contact.form.subtitle}</p>
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-white mb-2">{dict.contact.form.title}</h3>
+                <p className="text-sm text-slate-400">{dict.contact.form.subtitle}</p>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                      {dict.contact.form.name} <span className="text-emerald-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-700"
-                      placeholder={dict.contact.form.placeholderName}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                      {dict.contact.form.email} <span className="text-emerald-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-700"
-                      placeholder={dict.contact.form.placeholderEmail}
-                    />
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                    {dict.contact.form.company}
+                    {dict.contact.form.name} <span className="text-emerald-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-700"
-                    placeholder={dict.contact.form.placeholderCompany}
+                    placeholder={dict.contact.form.placeholderName}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                    {dict.contact.form.message} <span className="text-emerald-500">*</span>
+                    {dict.contact.form.email} <span className="text-emerald-500">*</span>
                   </label>
-                  <textarea
+                  <input
+                    type="email"
                     required
-                    rows={5}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none placeholder:text-slate-700"
-                    placeholder={dict.contact.form.placeholderMsg}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-700"
+                    placeholder={dict.contact.form.placeholderEmail}
                   />
                 </div>
+              </div>
 
-                {error && (
-                  <div className="text-xs font-mono text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg px-4 py-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-                    {error}
-                  </div>
-                )}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                  {dict.contact.form.company}
+                </label>
+                <input
+                  type="text"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-700"
+                  placeholder={dict.contact.form.placeholderCompany}
+                />
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white font-bold font-mono text-sm uppercase tracking-widest px-6 py-4 rounded-lg transition-all shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 flex items-center justify-center gap-3 mt-4"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {dict.contact.form.sending}
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      {dict.contact.form.submit}
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                  {dict.contact.form.message} <span className="text-emerald-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={5}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full bg-black/40 border border-slate-700 rounded-lg px-4 py-3 text-white font-sans text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none placeholder:text-slate-700"
+                  placeholder={dict.contact.form.placeholderMsg}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white font-bold font-mono text-sm uppercase tracking-widest px-6 py-4 rounded-lg transition-all shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 flex items-center justify-center gap-3 mt-4"
+              >
+                <Send className="w-4 h-4" />
+                {dict.contact.form.submit}
+              </button>
+            </form>
           </motion.div>
         </div>
       </div>

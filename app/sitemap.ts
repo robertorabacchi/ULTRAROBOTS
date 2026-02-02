@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/calendar',
     '/contact',
     '/ai-docs',
+    '/bin-picking',
   ];
 
   const now = new Date();
@@ -23,6 +24,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === '/' ? 1 : 0.7,
   }));
 }
-
-
-

@@ -1,0 +1,9 @@
+# Force non-www and HTTPS
+http://www.ultrarobots.ai/* https://ultrarobots.ai/:splat 301!
+https://www.ultrarobots.ai/* https://ultrarobots.ai/:splat 301!
+
+# Fallback for Netlify subdomain to canonical
+https://ultrarobots.netlify.app/* https://ultrarobots.ai/:splat 301!
+
+# Standard SPA/Next.js routes
+/*    /index.html   200
