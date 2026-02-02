@@ -5,5 +5,5 @@ https://www.ultrarobots.ai/* https://ultrarobots.ai/:splat 301!
 # Fallback for Netlify subdomain to canonical
 https://ultrarobots.netlify.app/* https://ultrarobots.ai/:splat 301!
 
-# Standard SPA/Next.js routes
-/*    /index.html   200
+# Standard Next.js behavior handled by Netlify plugin
+# No manual /* redirect needed here unless using static export
